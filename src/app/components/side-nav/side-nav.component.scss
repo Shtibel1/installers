@@ -1,88 +1,84 @@
 .example-container {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-  
-  .example-is-mobile .example-toolbar {
-    position: fixed;
-    /* Make sure the toolbar will stay on top of the content as it scrolls past. */
-    z-index: 2;
-    
-  }
-  
-  h1.example-app-name {
-    margin-left: 8px;
-  }
-  
-  .example-sidenav-container {
-    /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.example-is-mobile .example-toolbar {
+  position: fixed;
+  /* Make sure the toolbar will stay on top of the content as it scrolls past. */
+  z-index: 2;
+}
+
+h1.example-app-name {
+  margin-left: 8px;
+}
+
+.example-sidenav-container {
+  /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
        causes `<mat-sidenav-content>` to act as our scrolling element for desktop layouts. */
-    flex: 1;
-  }
-  
-  .example-is-mobile .example-sidenav-container {
-    /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
+  flex: 1;
+}
+
+.example-is-mobile .example-sidenav-container {
+  /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
        `<body>` to be our scrolling element for mobile layouts. */
-    flex: 1 0 auto;
-  }
+  flex: 1 0 auto;
+}
 
+.mat-toolbar.mat-primary {
+  display: flex;
+  justify-content: space-between;
+}
 
-  .mat-toolbar.mat-primary {
-    display: flex;
-    justify-content: space-between;
-  }
+.example-toolbar {
+  display: flex;
+  justify-content: start;
+}
 
-  .example-toolbar {
-    display: flex;
-    justify-content: start;
-  }
+.mat-drawer-content {
+  width: 80%;
+  padding: 30px;
+}
 
-  .mat-drawer-content {
-    display: flex;
-    // align-items: center;
-    justify-content: center;
-    // margin-top: 3rem;
-  }
+h4 {
+  padding-right: 1rem;
+  margin-bottom: 0rem;
+}
 
-  h4 {
-    padding-right: 1rem;
-    margin-bottom: 0rem;
-  }
+.mat-list-item {
+  height: 42px !important;
+}
 
-  .mat-list-item {
-    height: 42px !important;
-  }
+.user {
+  border-bottom: 2px solid #dfe1e6;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+}
 
-  .user {
-    border-bottom: 2px solid  #DFE1E6;
-    padding-bottom: 1rem;
-    padding-left: 2rem;
-  }
+.user-image {
+  width: 42px;
+  height: 42px;
+  background-color: rgb(153, 243, 255);
+  border-radius: 5px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+}
+.user-title {
+  margin-left: 1rem;
+}
+.user-role {
+  margin: 0;
+  margin-top: 0.2rem;
+  align-self: flex-start;
+  font-size: 0.8rem;
+}
 
-  .user-image {
-    width: 42px;
-    height: 42px;
-    background-color: rgb(153, 243, 255);
-    border-radius: 5px;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    font-size: 1.5rem;
-  }
-  .user-title{
-    margin-left: 1rem;
-  }
-  .user-role {
-    margin: 0;
-    margin-top: .2rem;
-    align-self: flex-start;
-    font-size: .8rem;
-  }
-
-  .mat-drawer-container {
-    // overflow: auto;
-  }
+.mat-drawer-container {
+  // overflow: auto;
+}
