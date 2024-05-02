@@ -1,0 +1,18 @@
+<mat-form-field appearance="outline" class="example-full-width">
+  <mat-label>מוצר</mat-label>
+  <input formControlName="product" matInput [matAutocomplete]="auto" />
+  <mat-autocomplete
+    autoActiveFirstOption
+    #auto="matAutocomplete"
+    [displayWith]="displayFn"
+  >
+    @For (product of filteredProductsOptions | async; ) {
+    <mat-option
+      [value]="product"
+      (onSelectionChange)="onProduct(product, $event)"
+    >
+      {{ product?.name }}
+    </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

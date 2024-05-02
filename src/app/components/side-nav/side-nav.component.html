@@ -1,0 +1,60 @@
+<div class="example-container" [class.example-is-mobile]="mobileQuery.matches" >
+    <mat-toolbar color="primary" class="example-toolbar">
+      <div class="btns-wrapper"  *ngIf="user">
+      <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+      <button *ngIf="user.role == 'manager'"  class="button" (click)="openManageDialog()" mat-icon-button>
+        <mat-icon>add</mat-icon>
+    </button>
+    </div>
+      <div class="logo-wrapper">
+      <h1 class="example-app-name">Shtibay</h1>
+    </div>
+    </mat-toolbar>
+    <mat-sidenav-container class="example-sidenav-container"
+                           [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+      <mat-sidenav [opened]="!mobileQuery.matches ? true : false" #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
+                   [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"  >
+        <mat-nav-list>
+          <div class="nav-lists-wrapper" class="flex flex-col justify-center align-center width-10/10" *ngIf="user">
+
+            <div class="user nav-list-wrapper flex align-center justify-center">
+              <div class="user-image flex align-center justify-center" >
+              {{user.name[0]}}
+              </div>
+              <div class="user-details flex flex-col align-center justify-center">
+                <span class="user-title"> שלום {{user.name}}  </span>
+                <p class="user-role"> {{user.role == "manager" ? "מנהל/ת" : "מתקין"}} </p>
+              </div>
+            </div>
+
+            <div class="nav-list-wrapper width-10/10">
+            <h4>התקנות</h4>
+            <a mat-list-item routerLink="" >כל ההתקנות</a>
+            <a *ngIf="user.role == 'manager'" mat-list-item routerLink="manage-assignment" >הוספת התקנה</a>
+            </div>
+
+            <div class="nav-list-wrapper width-10/10" *ngIf="user.role == 'manager'">
+              <h4>ניהול</h4>
+              <a mat-list-item routerLink="products" >כל המוצרים</a>
+              <a mat-list-item routerLink="installers"    >כל המתקינים</a> 
+              <a mat-list-item (click)="onCreateManager()"  routerLink="." >הוספת משתמש</a>
+              <a mat-list-item routerLink="." >סטטיסטיקות</a>
+            </div>
+
+            <div class="nav-list-wrapper width-10/10" *ngIf="user.role != 'manager'">
+              <a mat-list-item [routerLink]="['installers', user.id, 'prices']"   > מחירון התקנות </a>
+            </div>
+
+            <div class="nav-list-wrapper width-10/10">
+              <a mat-list-item (click)="onLogout()"> התנתק </a>
+            </div>
+          </div>
+        </mat-nav-list>
+      </mat-sidenav>
+      <mat-sidenav-content>
+        <!-- <p *ngFor="let content of fillerContent">{{content}}</p> -->
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+  

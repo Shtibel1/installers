@@ -1,0 +1,42 @@
+<form class="example-form" [formGroup]="customerForm">
+  <span>פרטי לקוח</span>
+  <tr class="flex flex-wrap gap-4">
+    <td>
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>שם</mat-label>
+        <input matInput required [formControl]="nameControl" />
+        <mat-error></mat-error>
+      </mat-form-field>
+    </td>
+  </tr>
+  <tr class="flex flex-wrap gap-4">
+    <td>
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label>טלפון</mat-label>
+        <app-phone-input
+          required
+          [formControl]="phoneControl"
+        ></app-phone-input>
+      </mat-form-field>
+    </td>
+    <td>
+      <mat-form-field appearance="outline" class="example-full-width">
+        <mat-label> כתובת </mat-label>
+        <input matInput [formControl]="addressControl" />
+      </mat-form-field>
+    </td>
+  </tr>
+</form>
+
+<!-- the date -->
+
+<!-- <td class="  date-td">
+            <mat-form-field class=""  appearance="outline">
+                <div class="flex">
+                <input  matInput [matDatepicker]="picker2"
+                       [formControl]="getDateControl()" >
+                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+                </div>
+              </mat-form-field>
+        </td> -->

@@ -1,0 +1,160 @@
+<div class="wrapper">
+  <mat-chip-list aria-label="Fish selection">
+    <mat-chip (click)="onAll()"> הכל </mat-chip>
+    <mat-chip
+      *ngFor="let installer of installers"
+      (click)="onInstaller(installer.name)"
+    >
+      {{ installer.name }}
+    </mat-chip>
+    <mat-chip
+      *ngFor="let category of categories"
+      (click)="onCategory(category.name)"
+    >
+      {{ category.name }}
+    </mat-chip>
+  </mat-chip-list>
+
+  <mat-form-field>
+    <mat-label>חפש</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="" #input />
+  </mat-form-field>
+
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    multiTemplateDataRows
+    matSort
+    class="mat-elevation-z8"
+  >
+    <ng-container matColumnDef="date">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>תאריך</th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          element.assignmentDetails.date | date : "dd/MM/yy, HH:mm" : "UTC+6"
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef>שם</th>
+      <td mat-cell *matCellDef="let element">{{ element.customer.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="address">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>כתובת</th>
+      <td mat-cell *matCellDef="let element">{{ element.customer.address }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>טלפון</th>
+      <td mat-cell *matCellDef="let element">{{ element.customer.phone }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="installerName">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>מתקין</th>
+      <td mat-cell *matCellDef="let element">{{ element.installer.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="product">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>מוצר</th>
+      <td mat-cell *matCellDef="let element">{{ element.product.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="commends">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>הערות</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element?.comments[0]?.content }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>סטטוס</th>
+      <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          mat-icon-button
+          aria-label="expand row"
+          (click)="
+            expandedElement = expandedElement === element ? null : element;
+            $event.stopPropagation()
+          "
+        >
+          <mat-icon *ngIf="expandedElement !== element"
+            >keyboard_arrow_down</mat-icon
+          >
+          <mat-icon *ngIf="expandedElement === element"
+            >keyboard_arrow_up</mat-icon
+          >
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [attr.colspan]="columnsToDisplayWithExpand.length"
+      >
+        <div
+          class="example-element-detail"
+          [@detailExpand]="
+            element == expandedElement ? 'expanded' : 'collapsed'
+          "
+        >
+          <div class="flex gap-4 expanded-wrapper justify-center align-center">
+            <!-- <div class="">  יוצר:  {{element.manager.name}}  </div> -->
+            <div
+              *ngIf="element?.assignmentDetails?.innerFloorPrice > 0"
+              class="flex"
+            >
+              <span><mat-icon>done</mat-icon></span>
+              <span> רצפה פנימית </span>
+            </div>
+            <div
+              *ngIf="element?.assignmentDetails?.outerFloorPrice > 0"
+              class="flex"
+            >
+              <span><mat-icon>done</mat-icon></span>
+              <span> רצפה חיצונית </span>
+            </div>
+            <div
+              *ngIf="element?.assignmentDetails?.carryPrice > 0"
+              class="flex"
+            >
+              <span><mat-icon>done</mat-icon></span>
+              <span> סבלות </span>
+            </div>
+            <div class="example-element-name">{{ element.name }}</div>
+            <div class="example-element-weight">{{ element.weight }}</div>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+    <tr
+      mat-row
+      *matRowDef="let element; columns: columnsToDisplayWithExpand"
+      class="example-element-row"
+      [class.example-expanded-row]="expandedElement === element"
+      (click)="onAssignment(element)"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: ['expandedDetail']"
+      class="example-detail-row"
+    ></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">
+        לא נמצאו תוצאות עבור: "{{ input.value }}"
+      </td>
+    </tr>
+  </table>
+</div>
