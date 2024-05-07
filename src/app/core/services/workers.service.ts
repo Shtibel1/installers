@@ -15,7 +15,6 @@ export class WorkersService extends BaseService {
   }
 
   getInstallers() {
-    console.log('getInstallers');
     return this.get<Installer[]>('installers').pipe(
       tap((installers) => {
         if (installers) this.installersChain.next(installers);

@@ -1,9 +1,11 @@
+import { InstallerPricing } from './../models/installerPricing.model';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Product } from '../models/product.model';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { Category } from '../models/category.model';
+import { Installer } from '../models/installer.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +17,10 @@ export class ProductsService extends BaseService {
     super(http, 'api/products');
   }
 
-  getProducts() {
+  getProducts(): Observable<Product[]> {
+    if (this.products$.value) {
+      return this.products$;
+    }
     return this.get<Product[]>('').pipe(
       tap((products) => {
         this.products$.next(products);
@@ -77,9 +82,18 @@ export class ProductsService extends BaseService {
     );
   }
 
-  getProductsByCategories(categories: Category[]) {
+  getProductsByCategories(categories: Category[]): Product[] {
+    console.log(categories);
+    console.log(this.products$.value);
     return this.products$.value.filter((p) =>
-      categories.some((c) => c.id == p.category.id)
+      categories.some((c) => c.id === p.category.id)
+    );
+  }
+
+  getProductsByInstaller(installer: Installer) {
+    const installerCats = installer.categories;
+    return this.products$.value.filter((p) =>
+      installerCats.some((c) => c.id === p.category.id)
     );
   }
 

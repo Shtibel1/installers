@@ -19,6 +19,8 @@ import { CategoriesService } from 'src/app/core/services/categories.service';
 import { ManageAssignmentComponent } from './manage-assignment/manage-assignment.component';
 import { WorkersService } from 'src/app/core/services/workers.service';
 import { take } from 'rxjs';
+import { Router } from 'react-router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-assignments',
@@ -94,7 +96,6 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   initInstallers() {
     this.workersService.installersChain.subscribe((installers) => {
       if (!installers) {
-        console.log('getInstallers');
         this.workersService.getInstallers().subscribe();
       } else {
         this.installers = installers;
@@ -114,7 +115,6 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
 
   initAssignments() {
     this.assignmentsService.assignmentsChain.subscribe((assigns) => {
-      console.log(assigns);
       if (!assigns) {
         this.assignmentsService.getAssignments().subscribe();
       } else {
@@ -157,9 +157,9 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   }
 
   onAssignment(assignment: Assignment) {
-    this.dialog.open(ManageAssignmentComponent, {
-      data: assignment,
-      height: '100%',
-    });
+    // this.dialog.open(ManageAssignmentComponent, {
+    //   data: assignment,
+    //   height: '100%',
+    // });
   }
 }

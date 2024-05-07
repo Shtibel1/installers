@@ -1,0 +1,8 @@
+<mat-form-field appearance="outline" class="example-full-width">
+  <mat-label *ngIf="label"> {{ label }} </mat-label>
+  <mat-select [formControl]="control" [compareWith]="compareIds">
+    <mat-option *ngFor="let opt of options" [value]="opt">
+      {{ opt.label }}</mat-option
+    >
+  </mat-select>
+</mat-form-field>

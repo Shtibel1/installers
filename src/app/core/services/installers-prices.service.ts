@@ -40,6 +40,12 @@ export class InstallersPricesService extends BaseService {
     );
   }
 
+  getInstallerPrice(installerId: string, productId: number) {
+    return this.get<InstallerPricing>(`${installerId}/${productId}`).pipe(
+      catchError((err) => this.handlePricesError(err))
+    );
+  }
+
   handlePricesError(error: HttpErrorResponse) {
     let errMessage = 'בקשה שגויה! אם בעיה זו חוזרת התקשרו 0523452554';
     if (!error.error || !error.error.message) {

@@ -10,6 +10,8 @@ import { Assignment } from '../models/assignment.model';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { CommentModel } from '../models/commentModel.model';
 import { AssignmentDto } from '../models/Dtos/assignmentDto.model';
+import { Product } from '../models/product.model';
+import { InstallerPricing } from '../models/installerPricing.model';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +43,7 @@ export class AssignmentsService extends BaseService {
       ...assignmentDto,
     }).pipe(
       tap((assignment) => {
+        console.log('aaaaaaaaaaaaaaaaaasda');
         for (let i = 0; i < this.assignmentsChain.value.length; i++) {
           if (this.assignmentsChain.value[i].id === assignment.id) {
             this.assignmentsChain.value[i] = assignment;
@@ -81,6 +84,10 @@ export class AssignmentsService extends BaseService {
         this.assignmentsChain.next(asmns);
       })
     );
+  }
+
+  getAssignment(id: number) {
+    return this.get<Assignment>(id.toString());
   }
 
   // getAssignmentsByInstaller(id: string) {

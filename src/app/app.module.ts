@@ -37,8 +37,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { ManageAssignmentComponent } from './components/assignments/manage-assignment/manage-assignment.component';
 import { CreateInstallerComponent } from './components/installers/create-installer/create-installer.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { PhoneInputComponent } from './components/common/phone-input/phone-input.component';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientJsonpModule,
+  HttpClientModule,
+} from '@angular/common/http';
 import { ManageProductComponent } from './components/products/manage-product/manage-product.component';
 import { ProductsComponent } from './components/products/products.component';
 import { InstallersComponent } from './components/installers/installers.component';
@@ -50,6 +53,15 @@ import { InstallerDetailsComponent } from './components/installers/installer-det
 import { BaseComponent } from './components/common/base/base.component';
 import { ManageCustomerComponent } from './components/assignments/manage-assignment/manage-customer/manage-customer.component';
 import { ManageCommentsComponent } from './components/assignments/manage-assignment/manage-comments/manage-comments.component';
+import { InputComponent } from './shared/input/input.component';
+import { NgxMaskModule } from 'ngx-mask';
+import { DateInputComponent } from './shared/date-input/date-input.component';
+import { SelectComponent } from './shared/select/select.component';
+import { AutocompleteComponent } from './shared/autocomplete/autocomplete.component';
+import { AdressInputComponent } from './shared/adress-input/adress-input.component';
+import { CheckboxComponent } from './shared/checkbox/checkbox.component';
+import { AssignmentAdditionalsComponent } from './components/assignments/manage-assignment/assignment-additionals/assignment-additionals.component';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -58,7 +70,6 @@ import { ManageCommentsComponent } from './components/assignments/manage-assignm
     AssignmentsComponent,
     ManageAssignmentComponent,
     CreateInstallerComponent,
-    PhoneInputComponent,
     ManageProductComponent,
     ProductsComponent,
     InstallersComponent,
@@ -68,6 +79,13 @@ import { ManageCommentsComponent } from './components/assignments/manage-assignm
     BaseComponent,
     ManageCustomerComponent,
     ManageCommentsComponent,
+    InputComponent,
+    DateInputComponent,
+    SelectComponent,
+    AutocompleteComponent,
+    AdressInputComponent,
+    CheckboxComponent,
+    AssignmentAdditionalsComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,6 +113,8 @@ import { ManageCommentsComponent } from './components/assignments/manage-assignm
     MatCheckboxModule,
     MatExpansionModule,
     MatChipsModule,
+    HttpClientJsonpModule,
+    NgxMaskModule.forRoot(),
   ],
   providers: [
     {
@@ -111,6 +131,7 @@ import { ManageCommentsComponent } from './components/assignments/manage-assignm
       multi: true,
     },
     { provide: MAT_DATE_LOCALE, useValue: 'israel' },
+    DatePipe,
   ],
 
   bootstrap: [AppComponent],

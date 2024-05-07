@@ -1,0 +1,15 @@
+<mat-form-field class="" appearance="outline">
+  <div class="flex">
+    <input
+      matInput
+      placeholder="תאריך"
+      [matDatepicker]="picker2"
+      [formControl]="control"
+    />
+    <mat-datepicker-toggle
+      matIconSuffix
+      [for]="picker2"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #picker2></mat-datepicker>
+  </div>
+</mat-form-field>

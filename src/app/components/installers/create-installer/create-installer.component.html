@@ -1,67 +1,73 @@
 <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
 
-
-<div class="wrapper" >
-<h1 mat-dialog-title>{{installerMode ? "הוספת מתקין" : "הוספת משתמש"}}</h1>
-<form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()" >
-
-
-  <table class="example-full-width" cellspacing="0">
-    <tr class="flex flex-wrap">
-      <td>
-        <mat-form-field appearance="outline" class="example-full-width">
-          <mat-label>שם</mat-label>
-          <input matInput required formControlName="name">
-          <mat-error></mat-error>
-        </mat-form-field>
-      </td>
-      <td>
-        <mat-form-field appearance="outline" class="password-wrapper">
-          <mat-label>סיסמא</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
-          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-          </button>
-        </mat-form-field>
-      </td>
-  </tr>
-  <tr class="flex flex-wrap">
-    <td>
-      <mat-form-field appearance="outline" class="example-full-width">
-        <mat-label>טלפון</mat-label>
-        <app-phone-input required formControlName="phone"></app-phone-input>
-      </mat-form-field>
-    </td>
-    <td>
-      <mat-form-field appearance="outline" class="example-full-width">
-        <mat-label>אימייל (אופציונלי)</mat-label>
-        <input matInput placeholder="pat@example.com" formControlName="email">
-      </mat-form-field>
-    </td>
-  </tr>
-  <tr class="flex flex-wrap">
-    <td>
-      <mat-form-field *ngIf="installerMode" appearance="outline" class="example-full-width">
-        <mat-label>קטגוריה</mat-label>
-        <mat-select formControlName="categories" multiple>
-          <mat-select-trigger>
-            {{category.value?.[0] || ''}}
-            <span *ngIf="(category.value?.length || 0) > 1" class="example-additional-selection">
-              (+{{(category.value?.length || 0) - 1}} {{category.value?.length === 2 ? 'other' : 'others'}})
-            </span>
-          </mat-select-trigger>
-          <mat-option *ngFor="let category of categories" [value]="category.name">{{category.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </td>
-    <td class="btn-wrapper flex flex-row justify-end align-end width-10/10">
-      <div >
-        <button mat-raised-button color="primary" type="submit">שמור</button>
-      </div>
-    </td>
-  </tr>
-  </table>
-  <br>
-  <div *ngIf="errMessage" class="error-msg">{{errMessage}}</div>
-</form>
+<div class="wrapper">
+  <h1 mat-dialog-title>{{ installerMode ? "הוספת מתקין" : "הוספת משתמש" }}</h1>
+  <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <table class="example-full-width" cellspacing="0">
+      <tr class="flex flex-wrap">
+        <td>
+          <app-input [control]="name" [label]="'שם'"></app-input>
+        </td>
+        <td>
+          <mat-form-field appearance="outline" class="password-wrapper">
+            <mat-label>סיסמא</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+            />
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr class="flex flex-wrap">
+        <td>
+          <app-input
+            [control]="phone"
+            [label]="'טלפון'"
+            [mask]="'000-000-0000 || 00-0000000'"
+          ></app-input>
+        </td>
+        <td>
+          <app-input [control]="email" [label]="'אימייל'"></app-input>
+        </td>
+      </tr>
+      <tr class="flex flex-wrap">
+        <td>
+          <mat-form-field
+            *ngIf="installerMode"
+            appearance="outline"
+            class="example-full-width"
+          >
+            <mat-label>קטגוריה</mat-label>
+            <mat-select formControlName="categories" multiple>
+              <mat-select-trigger>
+                {{category.value?.[0] || ''}}
+                <span
+                  *ngIf="(category.value?.length || 0) > 1"
+                  class="example-additional-selection"
+                >
+                  (+{{ (category.value?.length || 0) - 1 }}
+                  {{ category.value?.length === 2 ? "other" : "others" }})
+                </span>
+              </mat-select-trigger>
+              <mat-option
+                *ngFor="let category of categories"
+                [value]="category.name"
+                >{{ category.name }}</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td class="btn-wrapper flex flex-row justify-end align-end width-10/10">
+          <div>
+            <button mat-raised-button color="primary" type="submit">
+              שמור
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br />
+    <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+  </form>
 </div>

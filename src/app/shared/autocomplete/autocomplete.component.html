@@ -1,0 +1,9 @@
+<mat-form-field appearance="outline">
+  <mat-label *ngIf="label"> {{ label }} </mat-label>
+  <input matInput [formControl]="control" [matAutocomplete]="auto" />
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-option *ngFor="let option of filteredOptions" [value]="option">
+      {{ option.label }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

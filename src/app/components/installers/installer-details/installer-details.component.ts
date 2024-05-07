@@ -91,7 +91,7 @@ export class InstallerDetailsComponent implements OnInit {
   getTotalCost() {
     let sum = 0;
     if (this.assignments)
-      this.assignments.forEach((a) => (sum += a.totalPrice));
+      this.assignments.forEach((a) => (sum += a.assignmentCost));
     return sum;
   }
 
@@ -106,7 +106,7 @@ export class InstallerDetailsComponent implements OnInit {
     let sum = 0;
     if (this.assignments)
       this.assignments.forEach(
-        (a) => (sum += a.totalPrice - a.customerNeedsToPay)
+        (a) => (sum += a.assignmentCost - a.customerNeedsToPay)
       );
     return sum;
   }

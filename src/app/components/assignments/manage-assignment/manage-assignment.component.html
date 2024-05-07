@@ -1,126 +1,63 @@
-<div class="wrapper">
+<div *ngIf="!isLoading" class="wrapper">
   <h1 mat-dialog-title>{{ editMode ? "עריכת התקנה" : "הוספת התקנה" }}</h1>
 
   <form [formGroup]="assignmentForm">
-    <table>
-      <tr class="flex flex-wrap gap-4">
-        <td>
-          <mat-form-field class="" appearance="outline">
-            <div class="flex">
-              <input
-                matInput
-                placeholder="תאריך הזמנה"
-                [matDatepicker]="picker2"
-                [formControl]="getDateControl()"
-              />
-              <mat-datepicker-toggle
-                matIconSuffix
-                [for]="picker2"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #picker2></mat-datepicker>
-            </div>
-          </mat-form-field>
-        </td>
-      </tr>
-      <tr class="flex flex-wrap gap-4">
-        <td>
-          <mat-form-field appearance="outline" class="example-full-width">
-            <mat-label>מתקין</mat-label>
-            <mat-select formControlName="installer">
-              <mat-option
-                *ngFor="let installer of installers"
-                [value]="installer.name"
-                (onSelectionChange)="onInstaller(installer, $event)"
-              >
-                {{ installer.name }}</mat-option
-              >
-            </mat-select>
-          </mat-form-field>
-        </td>
-        <td></td>
-      </tr>
-      <app-manage-customer [control]="customerControl"></app-manage-customer>
-      <tr class="flex flex-wrap gap-4">
-        <td>
-          <mat-form-field appearance="outline" floatLabel="always">
-            <mat-label>לקוח ישלם למתקין</mat-label>
-            <input
-              matInput
-              type="number"
-              class="price-input"
-              placeholder="הזן סכום"
-              formControlName="customerNeedsToPay"
-            />
-            <span matTextPrefix>₪&nbsp;</span>
-          </mat-form-field>
-        </td>
-        <!-- <td>
-          <mat-form-field appearance="outline" class="example-full-width">
-            <mat-label> הערות </mat-label>
-            <input matInput formControlName="comments" />
-            <mat-error></mat-error>
-          </mat-form-field>
-        </td> -->
-      </tr>
-      <tr class="flex flex-wrap gap-4">
-        <td></td>
-        <td></td>
-      </tr>
+    <div class="right-wrapper">
+      <app-date-input [control]="dateControl"></app-date-input>
+      <app-manage-customer
+        (formReady)="onCustomerFormReady($event)"
+        [customer]="assignment?.customer"
+      ></app-manage-customer>
+    </div>
+    <div class="left-wrapper">
+      <div class="grid">
+        <app-select
+          class="installer"
+          [control]="installerControl"
+          [options]="installersOptions"
+          [label]="'מתקין'"
+        ></app-select>
+        <app-autocomplete
+          class="product"
+          [control]="productControl"
+          [options]="filteredProductsOptions"
+          [label]="'מוצר'"
+        >
+        </app-autocomplete>
+      </div>
 
-      <tr class="flex flex-wrap flex-col">
-        <td>
+      <div class="flex flex-wrap flex-col checkboxes">
+        <div>
           <section class="example-section flex gap-4">
-            <mat-checkbox
-              [checked]="assignment?.innerFloorPrice > 0"
-              [disabled]="
-                selectedProduct &&
-                pricesByProduct &&
-                pricesByProduct.innerFloorPrice
-                  ? false
-                  : true
-              "
-              (change)="onInnerFloor($event.checked)"
-              >רצפה פנימית</mat-checkbox
-            >
-            <mat-checkbox
-              [checked]="assignment?.outerFloorPrice > 0"
-              [disabled]="
-                selectedProduct &&
-                pricesByProduct &&
-                pricesByProduct?.outerFloorPrice
-                  ? false
-                  : true
-              "
-              (change)="onOuterFloor($event.checked)"
-            >
-              רצפה חיצונית
-            </mat-checkbox>
-            <mat-checkbox
-              [checked]="assignment?.carryPrice > 0"
-              [disabled]="
-                selectedProduct &&
-                pricesByProduct &&
-                pricesByProduct?.carryPrice
-                  ? false
-                  : true
-              "
-              (change)="onCarry($event.checked)"
-            >
-              סבלות</mat-checkbox
-            >
+            <app-assignment-additionals
+              [form]="assignmentForm"
+              [pricesByProduct]="pricesByProduct"
+            ></app-assignment-additionals>
           </section>
-        </td>
-      </tr>
+        </div>
+      </div>
+      <div class="grid">
+        <app-input
+          [control]="customerNeedsToPayControl"
+          [label]="'לקוח ישלם למתקין'"
+          [currency]="'₪'"
+        ></app-input>
 
-      <tr class="flex flex-wrap">
-        <td></td>
-        <td
+        <app-input
+          [control]="assignmentCostControl"
+          [label]="'עלות ההתקנה'"
+        ></app-input>
+      </div>
+
+      <div class="flex flex-wrap">
+        <div></div>
+        <div
           class="btn-wrapper flex flex-row justify-end align-end width-10/10 gap-2"
         >
           <div>
             <button
               mat-raised-button
-              [disabled]="assignmentForm.invalid"
+              [disabled]="assignmentForm.invalid && false"
               color="primary"
               type="submit"
               (click)="onSubmit()"
@@ -140,10 +77,10 @@
               מחק
             </button>
           </div>
-        </td>
-      </tr>
-    </table>
-    <br />
-    <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+        </div>
+      </div>
+      <br />
+      <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+    </div>
   </form>
 </div>

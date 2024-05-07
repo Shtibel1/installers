@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MyTel } from '../../common/phone-input/phone-input.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
 import { Category } from 'src/app/core/models/category.model';
@@ -24,12 +23,14 @@ import { MyErrorStateMatcher } from 'src/app/core/common/error-matcher';
   styleUrls: ['./create-installer.component.scss'],
 })
 export class CreateInstallerComponent implements OnInit {
-  form: FormGroup = new FormGroup({});
+  form: FormGroup;
+  phone: FormControl;
+  name: FormControl;
+  email: FormControl;
   matcher = new MyErrorStateMatcher();
   errMessage: string | null = null;
   hidePassword = true;
   categories: Category[];
-  phone: string | null = null;
   category = new FormControl(null, Validators.required);
 
   constructor(
@@ -47,12 +48,21 @@ export class CreateInstallerComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    let phoneRef = this.form.value.phone;
-    this.form.value.phone =
-      this.phone ?? phoneRef.area + phoneRef.exchange + phoneRef.subscriber;
-    this.phone = this.form.value.phone;
+  forminit() {
+    this.name = new FormControl(null, Validators.required);
+    this.phone = new FormControl(null, Validators.required);
+    this.email = new FormControl();
 
+    this.form = new FormGroup({
+      name: this.name,
+      phone: this.phone,
+      email: this.email,
+      categories: this.category,
+      password: new FormControl(null, Validators.required),
+    });
+  }
+
+  onSubmit() {
     if (this.installerMode) {
       let categories: number[] = [];
       this.categories.forEach((cat) => {
@@ -63,9 +73,9 @@ export class CreateInstallerComponent implements OnInit {
         });
       });
       let installer: InstallerDto = {
-        name: this.form.value?.name,
-        phone: this.form.value?.phone,
-        email: this.form.value?.email,
+        name: this.name.value,
+        phone: this.phone.value,
+        email: this.email.value,
         role: 'installer',
         categories: categories,
       };
@@ -99,16 +109,6 @@ export class CreateInstallerComponent implements OnInit {
   private openSnackBar(message: string) {
     this._snackBar.open(message, 'Ok', {
       duration: 5000,
-    });
-  }
-
-  forminit() {
-    this.form = new FormGroup({
-      name: new FormControl(null, Validators.required),
-      phone: new FormControl(new MyTel('', '', '')),
-      email: new FormControl(),
-      categories: this.category,
-      password: new FormControl(null, Validators.required),
     });
   }
 

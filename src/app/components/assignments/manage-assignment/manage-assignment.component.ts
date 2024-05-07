@@ -1,27 +1,46 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { CategoriesService } from './../../../core/services/categories.service';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MyTel } from '../../common/phone-input/phone-input.component';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { Installer } from 'src/app/core/models/installer.model';
-import { Product } from 'src/app/core/models/product.model';
-import { DateAdapter, mixinDisabled } from '@angular/material/core';
-import { ProductsService } from 'src/app/core/services/products.service';
-import { Observable, map, of, startWith, tap } from 'rxjs';
-import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
-import { Form } from 'react-router-dom';
-import { Assignment } from 'src/app/core/models/assignment.model';
-import { Customer } from 'src/app/core/models/customer.model';
-import { AppUser } from 'src/app/core/models/app-user.model';
-import { Manager } from 'src/app/core/models/manager.model';
-import { AssignmentsService } from 'src/app/core/services/assignments.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Category } from 'src/app/core/models/category.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
+import { Assignment } from 'src/app/core/models/assignment.model';
+import { Installer } from 'src/app/core/models/installer.model';
+import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
+import { Product } from 'src/app/core/models/product.model';
+import { AssignmentsService } from 'src/app/core/services/assignments.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
+import { ProductsService } from 'src/app/core/services/products.service';
 import { WorkersService } from 'src/app/core/services/workers.service';
 import { BaseComponent } from '../../common/base/base.component';
+import { Option } from './../../../core/models/option.model';
+import { CustomerForm } from './manage-customer/manage-customer.component';
+import { workerToOption } from 'src/app/core/helpers/workerToOption';
+import { updateDisabledControlValue } from 'src/app/core/helpers/updateDisabledControlValue';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import {
+  Observable,
+  combineLatest,
+  filter,
+  forkJoin,
+  map,
+  take,
+  tap,
+} from 'rxjs';
+
+export interface AssignmentForm {
+  createdDate: FormControl;
+  installer: FormControl<Option<Installer>>;
+  product: FormControl<Option<Product>>;
+  customerNeedsToPay: FormControl;
+  assignmentCost: FormControl;
+  carryPrice: FormControl;
+  hasInnerFloor: FormControl;
+  hasOuterFloor: FormControl;
+  hasCarry: FormControl;
+}
 
 @Component({
   selector: 'app-manage-assignment',
@@ -32,75 +51,256 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   editMode: boolean = false;
   assignmentForm: FormGroup;
   errMessage: string;
-  installers: Installer[] = null;
-  selectedInstaller: Installer = null;
-  filteredProductsOptions: Product[];
+  installersOptions: Option<Installer>[];
+  filteredProductsOptions: Option<Product>[];
   pricesArray: InstallerPricing[] = [];
   pricesByProduct: InstallerPricing;
   selectedProduct: Product;
-  productsByInstaller: any;
-  customerForm: any;
-  products: any;
-  customerControl?: FormControl;
+  productsByInstaller: Product[];
+  productsOptions: Option<Product>[] = [];
+
+  dateControl: FormControl;
+  installerControl: FormControl<Option<Installer>>;
+  productControl: FormControl<Option<Product> | null>;
+  customerNeedsToPayControl: FormControl;
+  assignmentCostControl: FormControl;
+  hasInnerFloorControl: FormControl;
+  hasOuterFloorControl: FormControl;
+  hasCarryControl: FormControl;
+
+  isLoading = false;
+
+  customerControl: FormGroup<CustomerForm>;
 
   constructor(
-    private accontsService: AuthService,
-    private _adapter: DateAdapter<any>,
+    accontsService: AuthService,
     private productsService: ProductsService,
     private pricesService: InstallersPricesService,
     private workersService: WorkersService,
     private assingmentsService: AssignmentsService,
     private _snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public assignment: Assignment,
-    private dialogRef: MatDialogRef<ManageAssignmentComponent>
+    private dialogRef: MatDialogRef<ManageAssignmentComponent>,
+    private datePipe: DatePipe,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    @Inject(MAT_DIALOG_DATA) public assignment?: Assignment
   ) {
     super(accontsService);
   }
 
   ngOnInit(): void {
-    this.editMode = !!this.assignment;
-    this._adapter.setLocale('il');
-    this.forminit();
-    this.getInstallers();
-    this.getProducts();
+    this.isLoading = true;
+    this.route.data.pipe(take(1)).subscribe((data) => {
+      this.assignment = data['assigment'];
 
-    this.assignmentForm
-      .get('product')
-      .valueChanges.pipe(
-        startWith(''),
-        map((value) => value)
+      if (this.assignment) {
+        this.getProducts();
+        this.updateProductsByInstaller(this.assignment.installer);
+        this.updatePricesByProduct(this.assignment.product);
+        this.editMode = true;
+      }
+      this.getInstallers();
+      this.forminit();
+      this.initFormBehavior();
+      this.isLoading = false;
+    });
+  }
+
+  forminit() {
+    let createdDate = this.assignment?.createdDate || new Date();
+    let installer = this.assignment?.installer
+      ? {
+          label: this.assignment.installer.name,
+          value: this.assignment.installer,
+        }
+      : null;
+    let product = this.assignment?.product
+      ? { label: this.assignment.product.name, value: this.assignment.product }
+      : null; //export
+    let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
+    let assignmentCost = this.assignment?.assignmentCost || null;
+    console.log(this.assignment.assignmentCost);
+    this.selectedProduct = product?.value;
+
+    this.dateControl = new FormControl(createdDate, Validators.required);
+    this.installerControl = new FormControl(installer, Validators.required);
+    this.productControl = new FormControl(product, Validators.required);
+    this.customerNeedsToPayControl = new FormControl(
+      customerNeedsToPay,
+      Validators.required
+    );
+    this.assignmentCostControl = new FormControl({
+      value: assignmentCost,
+      disabled: true,
+    });
+
+    let innerFloorPrice = !!this.assignment?.innerFloorPrice || null;
+    let outerFloorPrice = !!this.assignment?.outerFloorPrice || null;
+    let carryPrice = !!this.assignment?.carryPrice || null;
+
+    this.hasInnerFloorControl = new FormControl(innerFloorPrice);
+    this.hasOuterFloorControl = new FormControl(outerFloorPrice);
+    this.hasCarryControl = new FormControl(carryPrice);
+
+    this.assignmentForm = new FormGroup({
+      createdDate: this.dateControl,
+      installer: this.installerControl,
+      product: this.productControl,
+      customerNeedsToPay: this.customerNeedsToPayControl,
+      assignmentCost: this.assignmentCostControl,
+      hasInnerFloor: this.hasInnerFloorControl,
+      hasOuterFloor: this.hasOuterFloorControl,
+      hasCarry: this.hasCarryControl,
+    });
+  }
+
+  onCustomerFormReady(customerForm: FormGroup<CustomerForm>) {
+    this.assignmentForm.addControl('customer', customerForm);
+    this.customerControl = customerForm;
+  }
+
+  initFormBehavior() {
+    this.installerControl.valueChanges.subscribe(
+      (installerOpt: Option<Installer>) => {
+        if (!installerOpt) {
+          return;
+        }
+        this.resetControlsOnInstaller();
+        this.updateProductsByInstaller(installerOpt.value);
+      }
+    );
+
+    this.productControl.valueChanges.subscribe(
+      (productOpt: Option<Product> | string | null) => {
+        if (!productOpt || typeof productOpt === 'string') {
+          return;
+        }
+        let product = productOpt.value;
+        this.updatePricesByProduct(product);
+        this.customerNeedsToPayControl.patchValue(
+          product.customerInstallationPrice
+        );
+
+        // updateDisabledControlValue(this.hasInnerFloorControl, false);
+        // updateDisabledControlValue(this.hasOuterFloorControl, false);
+        // updateDisabledControlValue(this.hasCarryControl, false);
+      }
+    );
+  }
+
+  getPricesByInstallerProduct(installer: Installer) {
+    return this.pricesService.getPricesByInstaller(installer.id).pipe(
+      tap((prices) => {
+        this.pricesArray = prices;
+        this.updateProductsByInstaller(installer);
+        console.log(this.pricesArray);
+      })
+    );
+  }
+
+  updatePricesByProduct(product: Product) {
+    this.pricesService
+      .getInstallerPrice(
+        this.assignment?.installer?.id ?? this.installerControl.value.value.id,
+        product.id
       )
-      .subscribe((value) => (this.filteredProductsOptions = value));
+      .pipe(
+        tap((price) => {
+          this.pricesByProduct = price;
+        })
+      )
+      .subscribe();
+  }
+
+  resetControlsOnInstaller() {
+    this.productControl?.reset(null, { emitEvent: false });
+    this.assignmentCostControl.reset(null, { emitEvent: false });
+    this.customerNeedsToPayControl.reset(null, { emitEvent: false });
+    this.hasInnerFloorControl.reset(false, { emitEvent: false });
+    this.hasOuterFloorControl.reset(false, { emitEvent: false });
+    this.hasCarryControl.reset(false, { emitEvent: false });
+    this.pricesByProduct = null;
+  }
+
+  updateProductsByInstaller(installer: Installer) {
+    this.productsByInstaller =
+      this.productsService.getProductsByInstaller(installer);
+
+    this.filteredProductsOptions = this.productsByInstaller.map((product) => {
+      return { label: product.name, value: product };
+    });
+  }
+
+  getInstallers(): void {
+    this.workersService.getInstallers().subscribe((installers) => {
+      this.installersOptions = installers.map((installer) => {
+        return { label: installer.name, value: installer };
+      });
+    });
+  }
+
+  getProducts(): Observable<Product[]> {
+    return this.productsService.getProducts().pipe(
+      tap((products) => {
+        this.productsOptions = products.map((product) => {
+          return { label: product.name, value: product };
+        });
+      })
+    );
+  }
+
+  private openSnackBar(message: string) {
+    this._snackBar.open(message, 'Ok', {
+      duration: 3000,
+    });
   }
 
   onSubmit() {
+    if (!this.assignmentForm.valid) {
+      this.assignmentForm.markAllAsTouched();
+      return;
+    }
+
     let assignmentDto: AssignmentDto = {
-      id: this.assignment.id || 0,
-      productId: this.selectedProduct.id,
+      id: this.assignment?.id || 0,
+      productId: this.productControl.value.value.id,
       managerId: this.user.id,
-      installerId: this.selectedInstaller.id,
-      date: this.assignmentForm.value.date,
-      customerPrice: this.assignmentForm.value.customerPrice,
-      totalPrice: this.assignmentForm.value.totalPrice,
-      installationPrice: this.assignmentForm.get('installationPrice').value,
-      innerFloorPrice: this.assignmentForm.get('innerFloorPrice').value,
-      outerFloorPrice: this.assignmentForm.get('outerFloorPrice').value,
-      carryPrice: this.assignmentForm.get('carryPrice').value,
-      customer: { ...this.customerForm.value },
+      installerId: this.installerControl.value.value.id,
+      date: this.datePipe.transform(
+        this.dateControl.value,
+        'yyyy-MM-ddTHH:mm:ss'
+      ),
+      customerNeedsToPay: this.customerNeedsToPayControl.value,
+      customerAlreadyPaid: 0,
+      assignmentCost: this.assignmentCostControl.value,
+      installationPrice: this.pricesByProduct.installationPrice,
+      innerFloorPrice: this.hasInnerFloorControl.value
+        ? this.pricesByProduct.innerFloorPrice
+        : 0,
+      outerFloorPrice: this.hasOuterFloorControl.value
+        ? this.pricesByProduct.outerFloorPrice
+        : 0,
+      carryPrice: this.hasCarryControl.value
+        ? this.pricesByProduct.carryPrice
+        : 0,
+      customer: {
+        ...this.customerControl.value,
+        id: this.assignment?.customer?.id || 0,
+      },
       comments: null,
       status: 'פתוח',
     };
 
-    if (
-      this.assignmentForm.get('comments').value != '' &&
-      this.assignmentForm.get('comments').value !== null
-    ) {
-      assignmentDto.comments = [];
-      assignmentDto.comments.push({
-        userId: this.user.id,
-        content: this.assignmentForm.get('comments').value,
-      });
-    }
+    // if (
+    //   this.assignmentForm.get('comments').value != '' &&
+    //   this.assignmentForm.get('comments').value !== null
+    // ) {
+    //   assignmentDto.comments = [];
+    //   assignmentDto.comments.push({
+    //     userId: this.user.id,
+    //     content: this.assignmentForm.get('comments').value,
+    //   });
+    // }
 
     if (!this.editMode) {
       this.assingmentsService.createAssignment(assignmentDto).subscribe({
@@ -114,12 +314,10 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       });
     } else {
       this.assingmentsService
-        .patchAssignment(
-          this.assignment.id,
-          this.getChangedFields(assignmentDto)
-        )
+        .updateAssignment(this.assignment.id, assignmentDto)
         .subscribe({
           next: (res) => {
+            console.log(res);
             this.openSnackBar('ההתקנה עודנה בהצלחה!');
             this.dialogRef.close();
           },
@@ -141,218 +339,5 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         this.errMessage = err;
       },
     });
-  }
-
-  onInstaller(installer: Installer, event: any) {
-    if (event.isUserInput) {
-      this.selectedInstaller = installer;
-      this.pricesService
-        .getPricesByInstaller(installer.id)
-        .subscribe((prices) => {
-          this.pricesArray = prices;
-          this.updateProductsByInstaller(installer);
-          this.assignmentForm.get('product').enable();
-        });
-    }
-  }
-
-  updateProductsByInstaller(installer) {
-    this.productsByInstaller = this.productsService.getProductsByCategories(
-      installer.categories
-    );
-
-    let arr = [];
-    this.pricesArray.forEach((prices) => {
-      this.productsByInstaller.forEach((p) => {
-        if (prices.productId == p.id && prices.installationPrice > 0) {
-          arr.push(p);
-        }
-      });
-    });
-    this.productsByInstaller = arr;
-    this.filteredProductsOptions = this.productsByInstaller;
-  }
-
-  // onProduct(product: Product, event: any) {
-  //   if (event.isUserInput) {
-  //     this.pricesArray.forEach((prices) => {
-  //       if (prices.productId === product.id) {
-  //         this.pricesByProduct = prices;
-  //       }
-  //     });
-  //     this.assignmentForm.controls['customerPrice'].patchValue(
-  //       product.customerInstallationPrice
-  //     );
-  //     this.assignmentForm.controls['installationPrice'].patchValue(
-  //       this.pricesByProduct?.installationPrice || null
-  //     );
-  //     this.assignmentForm.controls['totalPrice'].patchValue(
-  //       this.pricesByProduct?.installationPrice || null
-  //     );
-  //     this.assignmentForm.get('innerFloorPrice').patchValue(null);
-  //     this.assignmentForm.get('outerFloorPrice').patchValue(null);
-  //     this.assignmentForm.get('carryPrice').patchValue(null);
-  //     this.selectedProduct = product;
-  //   }
-  // }
-
-  forminit() {
-    let createdDate = this.assignment?.createdDate || new Date();
-    let customer = this.assignment?.customer || null;
-    let installer = this.assignment?.installer || null;
-    let product = this.assignment?.product || null; //export
-    let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
-    let totalPrice = this.assignment?.totalPrice || null;
-    let carryPrice = this.assignment?.carryPrice || null;
-    this.selectedInstaller = installer;
-    this.selectedProduct = product;
-
-    this.customerControl = new FormControl(customer, Validators.required);
-
-    this.assignmentForm = new FormGroup({
-      createdDate: new FormControl(createdDate, Validators.required),
-      installer: new FormControl(installer?.name, Validators.required),
-      customer: this.customerControl,
-      product: new FormControl<Product>(product, Validators.required),
-      customerNeedsToPay: new FormControl(
-        customerNeedsToPay,
-        Validators.required
-      ),
-      totalPrice: new FormControl(totalPrice, Validators.required),
-      carryPrice: new FormControl({ value: carryPrice, disabled: true }),
-    });
-  }
-
-  private filter(value: string): Product[] {
-    const filterValue = value.toLowerCase();
-    let productsName: Product[] = [];
-    this.productsByInstaller.forEach((p) => {
-      if (p.name.toLowerCase().includes(filterValue)) {
-        productsName.push(p);
-      }
-    });
-    return productsName;
-  }
-
-  getInstallers() {
-    this.workersService.installersChain.subscribe((installers) => {
-      if (!installers) {
-        this.workersService.getInstallers().subscribe();
-      } else {
-        this.installers = installers;
-      }
-    });
-    this.assignmentForm.get('date');
-  }
-
-  getProducts() {
-    this.productsService.products$.subscribe((prds) => {
-      if (!prds) {
-        this.productsService.getProducts().subscribe();
-      } else {
-        this.products = prds;
-        this.productsByInstaller = prds;
-        this.filteredProductsOptions = prds;
-      }
-    });
-  }
-
-  onInnerFloor(selected: boolean) {
-    if (selected) {
-      this.assignmentForm.controls['totalPrice'].patchValue(
-        this.assignmentForm.controls['totalPrice'].value +
-          this.pricesByProduct.innerFloorPrice
-      );
-      return this.assignmentForm
-        .get('innerFloorPrice')
-        .patchValue(this.pricesByProduct.innerFloorPrice);
-    }
-    this.assignmentForm.controls['totalPrice'].patchValue(
-      this.assignmentForm.controls['totalPrice'].value -
-        this.pricesByProduct.innerFloorPrice
-    );
-    return this.assignmentForm.get('innerFloorPrice').patchValue(0);
-  }
-  onOuterFloor(selected: boolean) {
-    if (selected) {
-      this.assignmentForm.controls['totalPrice'].patchValue(
-        this.assignmentForm.controls['totalPrice'].value +
-          this.pricesByProduct.outerFloorPrice
-      );
-      return this.assignmentForm
-        .get('outerFloorPrice')
-        .patchValue(this.pricesByProduct.outerFloorPrice);
-    }
-    this.assignmentForm.controls['totalPrice'].patchValue(
-      this.assignmentForm.controls['totalPrice'].value -
-        this.pricesByProduct.outerFloorPrice
-    );
-    return this.assignmentForm.get('outerFloorPrice').patchValue(0);
-  }
-  onCarry(selected: boolean) {
-    if (selected) {
-      this.assignmentForm.controls['totalPrice'].patchValue(
-        this.assignmentForm.controls['totalPrice'].value +
-          this.pricesByProduct.carryPrice
-      );
-      return this.assignmentForm
-        .get('carryPrice')
-        .patchValue(this.pricesByProduct.carryPrice);
-    }
-    this.assignmentForm.controls['totalPrice'].patchValue(
-      this.assignmentForm.controls['totalPrice'].value -
-        this.pricesByProduct.carryPrice
-    );
-    return this.assignmentForm.get('carryPrice').patchValue(0);
-  }
-
-  getDateControl() {
-    return this.assignmentForm.get('createdDate') as FormControl;
-  }
-
-  private openSnackBar(message: string) {
-    this._snackBar.open(message, 'Ok', {
-      duration: 3000,
-    });
-  }
-
-  getChangedFields(assignmentDto: AssignmentDto): string[][] {
-    const paths: string[] = [];
-    const values: string[] = [];
-
-    Object.keys(assignmentDto.customer).forEach((field) => {
-      if (
-        this.assignment.customer.hasOwnProperty(field) &&
-        assignmentDto.customer[field] !== this.assignment.customer[field]
-      ) {
-        paths.push(`/customer/${field}`);
-        values.push(assignmentDto.customer[field]);
-        this.assignment.customer[field] = assignmentDto.customer[field];
-      }
-    });
-
-    if (assignmentDto.comments && assignmentDto.comments.length > 0) {
-      paths.push(`/comments/content`);
-      values.push(assignmentDto.comments[0].content);
-    }
-
-    Object.keys(assignmentDto).forEach((field) => {
-      if (
-        this.assignment.hasOwnProperty(field) &&
-        assignmentDto[field] !== this.assignment[field]
-      ) {
-        paths.push(`/${field}`);
-        values.push(assignmentDto[field]);
-        this.assignment[field] = assignmentDto[field];
-      }
-    });
-
-    const index = this.assingmentsService.assignmentsChain.value.findIndex(
-      (a) => a.id == this.assignment.id
-    );
-    const array = this.assingmentsService.assignmentsChain.value;
-    array[index] = this.assignment;
-    this.assingmentsService.assignmentsChain.next(array);
-    return [paths, values];
   }
 }

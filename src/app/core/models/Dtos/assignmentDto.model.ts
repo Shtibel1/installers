@@ -4,9 +4,10 @@ import { Customer } from '../customer.model';
 
 export class AssignmentDto {
   id: number;
-  date: Date;
-  customerPrice: number;
-  totalPrice: number;
+  date: string;
+  customerNeedsToPay: number;
+  customerAlreadyPaid: number;
+  assignmentCost: number;
   installationPrice: number;
   innerFloorPrice: number;
   outerFloorPrice: number;
