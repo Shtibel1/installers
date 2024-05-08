@@ -20,10 +20,7 @@ export class SelectComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-    console.log('control', this.control);
-    console.log('options', this.options);
-  }
+  ngOnInit(): void {}
 
   compareIds(id1: any, id2: any): boolean {
     return id1 && id2 && id1.id === id2.id;

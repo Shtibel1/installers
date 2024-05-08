@@ -47,7 +47,6 @@ export class ManageProductComponent implements OnInit {
     });
 
     let product: Product = { ...this.form.value };
-    console.log(product);
     if (!this.editProduct) {
       this.productsService.addProduct(product).subscribe({
         next: () => {

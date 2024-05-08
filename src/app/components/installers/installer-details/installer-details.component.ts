@@ -61,7 +61,6 @@ export class InstallerDetailsComponent implements OnInit {
       if (!installers) {
         this.workersService.getInstallers().subscribe();
       } else {
-        console.log('asd');
         this.installer = installers.find(
           (ins) => ins.id.toString() == params['id']
         );
@@ -81,7 +80,6 @@ export class InstallerDetailsComponent implements OnInit {
         this.filteredAssignments = this.assignments;
       }
     });
-    console.log(this.assignments);
   }
 
   onPrices() {

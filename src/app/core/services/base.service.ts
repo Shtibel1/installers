@@ -18,7 +18,6 @@ export abstract class BaseService {
     endPointUrl: string,
     headers?: { headers: HttpHeaders }
   ): Observable<T | null> {
-    console.log(`${this.apiUrl}/${endPointUrl}`);
     return this.http.get<T>(`${this.apiUrl}/${endPointUrl}`, headers);
   }
 

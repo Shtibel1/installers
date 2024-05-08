@@ -43,7 +43,6 @@ export class AssignmentsService extends BaseService {
       ...assignmentDto,
     }).pipe(
       tap((assignment) => {
-        console.log('aaaaaaaaaaaaaaaaaasda');
         for (let i = 0; i < this.assignmentsChain.value.length; i++) {
           if (this.assignmentsChain.value[i].id === assignment.id) {
             this.assignmentsChain.value[i] = assignment;
@@ -80,7 +79,6 @@ export class AssignmentsService extends BaseService {
   getAssignments() {
     return this.get<Assignment[]>('').pipe(
       tap((asmns) => {
-        console.log(asmns);
         this.assignmentsChain.next(asmns);
       })
     );
@@ -109,10 +107,8 @@ export class AssignmentsService extends BaseService {
   }
 
   handleAssignmentsError(error: HttpErrorResponse) {
-    console.log(error);
     let errMessage = 'בקשה שגויה! אם בעיה זו חוזרת התקשרו 0523452554';
     if (!error.error) {
-      console.log(error.error);
       return throwError(errMessage);
     }
     switch (error.error) {

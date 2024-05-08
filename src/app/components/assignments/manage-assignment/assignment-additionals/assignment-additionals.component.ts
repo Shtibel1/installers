@@ -38,7 +38,6 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['pricesByProduct'] || changes['form']) {
-      console.log('pricesByProduct', this.pricesByProduct);
       if (!this.pricesByProduct) {
         this.disableControls();
       } else {
@@ -74,13 +73,13 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
 
   initFormBehaviors() {
     this.hasInnerFloorControl.valueChanges.subscribe((value) => {
-      console.log('start calculation', value);
+      console.log('value', value);
+      console.log('this.pricesByProduct', this.pricesByProduct);
       if (value) {
         this.setCostsValues(true, this.pricesByProduct?.innerFloorPrice);
       } else {
         this.setCostsValues(false, this.pricesByProduct?.innerFloorPrice);
       }
-      console.log('end calculation', value);
     });
 
     this.hasOuterFloorControl.valueChanges.subscribe((value) => {
@@ -92,13 +91,11 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
     });
 
     this.hasCarryControl.valueChanges.subscribe((value) => {
-      console.log('start calculation', value);
       if (value) {
         this.setCostsValues(true, this.pricesByProduct?.carryPrice);
       } else {
         this.setCostsValues(false, this.pricesByProduct?.carryPrice);
       }
-      console.log('end calculation', value);
     });
 
     this.productControl.valueChanges.subscribe((value) => {
@@ -118,8 +115,6 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
   }
 
   private setCostsValues(add: boolean, price?: number) {
-    console.log(this.pricesByProduct);
-    console.log('setCostsValues', add, price);
     if (add) {
       this.customerNeedsToPay.setValue(
         this.customerNeedsToPay.value + price || 0

@@ -83,8 +83,6 @@ export class ProductsService extends BaseService {
   }
 
   getProductsByCategories(categories: Category[]): Product[] {
-    console.log(categories);
-    console.log(this.products$.value);
     return this.products$.value.filter((p) =>
       categories.some((c) => c.id === p.category.id)
     );

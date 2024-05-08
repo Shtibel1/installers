@@ -19,7 +19,6 @@ export class AssignmentResolver implements Resolve<Assignment> {
   resolve(route: ActivatedRouteSnapshot): Observable<Assignment> {
     const id = route.paramMap.get('id');
     if (id) {
-      console.log('id', id);
       return this.ProductsService.getProducts().pipe(
         switchMap(() => {
           return this.CategoriesService.getCategories().pipe(

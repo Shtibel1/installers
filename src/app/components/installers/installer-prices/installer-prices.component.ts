@@ -49,7 +49,6 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
     this.initForm();
     this.route.params.subscribe((params) => {
       this.initInstaller(params).subscribe(() => {
-        console.log(params['id']);
         this.pricesService
           .getPricesByInstaller(params['id'])
           .subscribe((prices) => {
@@ -169,7 +168,6 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
               }
             });
           });
-          console.log(this.products);
         }
       })
     );

@@ -96,7 +96,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       if (this.assignment) {
         this.getProducts();
         this.updateProductsByInstaller(this.assignment.installer);
-        this.updatePricesByProduct(this.assignment.product);
+        this.updatePricesByProduct(this.assignment.product).subscribe();
         this.editMode = true;
       }
       this.getInstallers();
@@ -119,7 +119,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       : null; //export
     let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let assignmentCost = this.assignment?.assignmentCost || null;
-    console.log(this.assignment.assignmentCost);
     this.selectedProduct = product?.value;
 
     this.dateControl = new FormControl(createdDate, Validators.required);
@@ -176,7 +175,14 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
           return;
         }
         let product = productOpt.value;
-        this.updatePricesByProduct(product);
+        this.updatePricesByProduct(product).subscribe(
+          (installerProductPrice) => {
+            console.log('installerProductPrice', installerProductPrice);
+            this.assignmentCostControl.patchValue(
+              installerProductPrice.installationPrice
+            );
+          }
+        );
         this.customerNeedsToPayControl.patchValue(
           product.customerInstallationPrice
         );
@@ -193,13 +199,12 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       tap((prices) => {
         this.pricesArray = prices;
         this.updateProductsByInstaller(installer);
-        console.log(this.pricesArray);
       })
     );
   }
 
   updatePricesByProduct(product: Product) {
-    this.pricesService
+    return this.pricesService
       .getInstallerPrice(
         this.assignment?.installer?.id ?? this.installerControl.value.value.id,
         product.id
@@ -208,8 +213,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         tap((price) => {
           this.pricesByProduct = price;
         })
-      )
-      .subscribe();
+      );
   }
 
   resetControlsOnInstaller() {
@@ -317,12 +321,10 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         .updateAssignment(this.assignment.id, assignmentDto)
         .subscribe({
           next: (res) => {
-            console.log(res);
             this.openSnackBar('ההתקנה עודנה בהצלחה!');
             this.dialogRef.close();
           },
           error: (err) => {
-            console.log(err);
             this.errMessage = err;
           },
         });
