@@ -5,6 +5,7 @@ export interface InstallerPricing {
   installationPrice: number;
   outerFloorPrice: number;
   innerFloorPrice: number;
+  distancePrice: number;
   carryPrice: number;
   installerId?: string;
   id?: number;

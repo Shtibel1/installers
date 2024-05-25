@@ -2,6 +2,7 @@ import { ProductsService } from 'src/app/core/services/products.service';
 import { Component } from '@angular/core';
 import { AuthService } from './core/services/auth.service';
 import { AssignmentsService } from './core/services/assignments.service';
+import { WebsocketService } from './core/services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ export class AppComponent {
   constructor(
     private accountsService: AuthService,
     private productsService: ProductsService,
-    private assignmentService: AssignmentsService
+    private assignmentService: AssignmentsService,
+    private socket: WebsocketService
   ) {
     this.accountsService.autoLogin();
     this.productsService.getProducts().subscribe();

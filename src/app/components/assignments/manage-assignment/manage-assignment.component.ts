@@ -29,6 +29,9 @@ import {
   take,
   tap,
 } from 'rxjs';
+import { SnackbarService } from 'src/app/core/services/snackbar.service';
+import { WebsocketService } from 'src/app/core/services/websocket.service';
+import { Status } from 'src/app/core/enums/status.enum';
 
 export interface AssignmentForm {
   createdDate: FormControl;
@@ -68,6 +71,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   hasOuterFloorControl: FormControl;
   hasCarryControl: FormControl;
 
+  assignment: Assignment;
+
   isLoading = false;
 
   customerControl: FormGroup<CustomerForm>;
@@ -78,12 +83,11 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     private pricesService: InstallersPricesService,
     private workersService: WorkersService,
     private assingmentsService: AssignmentsService,
-    private _snackBar: MatSnackBar,
-    private dialogRef: MatDialogRef<ManageAssignmentComponent>,
     private datePipe: DatePipe,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    @Inject(MAT_DIALOG_DATA) public assignment?: Assignment
+    private snackbarService: SnackbarService,
+    private socket: WebsocketService
   ) {
     super(accontsService);
   }
@@ -186,10 +190,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         this.customerNeedsToPayControl.patchValue(
           product.customerInstallationPrice
         );
-
-        // updateDisabledControlValue(this.hasInnerFloorControl, false);
-        // updateDisabledControlValue(this.hasOuterFloorControl, false);
-        // updateDisabledControlValue(this.hasCarryControl, false);
       }
     );
   }
@@ -253,12 +253,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     );
   }
 
-  private openSnackBar(message: string) {
-    this._snackBar.open(message, 'Ok', {
-      duration: 3000,
-    });
-  }
-
   onSubmit() {
     if (!this.assignmentForm.valid) {
       this.assignmentForm.markAllAsTouched();
@@ -292,37 +286,28 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         id: this.assignment?.customer?.id || 0,
       },
       comments: null,
-      status: 'פתוח',
     };
 
-    // if (
-    //   this.assignmentForm.get('comments').value != '' &&
-    //   this.assignmentForm.get('comments').value !== null
-    // ) {
-    //   assignmentDto.comments = [];
-    //   assignmentDto.comments.push({
-    //     userId: this.user.id,
-    //     content: this.assignmentForm.get('comments').value,
-    //   });
-    // }
-
     if (!this.editMode) {
+      assignmentDto.status = Status.new;
+      assignmentDto.pickupStatus = null;
       this.assingmentsService.createAssignment(assignmentDto).subscribe({
         next: (res) => {
-          this.openSnackBar('ההתקנה נוספה בהצלחה!');
-          this.dialogRef.close();
+          this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה!');
         },
         error: (err) => {
           this.errMessage = err;
         },
       });
     } else {
+      assignmentDto.status = this.assignment.status;
+      assignmentDto.pickupStatus = this.assignment.pickupStatus;
       this.assingmentsService
         .updateAssignment(this.assignment.id, assignmentDto)
         .subscribe({
           next: (res) => {
-            this.openSnackBar('ההתקנה עודנה בהצלחה!');
-            this.dialogRef.close();
+            this.socket.sendMessage(res);
+            this.snackbarService.openSnackBar('ההתקנה עודנה בהצלחה!');
           },
           error: (err) => {
             this.errMessage = err;
@@ -334,8 +319,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   onDelete() {
     this.assingmentsService.deleteAssignment(this.assignment.id).subscribe({
       next: (res) => {
-        this.openSnackBar('ההתקנה נמחקה בהצלחה!');
-        this.dialogRef.close();
+        this.snackbarService.openSnackBar('ההתקנה נמחקה בהצלחה!');
       },
       error: (err) => {
         this.errMessage = err;

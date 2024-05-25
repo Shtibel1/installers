@@ -3,24 +3,29 @@ import { Customer } from './customer.model';
 import { Installer } from './installer.model';
 import { Product } from './product.model';
 import { CommentModel } from './commentModel.model';
+import { PickupStatus } from '../enums/pickup-status.enum';
 
 export interface Assignment {
-  id: number; //assignment field
-  createdDate: Date; //assignment field
-  installationDate?: Date; //not field
+  id: number;
+  createdDate: Date;
+  installationDate?: Date;
+
+  carryPrice: number;
+  product: Product;
+  customer: Customer;
+  manager: AppUser;
+  installer: Installer;
+  comments: CommentModel[];
+  status?: string;
+
   customerNeedsToPay: number;
   customerAlreadyPaid: number;
   assignmentCost: number;
-  installationPrice: number; //not field
-  innerFloorPrice: number; //not field
-  outerFloorPrice: number; //not field
-  carryPrice: number;
-  product: Product; //product field
-  customer: Customer; //customer field
-  manager: AppUser; //assignment field
-  installer: Installer; //assignment field
-  comments: CommentModel[]; //comments field
-  status?: string; //assignment field
+  installationPrice: number;
+  innerFloorPrice: number;
+  outerFloorPrice: number;
+
+  pickupStatus?: PickupStatus;
 }
 
 // {

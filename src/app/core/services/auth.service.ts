@@ -51,7 +51,7 @@ export class AuthService {
       .post<{ message: string }>(`${this.url}/signup`, {
         ...installer,
         password: password,
-        role: Roles.installer,
+        role: Roles.ServiceProvider,
       })
       .pipe(
         tap((res) => this.workersService.getInstallers()),
@@ -64,7 +64,7 @@ export class AuthService {
       .post<{ message: string }>(`${this.url}/signup`, {
         ...manager,
         password,
-        role: Roles.manager,
+        role: Roles.Employee,
       })
       .pipe(catchError((err) => this.handleAccountsError(err)));
   }

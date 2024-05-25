@@ -127,7 +127,7 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
         })
       );
     }
-    if (this.user.role == Roles.installer) {
+    if (this.user.role == Roles.ServiceProvider) {
       this.prodFormArray.disable();
     }
     return this.prodFormArray;

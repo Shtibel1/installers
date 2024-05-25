@@ -35,8 +35,8 @@ export class ManageCustomerComponent implements OnInit {
     let address = this.customer?.address || null;
 
     this.nameControl = new FormControl(name, Validators.required);
-    this.phoneControl = new FormControl(phone);
-    this.addressControl = new FormControl(address);
+    this.phoneControl = new FormControl(phone, Validators.required);
+    this.addressControl = new FormControl(address, Validators.required);
 
     this.customerForm = new FormGroup({
       name: this.nameControl,

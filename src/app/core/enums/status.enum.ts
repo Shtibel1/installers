@@ -1,5 +1,5 @@
 export enum Status {
-    new = "חדש",
-    scheduled = "תואם התקנה",
-    done = "הותקן"
+  new = 'פתוח',
+  scheduled = 'תואם התקנה',
+  done = 'הותקן',
 }

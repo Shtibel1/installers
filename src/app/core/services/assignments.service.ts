@@ -43,13 +43,7 @@ export class AssignmentsService extends BaseService {
       ...assignmentDto,
     }).pipe(
       tap((assignment) => {
-        for (let i = 0; i < this.assignmentsChain.value.length; i++) {
-          if (this.assignmentsChain.value[i].id === assignment.id) {
-            this.assignmentsChain.value[i] = assignment;
-            this.assignmentsChain.next([...this.assignmentsChain.value]);
-            break;
-          }
-        }
+        this.updateAssignmentInSubject(assignment);
       }),
       catchError((err) => this.handleAssignmentsError(err))
     );
@@ -104,6 +98,24 @@ export class AssignmentsService extends BaseService {
         }
       })
     );
+  }
+
+  updateAssignmentInSubject(assignment: Assignment) {
+    let assigments = this.assignmentsChain.value || [];
+
+    let isFound = false;
+    for (let i = 0; i < assigments.length; i++) {
+      if (assigments[i].id === assignment.id) {
+        assigments[i] = assignment;
+        isFound = true;
+        break;
+      }
+    }
+    if (!isFound) {
+      assigments.push(assignment);
+    }
+
+    this.assignmentsChain.next(assigments);
   }
 
   handleAssignmentsError(error: HttpErrorResponse) {
