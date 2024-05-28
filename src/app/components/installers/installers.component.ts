@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Installer } from 'src/app/core/models/installer.model';
-import { WorkersService } from 'src/app/core/services/workers.service';
+import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { UsersService } from 'src/app/core/services/users.service';
 import { CreateInstallerComponent } from './create-installer/create-installer.component';
 
 @Component({
@@ -15,7 +15,7 @@ export class InstallersComponent implements OnInit {
   dataSource;
 
   constructor(
-    private workersService: WorkersService,
+    private workersService: UsersService,
     private router: Router,
     private dialog: MatDialog
   ) {}
@@ -30,7 +30,7 @@ export class InstallersComponent implements OnInit {
     });
   }
 
-  onInstaller(installer: Installer) {
+  onInstaller(installer: ServiceProvider) {
     this.router.navigate(['installers', installer.id]);
   }
 

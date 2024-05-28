@@ -1,81 +1,82 @@
 <div *ngIf="products" class="table-wrapper">
-    <form  [formGroup]="addPricesForm" (ngSubmit)="onSubmit()" >
-    <table  class="">
-        <ng-container formArrayName="prices">
+  <form [formGroup]="addPricesForm" (ngSubmit)="onSubmit()">
+    <table class="">
+      <ng-container formArrayName="prices">
+        <tr class="flex flex-row" *ngFor="let prod of products; let i = index">
+          <div class="col-wrapper flex flex-col">
+            <th *ngIf="i == 0">מוצר</th>
+            <td formGroupName="{{ i }}" class="">
+              <div class="form-field product-name-wrapper">
+                <input
+                  type="text"
+                  formControlName="productName"
+                  readonly
+                  [value]="prod.name"
+                />
+              </div>
+            </td>
+          </div>
 
-          <tr class="flex flex-row" *ngFor="let prod of products; let i = index">
-            
-            <div class="col-wrapper flex flex-col ">
-                <th *ngIf="i==0">מוצר</th>
-                <td  formGroupName="{{i}}" class="">
-                    <div class="form-field product-name-wrapper">
-                        <input  type="text" formControlName="productName" readonly [value]="prod.name" >
-                    </div>
-                </td>
-            </div>
-           
-            <div class="col-wrapper flex flex-col ">
-                <th *ngIf="i==0">מחיר התקנה</th>
-                <td   formGroupName="{{i}}" class="">
-                    <div class="form-field">
-                        <input  type="number" formControlName="installationPrice" >
-                    </div>
-                </td>
-            </div>
+          <div class="col-wrapper flex flex-col">
+            <th *ngIf="i == 0">מחיר התקנה</th>
+            <td formGroupName="{{ i }}" class="">
+              <div class="form-field">
+                <input type="number" formControlName="installationPrice" />
+              </div>
+            </td>
+          </div>
 
-            <div class="col-wrapper flex flex-col ">
-                <th *ngIf="i==0">במה חיצונית</th>
-                <td  formGroupName="{{i}}" class="">
-                    <div class="form-field">
-                        <input  type="number" formControlName="outerFloorPrice" >
-                    </div>
-                </td>
-            </div>
+          <div class="col-wrapper flex flex-col">
+            <th *ngIf="i == 0">במה חיצונית</th>
+            <td formGroupName="{{ i }}" class="">
+              <div class="form-field">
+                <input type="number" formControlName="outerFloorPrice" />
+              </div>
+            </td>
+          </div>
 
-            <div class="col-wrapper flex flex-col ">
-                <th *ngIf="i==0">רצפה פנימית</th>
-                <td  formGroupName="{{i}}" class="">
-                    <div class="form-field">
-                        <input  type="number" formControlName="innerFloorPrice">
-                    </div>
-                </td>
-            </div>
+          <div class="col-wrapper flex flex-col">
+            <th *ngIf="i == 0">רצפה פנימית</th>
+            <td formGroupName="{{ i }}" class="">
+              <div class="form-field">
+                <input type="number" formControlName="innerFloorPrice" />
+              </div>
+            </td>
+          </div>
 
-            <div class="col-wrapper flex flex-col ">
-                <th *ngIf="i==0">סבלות לקומה</th>
-                <td  formGroupName="{{i}}" class="">
-                    <div class="form-field">
-                        <input  type="number" formControlName="carryPrice" >
-                    </div>
-                </td>
-            </div>
-
-           </tr>
-
-        </ng-container>
-        <br>
-        <div>
-            <button *ngIf="user.role == 'manager'" type="submit" mat-raised-button color="primary">שמור</button>
-        </div>
-        <br><br>
-        <div class="error-msg" *ngIf="errMessage" > {{errMessage}} </div>
+          <div class="col-wrapper flex flex-col">
+            <th *ngIf="i == 0">סבלות לקומה</th>
+            <td formGroupName="{{ i }}" class="">
+              <div class="form-field">
+                <input type="number" formControlName="carryPrice" />
+              </div>
+            </td>
+          </div>
+        </tr>
+      </ng-container>
+      <br />
+      <div>
+        <button
+          *ngIf="user.role == roles.Employee"
+          type="submit"
+          mat-raised-button
+          color="primary"
+        >
+          שמור
+        </button>
+      </div>
+      <br /><br />
+      <div class="error-msg" *ngIf="errMessage">{{ errMessage }}</div>
     </table>
-</form>
+  </form>
 </div>
-<!-- 
+<!--
             <td><input type="text" formControlName="installationPrice" value="{{getFormGroupControl(getFormArrayControls()[i],1)}}"></td>
             <td><input type="text" formControlName="outerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],2)}}"></td>
             <td><input type="text" formControlName="innerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],3)}}"></td>
             <td><input type="text" formControlName="carryPrice" value="{{getFormGroupControl(getFormArrayControls()[i],4)}}"></td> -->
-   
-    
-    
-    
 
-
-
-
-<!-- 
+<!--
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
 
 
@@ -145,13 +146,13 @@
 </div>
  -->
 
- <!-- 
+<!--
     <div class="table-wrapper">
     <form  [formGroup]="addPricesForm" (ngSubmit)="onSubmit()" >
     <table>
         <thead>
           <tr>
-            
+
             <th>מחיר התקנה</th>
             <th>במה חיצונית</th>
             <th>רצפה פנימית</th>
@@ -160,11 +161,11 @@
         </thead>
         <tbody formArrayName="prices">
 
-        <ng-container *ngFor="let prod of getFormArrayControls(); let i = index" >     
+        <ng-container *ngFor="let prod of getFormArrayControls(); let i = index" >
             <tr formGroupName="{{i}}" class="flex ">
-                
+
             <mat-form-field class="form-field">
-                
+
                 <td><input matInput  type="text" formControlName="productName" value="{{getFormGroupControl(getFormArrayControls()[i],0)}}"> </td>
             </mat-form-field>
 

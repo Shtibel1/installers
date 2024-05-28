@@ -10,7 +10,10 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
 import { Category } from 'src/app/core/models/category.model';
-import { Installer, InstallerDto } from 'src/app/core/models/installer.model';
+import {
+  ServiceProvider,
+  InstallerDto as ServiceProviderDto,
+} from 'src/app/core/models/installer.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Manager, ManagerDto } from 'src/app/core/models/manager.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -64,23 +67,23 @@ export class CreateInstallerComponent implements OnInit {
 
   onSubmit() {
     if (this.installerMode) {
-      let categories: number[] = [];
+      let categoryIds: string[] = [];
       this.categories.forEach((cat) => {
         this.form.value.categories.forEach((formCat) => {
           if (cat.name == formCat) {
-            categories.push(cat.id);
+            categoryIds.push(cat.id);
           }
         });
       });
-      let installer: InstallerDto = {
+      let serviceProvider: ServiceProviderDto = {
         name: this.name.value,
         phone: this.phone.value,
         email: this.email.value,
         role: 'installer',
-        categories: categories,
+        categories: categoryIds,
       };
       this.accountsService
-        .createInstaller(installer, this.form.value.password)
+        .createServiceProvider(serviceProvider, this.form.value.password)
         .subscribe({
           next: (res) => {
             this.openSnackBar('מתקין נוסף בהצלחה!');

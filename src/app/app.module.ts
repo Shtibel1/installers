@@ -62,6 +62,9 @@ import { AdressInputComponent } from './shared/adress-input/adress-input.compone
 import { CheckboxComponent } from './shared/checkbox/checkbox.component';
 import { AssignmentAdditionalsComponent } from './components/assignments/manage-assignment/assignment-additionals/assignment-additionals.component';
 import { DatePipe } from '@angular/common';
+import { AddressComponent } from './shared/address/address.component';
+import { MarketersComponent } from './components/marketers/marketers.component';
+import { TableComponent } from './shared/table/table.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +89,9 @@ import { DatePipe } from '@angular/common';
     AdressInputComponent,
     CheckboxComponent,
     AssignmentAdditionalsComponent,
+    AddressComponent,
+    MarketersComponent,
+    TableComponent,
   ],
   imports: [
     BrowserModule,

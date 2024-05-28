@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Installer } from '../models/installer.model';
+import { ServiceProvider } from '../models/installer.model';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class WorkersService extends BaseService {
-  installersChain = new BehaviorSubject<Installer[] | null>(null);
+export class UsersService extends BaseService {
+  installersChain = new BehaviorSubject<ServiceProvider[] | null>(null);
 
   constructor(http: HttpClient) {
-    super(http, 'api');
+    super(http, 'api/serviceProviders');
   }
 
   getInstallers() {
-    return this.get<Installer[]>('installers').pipe(
+    return this.get<ServiceProvider[]>('').pipe(
       tap((installers) => {
         if (installers) this.installersChain.next(installers);
       }),

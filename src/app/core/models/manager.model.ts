@@ -1,15 +1,9 @@
-import { WorkerBase } from "./worker.model";
-
-interface Manager extends WorkerBase {
-
+interface Manager {
+  id?: string;
+  name: string;
+  phone: string;
+  role: string;
+  email: string;
 }
 
-interface ManagerDto extends WorkerBase {
-
-}
-
-export {
-    Manager,
-    ManagerDto
-}
-
+export { Manager, Manager as ManagerDto };

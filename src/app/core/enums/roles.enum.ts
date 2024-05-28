@@ -3,3 +3,9 @@ export enum Roles {
   ServiceProvider,
   Storekeeper,
 }
+
+export enum RolesNames {
+  Employee = 'מנהל/ת',
+  ServiceProvider = 'מתקין',
+  Storekeeper = 'אחראי מחסן',
+}

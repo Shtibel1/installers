@@ -1,16 +1,22 @@
-import { AppUser } from "./app-user.model";
-import { Category } from "./category.model";
-import { WorkerBase } from "./worker.model";
+import { AppUser } from './app-user.model';
+import { Category } from './category.model';
 
-interface Installer extends WorkerBase{
-    categories: Category[]
+interface ServiceProvider {
+  id?: string;
+  name: string;
+  phone: string;
+  role: string;
+  email: string;
+  categories: Category[];
 }
 
-interface InstallerDto extends WorkerBase {
-    categories: number[];
+interface InstallerDto {
+  id?: string;
+  name: string;
+  phone: string;
+  role: string;
+  email: string;
+  categories: string[];
 }
 
-export {
-    Installer,
-    InstallerDto
-}
+export { ServiceProvider, InstallerDto };

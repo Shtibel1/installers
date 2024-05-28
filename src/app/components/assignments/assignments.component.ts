@@ -12,12 +12,12 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Category } from 'src/app/core/models/category.model';
-import { Installer } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/installer.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
 import { ManageAssignmentComponent } from './manage-assignment/manage-assignment.component';
-import { WorkersService } from 'src/app/core/services/workers.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { take } from 'rxjs';
 import { Router } from 'react-router';
 import { ActivatedRoute } from '@angular/router';
@@ -55,14 +55,14 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   ];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement: Assignment[] | null;
-  installers: Installer[];
+  installers: ServiceProvider[];
   categories: Category[];
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private assignmentsService: AssignmentsService,
-    private workersService: WorkersService,
+    private workersService: UsersService,
     private categoriesService: CategoriesService,
     private dialog: MatDialog
   ) {}
@@ -152,7 +152,7 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
 
   onInstaller(installerName: string) {
     this.dataSource = new MatTableDataSource(
-      this.assignments.filter((a) => a.installer.name === installerName)
+      this.assignments.filter((a) => a.serviceProvider.name === installerName)
     );
   }
 

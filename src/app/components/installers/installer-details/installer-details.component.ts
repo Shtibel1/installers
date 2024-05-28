@@ -3,9 +3,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { Assignment } from 'src/app/core/models/assignment.model';
-import { Installer } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/installer.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
-import { WorkersService } from 'src/app/core/services/workers.service';
+import { UsersService } from 'src/app/core/services/users.service';
 
 interface Transaction {
   item: string;
@@ -18,7 +18,7 @@ interface Transaction {
   styleUrls: ['./installer-details.component.scss'],
 })
 export class InstallerDetailsComponent implements OnInit {
-  installer: Installer;
+  installer: ServiceProvider;
   assignments: Assignment[];
   filteredAssignments: Assignment[];
 
@@ -31,7 +31,7 @@ export class InstallerDetailsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private workersService: WorkersService,
+    private workersService: UsersService,
     private route: ActivatedRoute,
     private assignmentService: AssignmentsService
   ) {}
@@ -52,7 +52,7 @@ export class InstallerDetailsComponent implements OnInit {
     });
   }
 
-  onInstaller(installer: Installer) {
+  onInstaller(installer: ServiceProvider) {
     this.router.navigate(['installers', installer.id]);
   }
 
@@ -75,7 +75,7 @@ export class InstallerDetailsComponent implements OnInit {
         this.assignmentService.getAssignments().subscribe();
       } else {
         this.assignments = asmnts.filter(
-          (a) => a.installer.id == this.installer.id
+          (a) => a.serviceProvider.id == this.installer.id
         );
         this.filteredAssignments = this.assignments;
       }
@@ -88,24 +88,20 @@ export class InstallerDetailsComponent implements OnInit {
 
   getTotalCost() {
     let sum = 0;
-    if (this.assignments)
-      this.assignments.forEach((a) => (sum += a.assignmentCost));
+    if (this.assignments) this.assignments.forEach((a) => (sum += a.cost));
     return sum;
   }
 
   getCustomerCost() {
     let sum = 0;
-    if (this.assignments)
-      this.assignments.forEach((a) => (sum += a.customerNeedsToPay));
+    if (this.assignments) this.assignments.forEach((a) => (sum += a.price));
     return sum;
   }
 
   getBalance() {
     let sum = 0;
     if (this.assignments)
-      this.assignments.forEach(
-        (a) => (sum += a.assignmentCost - a.customerNeedsToPay)
-      );
+      this.assignments.forEach((a) => (sum += a.cost - a.price));
     return sum;
   }
 }

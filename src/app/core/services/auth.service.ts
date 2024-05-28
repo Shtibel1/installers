@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Manager, ManagerDto } from '../models/manager.model';
-import { Installer, InstallerDto } from '../models/installer.model';
+import { ServiceProvider, InstallerDto } from '../models/installer.model';
 import { Category } from '../models/category.model';
 import {
   BehaviorSubject,
@@ -15,7 +15,7 @@ import {
 import { Roles } from '../enums/roles.enum';
 import { AppUser } from '../models/app-user.model';
 import { Router } from '@angular/router';
-import { WorkersService } from './workers.service';
+import { UsersService } from './users.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private workersService: WorkersService
+    private workersService: UsersService
   ) {}
 
   // url = `https://jltrinpj51.execute-api.eu-north-1.amazonaws.com/Prod/Account`
@@ -46,7 +46,7 @@ export class AuthService {
       );
   }
 
-  createInstaller(installer: InstallerDto, password: string) {
+  createServiceProvider(installer: InstallerDto, password: string) {
     return this.http
       .post<{ message: string }>(`${this.url}/signup`, {
         ...installer,

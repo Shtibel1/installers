@@ -13,6 +13,7 @@ import { ProductsService } from 'src/app/core/services/products.service';
 import { ManageProductComponent } from '../products/manage-product/manage-product.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AppUser } from 'src/app/core/models/app-user.model';
+import { Roles, RolesNames } from 'src/app/core/enums/roles.enum';
 
 @Component({
   selector: 'app-side-nav',
@@ -23,11 +24,14 @@ export class SideNavComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
   user: AppUser;
   private _mobileQueryListener: () => void;
+  roles = Roles;
+  rolesNames = RolesNames;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     public dialog: MatDialog,
+
     private producsService: ProductsService,
     private accountsService: AuthService
   ) {

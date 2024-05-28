@@ -43,6 +43,10 @@ export class ManageCustomerComponent implements OnInit {
       phone: this.phoneControl,
       address: this.addressControl,
     });
+
+    this.addressControl.valueChanges.subscribe((value) => {
+      console.log(value);
+    });
   }
 
   onSubmit() {}

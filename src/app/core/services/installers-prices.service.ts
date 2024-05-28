@@ -1,21 +1,21 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
-import { InstallerPricing } from '../models/installerPricing.model';
+import { ServiceProviderPricing } from '../models/installerPricing.model';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InstallersPricesService extends BaseService {
-  pricesChain = new BehaviorSubject<InstallerPricing[]>([]);
+  pricesChain = new BehaviorSubject<ServiceProviderPricing[]>([]);
 
   constructor(http: HttpClient) {
-    super(http, 'api/InstallerPricing');
+    super(http, 'api/ServiceProviderPricing');
   }
 
   getPricesByInstaller(installerId: string) {
-    return this.get<InstallerPricing[]>(`${installerId}`).pipe(
+    return this.get<ServiceProviderPricing[]>(`${installerId}`).pipe(
       tap((prices) => {
         this.pricesChain.next(prices);
       }),
@@ -23,10 +23,11 @@ export class InstallersPricesService extends BaseService {
     );
   }
 
-  updatePricesTable(installerId: string, prices: InstallerPricing[]) {
-    return this.put<InstallerPricing[], InstallerPricing[]>(`${installerId}`, [
-      ...prices,
-    ]).pipe(
+  updatePricesTable(installerId: string, prices: ServiceProviderPricing[]) {
+    return this.put<ServiceProviderPricing[], ServiceProviderPricing[]>(
+      `${installerId}`,
+      [...prices]
+    ).pipe(
       tap((resPrices) => {
         let newPrices = this.pricesChain.value.filter(
           (p) => p.installerId === installerId
@@ -40,8 +41,8 @@ export class InstallersPricesService extends BaseService {
     );
   }
 
-  getInstallerPrice(installerId: string, productId: number) {
-    return this.get<InstallerPricing>(`${installerId}/${productId}`).pipe(
+  getInstallerPrice(installerId: string, productId: string) {
+    return this.get<ServiceProviderPricing>(`${installerId}/${productId}`).pipe(
       catchError((err) => this.handlePricesError(err))
     );
   }

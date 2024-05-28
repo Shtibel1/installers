@@ -5,7 +5,7 @@
         <mat-icon>menu</mat-icon>
       </button>
       <button
-        *ngIf="user.role == 'manager'"
+        *ngIf="user.role == roles.Employee"
         class="button"
         routerLink="manage-assignment"
         mat-icon-button
@@ -44,7 +44,7 @@
             <div class="user-details flex flex-col align-center justify-center">
               <span class="user-title"> שלום {{ user.name }} </span>
               <p class="user-role">
-                {{ user.role == "manager" ? "מנהל/ת" : "מתקין" }}
+                {{ rolesNames[user.role] }}
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@
             <h4>התקנות</h4>
             <a mat-list-item routerLink="">כל ההתקנות</a>
             <a
-              *ngIf="user.role == 'manager'"
+              *ngIf="user.role == roles.Employee"
               mat-list-item
               routerLink="manage-assignment"
               >הוספת התקנה</a
@@ -62,7 +62,7 @@
 
           <div
             class="nav-list-wrapper width-10/10"
-            *ngIf="user.role == 'manager'"
+            *ngIf="user.role == roles.Employee"
           >
             <h4>ניהול</h4>
             <a mat-list-item routerLink="products">כל המוצרים</a>
@@ -75,7 +75,7 @@
 
           <div
             class="nav-list-wrapper width-10/10"
-            *ngIf="user.role != 'manager'"
+            *ngIf="user.role != roles.Employee"
           >
             <a mat-list-item [routerLink]="['installers', user.id, 'prices']">
               מחירון התקנות

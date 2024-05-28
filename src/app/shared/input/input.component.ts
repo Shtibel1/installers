@@ -14,6 +14,7 @@ export class InputComponent implements OnInit {
   @Input() currency: string;
   @Input() mask: string;
   @Input() disabled: boolean;
+  @Input() id: string;
 
   constructor() {}
 

@@ -1,17 +1,15 @@
-import { Injectable } from '@angular/core';
-import { BaseService } from './base.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
-import { Customer } from '../models/customer.model';
-import { Assignment } from '../models/assignment.model';
-import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
-import { CommentModel } from '../models/commentModel.model';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { AssignmentDto } from '../models/Dtos/assignmentDto.model';
-import { Product } from '../models/product.model';
-import { InstallerPricing } from '../models/installerPricing.model';
+import { Assignment } from '../models/assignment.model';
+import { BaseService } from './base.service';
+import { Status } from '../enums/status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +17,27 @@ import { InstallerPricing } from '../models/installerPricing.model';
 export class AssignmentsService extends BaseService {
   assignmentsChain = new BehaviorSubject<Assignment[] | null>(null);
 
-  constructor(http: HttpClient) {
+  constructor(http: HttpClient, private AuthService: AuthService) {
     super(http, 'api/assignments');
   }
 
+  getAssignments() {
+    return this.get<Assignment[]>('').pipe(
+      tap((asmns) => {
+        this.assignmentsChain.next(asmns);
+      })
+    );
+  }
+
+  getAssignment(id: string) {
+    let companyName = this.AuthService.user$.value?.companies[0]?.name;
+    return this.get<Assignment>(`${companyName}/${id.toString()}`);
+  }
+
   createAssignment(assignmentDto: AssignmentDto) {
+    assignmentDto.id = null;
+    assignmentDto.status = Status.new;
+    assignmentDto.customer.id = null;
     return this.post<Assignment, any>('', { ...assignmentDto }).pipe(
       tap((assignment) => {
         if (this.assignmentsChain.value?.length > 0)
@@ -68,18 +82,6 @@ export class AssignmentsService extends BaseService {
       tap(() => {}),
       catchError((err) => this.handleAssignmentsError(err))
     );
-  }
-
-  getAssignments() {
-    return this.get<Assignment[]>('').pipe(
-      tap((asmns) => {
-        this.assignmentsChain.next(asmns);
-      })
-    );
-  }
-
-  getAssignment(id: number) {
-    return this.get<Assignment>(id.toString());
   }
 
   // getAssignmentsByInstaller(id: string) {

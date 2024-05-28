@@ -1,11 +1,11 @@
-import { InstallerPricing } from './../models/installerPricing.model';
+import { ServiceProviderPricing } from './../models/installerPricing.model';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Product } from '../models/product.model';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { Category } from '../models/category.model';
-import { Installer } from '../models/installer.model';
+import { ServiceProvider } from '../models/installer.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ export class ProductsService extends BaseService {
   addProduct(product: Product) {
     return this.post<
       Product,
-      { name: string; customerInstallationPrice: number; categoryId: number }
+      { name: string; customerInstallationPrice: number; categoryId: string }
     >('', {
       name: product.name,
       customerInstallationPrice: product.customerInstallationPrice,
@@ -49,10 +49,10 @@ export class ProductsService extends BaseService {
     return this.put<
       Product,
       {
-        id: number;
+        id: string;
         name: string;
         customerInstallationPrice: number;
-        categoryId: number;
+        categoryId: string;
       }
     >(`${product.id}`, {
       id: product.id,
@@ -72,7 +72,7 @@ export class ProductsService extends BaseService {
     );
   }
 
-  deleteProduct(id: number) {
+  deleteProduct(id: string) {
     return this.delete(`${id}`).pipe(
       tap(() => {
         let updatedProducts = this.products$.value.filter((p) => p.id != id);
@@ -88,7 +88,7 @@ export class ProductsService extends BaseService {
     );
   }
 
-  getProductsByInstaller(installer: Installer) {
+  getProductsByInstaller(installer: ServiceProvider) {
     const installerCats = installer.categories;
     return this.products$.value.filter((p) =>
       installerCats.some((c) => c.id === p.category.id)

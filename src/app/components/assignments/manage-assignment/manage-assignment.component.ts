@@ -5,18 +5,17 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
 import { Assignment } from 'src/app/core/models/assignment.model';
-import { Installer } from 'src/app/core/models/installer.model';
-import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
+import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProviderPricing } from 'src/app/core/models/installerPricing.model';
 import { Product } from 'src/app/core/models/product.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
 import { ProductsService } from 'src/app/core/services/products.service';
-import { WorkersService } from 'src/app/core/services/workers.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Option } from './../../../core/models/option.model';
 import { CustomerForm } from './manage-customer/manage-customer.component';
-import { workerToOption } from 'src/app/core/helpers/workerToOption';
 import { updateDisabledControlValue } from 'src/app/core/helpers/updateDisabledControlValue';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -35,7 +34,7 @@ import { Status } from 'src/app/core/enums/status.enum';
 
 export interface AssignmentForm {
   createdDate: FormControl;
-  installer: FormControl<Option<Installer>>;
+  installer: FormControl<Option<ServiceProvider>>;
   product: FormControl<Option<Product>>;
   customerNeedsToPay: FormControl;
   assignmentCost: FormControl;
@@ -54,16 +53,16 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   editMode: boolean = false;
   assignmentForm: FormGroup;
   errMessage: string;
-  installersOptions: Option<Installer>[];
+  installersOptions: Option<ServiceProvider>[];
   filteredProductsOptions: Option<Product>[];
-  pricesArray: InstallerPricing[] = [];
-  pricesByProduct: InstallerPricing;
+  pricesArray: ServiceProviderPricing[] = [];
+  pricesByProduct: ServiceProviderPricing;
   selectedProduct: Product;
   productsByInstaller: Product[];
   productsOptions: Option<Product>[] = [];
 
   dateControl: FormControl;
-  installerControl: FormControl<Option<Installer>>;
+  installerControl: FormControl<Option<ServiceProvider>>;
   productControl: FormControl<Option<Product> | null>;
   customerNeedsToPayControl: FormControl;
   assignmentCostControl: FormControl;
@@ -81,7 +80,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     accontsService: AuthService,
     private productsService: ProductsService,
     private pricesService: InstallersPricesService,
-    private workersService: WorkersService,
+    private workersService: UsersService,
     private assingmentsService: AssignmentsService,
     private datePipe: DatePipe,
     private route: ActivatedRoute,
@@ -99,7 +98,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
       if (this.assignment) {
         this.getProducts();
-        this.updateProductsByInstaller(this.assignment.installer);
+        this.updateProductsByInstaller(this.assignment.serviceProvider);
         this.updatePricesByProduct(this.assignment.product).subscribe();
         this.editMode = true;
       }
@@ -112,17 +111,17 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
   forminit() {
     let createdDate = this.assignment?.createdDate || new Date();
-    let installer = this.assignment?.installer
+    let installer = this.assignment?.serviceProvider
       ? {
-          label: this.assignment.installer.name,
-          value: this.assignment.installer,
+          label: this.assignment.serviceProvider.name,
+          value: this.assignment.serviceProvider,
         }
       : null;
     let product = this.assignment?.product
       ? { label: this.assignment.product.name, value: this.assignment.product }
       : null; //export
     let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
-    let assignmentCost = this.assignment?.assignmentCost || null;
+    let assignmentCost = this.assignment?.cost || null;
     this.selectedProduct = product?.value;
 
     this.dateControl = new FormControl(createdDate, Validators.required);
@@ -164,7 +163,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
   initFormBehavior() {
     this.installerControl.valueChanges.subscribe(
-      (installerOpt: Option<Installer>) => {
+      (installerOpt: Option<ServiceProvider>) => {
         if (!installerOpt) {
           return;
         }
@@ -194,7 +193,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     );
   }
 
-  getPricesByInstallerProduct(installer: Installer) {
+  getPricesByInstallerProduct(installer: ServiceProvider) {
     return this.pricesService.getPricesByInstaller(installer.id).pipe(
       tap((prices) => {
         this.pricesArray = prices;
@@ -206,7 +205,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   updatePricesByProduct(product: Product) {
     return this.pricesService
       .getInstallerPrice(
-        this.assignment?.installer?.id ?? this.installerControl.value.value.id,
+        this.assignment?.serviceProvider?.id ??
+          this.installerControl.value.value.id,
         product.id
       )
       .pipe(
@@ -226,7 +226,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     this.pricesByProduct = null;
   }
 
-  updateProductsByInstaller(installer: Installer) {
+  updateProductsByInstaller(installer: ServiceProvider) {
     this.productsByInstaller =
       this.productsService.getProductsByInstaller(installer);
 
@@ -262,8 +262,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || 0,
       productId: this.productControl.value.value.id,
-      managerId: this.user.id,
-      installerId: this.installerControl.value.value.id,
+      employeeId: this.user.id,
+      serviceProviderId: this.installerControl.value.value.id,
       date: this.datePipe.transform(
         this.dateControl.value,
         'yyyy-MM-ddTHH:mm:ss'

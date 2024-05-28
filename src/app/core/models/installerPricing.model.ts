@@ -1,12 +1,13 @@
-export interface InstallerPricing {
-  productId: number;
+export interface ServiceProviderPricing {
+  id?: string;
+  installerId?: string;
+  productId: string;
   createdDate: Date;
-  startFromDate: Date;
+
   installationPrice: number;
   outerFloorPrice: number;
   innerFloorPrice: number;
-  distancePrice: number;
   carryPrice: number;
-  installerId?: string;
-  id?: number;
+  distancePrice: number;
+  deliveryOnlyPrice: number;
 }

@@ -9,7 +9,7 @@ import {
 import { Form, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { AssignmentForm } from 'src/app/components/assignments/manage-assignment/manage-assignment.component';
 import { Option } from './../../../../core/models/option.model';
-import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
+import { ServiceProviderPricing } from 'src/app/core/models/installerPricing.model';
 import { Product } from 'src/app/core/models/product.model';
 
 @Component({
@@ -19,7 +19,7 @@ import { Product } from 'src/app/core/models/product.model';
 })
 export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
   @Input() form: FormGroup;
-  @Input() pricesByProduct?: InstallerPricing;
+  @Input() pricesByProduct?: ServiceProviderPricing;
   hasInnerFloorControl: FormControl;
   hasOuterFloorControl: FormControl;
   hasCarryControl: FormControl;

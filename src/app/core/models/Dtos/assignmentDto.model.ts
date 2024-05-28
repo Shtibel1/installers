@@ -4,7 +4,7 @@ import { Customer } from '../customer.model';
 import { PickupStatus } from '../../enums/pickup-status.enum';
 
 export class AssignmentDto {
-  id: number;
+  id: number | null;
   date: string;
   customerNeedsToPay: number;
   customerAlreadyPaid: number;
@@ -13,11 +13,11 @@ export class AssignmentDto {
   innerFloorPrice: number;
   outerFloorPrice: number;
   carryPrice: number;
-  managerId: string;
-  installerId: string;
-  productId: number;
+  employeeId: string;
+  serviceProviderId: string;
+  productId: string;
   customer: Customer;
   comments?: CommentModel[] = [];
-  status?: string;
+  status?: Status;
   pickupStatus?: PickupStatus;
 }

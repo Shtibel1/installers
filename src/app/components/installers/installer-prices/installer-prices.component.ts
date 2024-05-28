@@ -9,13 +9,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Params } from 'react-router';
 import { take, tap } from 'rxjs';
-import { Installer } from 'src/app/core/models/installer.model';
-import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
+import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProviderPricing } from 'src/app/core/models/installerPricing.model';
 import { Product } from 'src/app/core/models/product.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
 import { ProductsService } from 'src/app/core/services/products.service';
-import { WorkersService } from 'src/app/core/services/workers.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Roles } from 'src/app/core/enums/roles.enum';
 
@@ -25,17 +25,17 @@ import { Roles } from 'src/app/core/enums/roles.enum';
   styleUrls: ['./installer-prices.component.scss'],
 })
 export class InstallerPricesComponent extends BaseComponent implements OnInit {
-  installer: Installer;
+  installer: ServiceProvider;
   prodFormArray: FormArray;
   addPricesForm: FormGroup = new FormGroup({});
   products: Product[] = [];
-  pricesArray: InstallerPricing[] = [];
-  currentPrices: InstallerPricing[] = [];
+  pricesArray: ServiceProviderPricing[] = [];
+  currentPrices: ServiceProviderPricing[] = [];
   errMessage: any;
 
   constructor(
     private route: ActivatedRoute,
-    private workersService: WorkersService,
+    private workersService: UsersService,
     private productsService: ProductsService,
     private cdr: ChangeDetectorRef,
     private pricesService: InstallersPricesService,
