@@ -1,6 +1,10 @@
+import { Option } from './../../../core/models/option.model';
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
@@ -16,7 +20,11 @@ import { ProductsService } from 'src/app/core/services/products.service';
 })
 export class ManageProductComponent implements OnInit {
   form: FormGroup;
-  categories: Category[];
+  categories: Option<Category>[];
+  name: FormControl;
+  category: FormControl<Option<Category> | null>;
+  customerInstallationPrice: FormControl;
+
   @Input('selectedCategory') selectedCategory: any = 'asd';
   errMessage: string = null;
   constructor(
@@ -34,14 +42,37 @@ export class ManageProductComponent implements OnInit {
       if (!res) {
         this.categoriesService.getCategories().subscribe();
       } else {
-        this.categories = res;
+        this.categories = res.map((cat) => {
+          return { label: cat.name, value: cat };
+        });
       }
+    });
+  }
+
+  initForm() {
+    const name = this.editProduct?.name || null;
+    const category: Option<Category | null> =
+      {
+        label: this.editProduct.category.name,
+        value: this.editProduct.category,
+      } || null;
+    const customerInstallationPrice =
+      this.editProduct?.customerInstallationPrice || null;
+
+    this.name = new FormControl(name, Validators.required);
+    this.category = new FormControl(category);
+    this.customerInstallationPrice = new FormControl(customerInstallationPrice);
+
+    this.form = new FormGroup({
+      name: this.name,
+      category: this.category,
+      customerInstallationPrice: this.customerInstallationPrice,
     });
   }
 
   onSubmit() {
     this.categories.forEach((cat) => {
-      if (this.form.value.category == cat.name) {
+      if (this.form.value.category == cat.value.name) {
         this.form.value.category = cat;
       }
     });
@@ -85,19 +116,6 @@ export class ManageProductComponent implements OnInit {
         },
       });
     }
-  }
-
-  initForm() {
-    const name = this.editProduct?.name || null;
-    const category = this.editProduct?.category.name || null;
-    const customerInstallationPrice =
-      this.editProduct?.customerInstallationPrice || null;
-
-    this.form = new FormGroup({
-      name: new FormControl(name, Validators.required),
-      category: new FormControl(category),
-      customerInstallationPrice: new FormControl(customerInstallationPrice),
-    });
   }
 
   openSnackbar(msg: string) {
