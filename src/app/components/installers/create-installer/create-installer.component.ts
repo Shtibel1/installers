@@ -14,9 +14,9 @@ import {
   ServiceProvider,
   InstallerDto as ServiceProviderDto,
 } from 'src/app/core/models/installer.model';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { Manager, ManagerDto } from 'src/app/core/models/manager.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { AppUser } from 'src/app/core/models/app-user.model';
 import { MyErrorStateMatcher } from 'src/app/core/common/error-matcher';
 

@@ -6,10 +6,10 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Product } from 'src/app/core/models/product.model';
 import { ProductsService } from 'src/app/core/services/products.service';
 import { ManageProductComponent } from './manage-product/manage-product.component';

@@ -7,9 +7,9 @@ import {
 } from '@angular/animations';
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Category } from 'src/app/core/models/category.model';
 import { ServiceProvider } from 'src/app/core/models/installer.model';

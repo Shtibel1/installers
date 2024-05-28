@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
   ViewChild,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ManageAssignmentComponent } from '../assignments/manage-assignment/manage-assignment.component';
 import { CreateInstallerComponent } from '../installers/create-installer/create-installer.component';
 import { ProductsService } from 'src/app/core/services/products.service';
