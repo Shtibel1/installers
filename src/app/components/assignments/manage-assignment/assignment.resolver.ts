@@ -2,13 +2,13 @@ import { UsersService } from '../../../core/services/users.service';
 import { CategoriesService } from './../../../core/services/categories.service';
 import { ProductsService } from './../../../core/services/products.service';
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 
 @Injectable({ providedIn: 'root' })
-export class AssignmentResolver implements Resolve<Assignment> {
+export class AssignmentResolver  {
   constructor(
     private assignmentService: AssignmentsService,
     private ProductsService: ProductsService,
