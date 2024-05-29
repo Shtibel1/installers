@@ -7,9 +7,7 @@ import {
 } from '@angular/animations';
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatSort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Category } from 'src/app/core/models/category.model';
 import { ServiceProvider } from 'src/app/core/models/installer.model';
@@ -21,6 +19,8 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { take } from 'rxjs';
 import { Router } from 'react-router';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-assignments',

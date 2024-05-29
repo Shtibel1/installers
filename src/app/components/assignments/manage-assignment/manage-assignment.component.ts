@@ -1,8 +1,5 @@
-import { CategoriesService } from './../../../core/services/categories.service';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { ServiceProvider } from 'src/app/core/models/installer.model';
@@ -16,7 +13,6 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Option } from './../../../core/models/option.model';
 import { CustomerForm } from './manage-customer/manage-customer.component';
-import { updateDisabledControlValue } from 'src/app/core/helpers/updateDisabledControlValue';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {

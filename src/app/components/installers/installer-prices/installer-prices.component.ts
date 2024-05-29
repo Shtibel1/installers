@@ -5,7 +5,6 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Params } from 'react-router';
 import { take, tap } from 'rxjs';
@@ -18,6 +17,7 @@ import { ProductsService } from 'src/app/core/services/products.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Roles } from 'src/app/core/enums/roles.enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-installer-prices',

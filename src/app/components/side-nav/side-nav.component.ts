@@ -6,14 +6,13 @@ import {
   ChangeDetectorRef,
   ViewChild,
 } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ManageAssignmentComponent } from '../assignments/manage-assignment/manage-assignment.component';
 import { CreateInstallerComponent } from '../installers/create-installer/create-installer.component';
 import { ProductsService } from 'src/app/core/services/products.service';
-import { ManageProductComponent } from '../products/manage-product/manage-product.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AppUser } from 'src/app/core/models/app-user.model';
 import { Roles, RolesNames } from 'src/app/core/enums/roles.enum';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-side-nav',

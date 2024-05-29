@@ -1,24 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormGroupDirective,
-  NgForm,
-  Validators,
-} from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MyErrorStateMatcher } from 'src/app/core/common/error-matcher';
+import { Category } from 'src/app/core/models/category.model';
+import { InstallerDto as ServiceProviderDto } from 'src/app/core/models/installer.model';
+import { ManagerDto } from 'src/app/core/models/manager.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
-import { Category } from 'src/app/core/models/category.model';
-import {
-  ServiceProvider,
-  InstallerDto as ServiceProviderDto,
-} from 'src/app/core/models/installer.model';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
-import { Manager, ManagerDto } from 'src/app/core/models/manager.model';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
-import { AppUser } from 'src/app/core/models/app-user.model';
-import { MyErrorStateMatcher } from 'src/app/core/common/error-matcher';
 
 @Component({
   selector: 'app-create-installer',

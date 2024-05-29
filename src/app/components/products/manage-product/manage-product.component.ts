@@ -1,11 +1,8 @@
 import { Option } from './../../../core/models/option.model';
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef,
-} from '@angular/material/legacy-dialog';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
 import { Category } from 'src/app/core/models/category.model';
@@ -29,7 +26,7 @@ export class ManageProductComponent implements OnInit {
   errMessage: string = null;
   constructor(
     @Inject(MAT_DIALOG_DATA) public editProduct: Product = null,
-    public categoriesService: CategoriesService, //ask tzioni whay public
+    public categoriesService: CategoriesService,
     public productsService: ProductsService,
     public _snackBar: MatSnackBar,
     public router: Router,
@@ -53,8 +50,8 @@ export class ManageProductComponent implements OnInit {
     const name = this.editProduct?.name || null;
     const category: Option<Category | null> =
       {
-        label: this.editProduct.category.name,
-        value: this.editProduct.category,
+        label: this.editProduct?.category?.name,
+        value: this.editProduct?.category,
       } || null;
     const customerInstallationPrice =
       this.editProduct?.customerInstallationPrice || null;
