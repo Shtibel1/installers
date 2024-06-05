@@ -1,0 +1,19 @@
+<div *ngIf="user" class="wrapper">
+  <div class="filters">
+    <div class="search-container">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        [formControl]="search"
+        type="text"
+        class="search-input"
+        placeholder="חפש"
+      />
+    </div>
+  </div>
+
+  <div class="btns-wrapper">
+    <!-- <button mat-raised-button color="accent" (click)="exportToExcel()">
+      <mat-icon>cloud_download</mat-icon>
+    </button> -->
+  </div>
+</div>

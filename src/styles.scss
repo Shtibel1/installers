@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-
+@use "sass:math";
 html,
 body {
   height: 100%;
@@ -9,16 +9,40 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+.content {
+  padding-right: 30px;
+  margin-top: 30px;
+  padding-left: 30px;
+  display: flex;
+  flex-direction: column;
+
+  gap: 1rem;
+}
+
+.content-center {
+  align-items: center;
+}
+
+.custom-date-picker
+  > .mat-mdc-text-field-wrapper
+  > .mat-mdc-form-field-flex
+  > .mat-mdc-form-field-infix {
+  padding: 3px !important;
+}
+
+//
+//
+//
+
+.add-btn {
+  width: fit-content;
+}
+
 @mixin setSizeAttr($attr) {
   @for $i from 0 to 11 {
-    // @if ($i < 5) {
-    //     .#{$attr}-#{$i}px {
-    //         #{$attr}: #{$i}px;
-    //     }
-    // }
-    @if (#{$attr} != "padding" && #{$attr} != "gap") {
+    @if (#{$attr} != "padding" and #{$attr} != "gap") {
       .#{$attr}-#{$i}\/10 {
-        #{$attr}: $i/ 10 * 100%;
+        #{$attr}: math.div($i, 10) * 100%;
       }
     }
     .#{$attr}-#{$i} {

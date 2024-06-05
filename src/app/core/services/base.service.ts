@@ -30,9 +30,24 @@ export abstract class BaseService {
     //       catchError(this.handleError(url, null)));
   }
 
-  protected post<Res, Req>(
+  protected postDep<Res, Req>(
     endPointUrl: string,
     entity: Req,
+    options?: { headers: HttpHeaders }
+  ): Observable<Res | null> {
+    return this.http.post<Res>(
+      `${this.apiUrl}/${endPointUrl}`,
+      entity,
+      options
+    );
+    //   .pipe(
+    //       catchError(err => this.handleError(err))
+    //   );
+  }
+
+  protected post<Res>(
+    endPointUrl: string,
+    entity: any,
     options?: { headers: HttpHeaders }
   ): Observable<Res | null> {
     return this.http.post<Res>(

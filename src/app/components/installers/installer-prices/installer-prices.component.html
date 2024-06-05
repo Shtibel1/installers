@@ -1,4 +1,5 @@
-<div *ngIf="products" class="table-wrapper">
+<div *ngIf="products" class="table-wrapper content">
+  <h1>מחירון {{ installer.name }}</h1>
   <form [formGroup]="addPricesForm" (ngSubmit)="onSubmit()">
     <table class="">
       <ng-container formArrayName="prices">

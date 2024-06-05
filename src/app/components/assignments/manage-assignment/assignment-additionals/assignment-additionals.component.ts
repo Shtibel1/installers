@@ -1,135 +1,94 @@
-import { Assignment } from 'src/app/core/models/assignment.model';
 import {
   Component,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
+  output,
 } from '@angular/core';
-import { Form, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { AssignmentForm } from 'src/app/components/assignments/manage-assignment/manage-assignment.component';
-import { Option } from './../../../../core/models/option.model';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ServiceProviderPricing } from 'src/app/core/models/installerPricing.model';
 import { Product } from 'src/app/core/models/product.model';
+import { Option } from './../../../../core/models/option.model';
+import { AdditionalsService } from './additionals.service';
+
+export interface AdditionalsForm {
+  hasInstallation: FormControl<boolean>;
+  hasInnerFloor: FormControl<boolean>;
+  hasOuterFloor: FormControl<boolean>;
+  hasCarry: FormControl<boolean>;
+}
 
 @Component({
   selector: 'app-assignment-additionals',
   templateUrl: './assignment-additionals.component.html',
   styleUrls: ['./assignment-additionals.component.scss'],
 })
-export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
+export class AssignmentAdditionalsComponent implements OnInit {
   @Input() form: FormGroup;
-  @Input() pricesByProduct?: ServiceProviderPricing;
-  hasInnerFloorControl: FormControl;
-  hasOuterFloorControl: FormControl;
-  hasCarryControl: FormControl;
-  assignmentCostControl: FormControl;
+
+  additionalsGroup: FormGroup<AdditionalsForm>;
+  hasInnerFloorControl: FormControl<boolean>;
+  hasOuterFloorControl: FormControl<boolean>;
+  hasCarryControl: FormControl<boolean>;
+  assignmentCostControl: FormControl<boolean>;
+  hasInstallationControl: FormControl<boolean>;
 
   productControl: FormControl<Option<Product>>;
 
   customerNeedsToPay: FormControl;
 
-  constructor() {}
+  @Output() formReady = new EventEmitter<FormGroup<AdditionalsForm>>();
+
+  constructor(private additionalsService: AdditionalsService) {}
 
   ngOnInit(): void {
     this.initForm();
     this.initFormBehaviors();
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pricesByProduct'] || changes['form']) {
-      if (!this.pricesByProduct) {
+    this.additionalsService.additionals$.subscribe((additionals) => {
+      this.hasCarryControl.setValue(additionals?.hasCarry, {
+        emitEvent: false,
+      });
+      this.hasInnerFloorControl.setValue(additionals?.hasInnerFloor, {
+        emitEvent: false,
+      });
+      this.hasOuterFloorControl.setValue(additionals?.hasOuterFloor, {
+        emitEvent: false,
+      });
+      if (!additionals) {
         this.disableControls();
-      } else {
-        this.pricesByProduct.carryPrice
-          ? this.handleAdditionalsChange(this.hasCarryControl)
-          : this.hasCarryControl.disable({ emitEvent: false });
-        this.pricesByProduct.innerFloorPrice
-          ? this.handleAdditionalsChange(this.hasInnerFloorControl)
-          : this.hasInnerFloorControl.disable({ emitEvent: false });
-        this.pricesByProduct.outerFloorPrice
-          ? this.handleAdditionalsChange(this.hasOuterFloorControl)
-          : this.hasOuterFloorControl.disable({ emitEvent: false });
       }
-    }
+    });
+
+    this.formReady.emit(this.additionalsGroup);
   }
 
   initForm() {
-    this.hasInnerFloorControl = this.form.get('hasInnerFloor') as FormControl;
-    this.hasOuterFloorControl = this.form.get('hasOuterFloor') as FormControl;
-    this.hasCarryControl = this.form.get('hasCarry') as FormControl;
-    this.productControl = this.form.get('product') as FormControl;
+    this.hasInnerFloorControl = new FormControl<boolean>(false);
+    this.hasOuterFloorControl = new FormControl<boolean>(false);
+    this.hasCarryControl = new FormControl<boolean>(false);
+    this.hasInstallationControl = new FormControl<boolean>(false);
 
-    this.customerNeedsToPay = this.form.get(
-      'customerNeedsToPay'
-    ) as FormControl;
-
-    this.assignmentCostControl = this.form.get('assignmentCost') as FormControl;
-
-    if (!this.productControl.value) {
-      this.disableControls();
-    }
+    this.additionalsGroup = new FormGroup({
+      hasInnerFloor: this.hasInnerFloorControl,
+      hasOuterFloor: this.hasOuterFloorControl,
+      hasCarry: this.hasCarryControl,
+      hasInstallation: this.hasInstallationControl,
+    });
   }
 
   initFormBehaviors() {
-    this.hasInnerFloorControl.valueChanges.subscribe((value) => {
-      console.log('value', value);
-      console.log('this.pricesByProduct', this.pricesByProduct);
-      if (value) {
-        this.setCostsValues(true, this.pricesByProduct?.innerFloorPrice);
-      } else {
-        this.setCostsValues(false, this.pricesByProduct?.innerFloorPrice);
-      }
+    this.additionalsGroup.valueChanges.subscribe((additionals) => {
+      this.additionalsService.setAdditionals({
+        hasInnerFloor: additionals.hasInnerFloor,
+        hasOuterFloor: additionals.hasOuterFloor,
+        hasCarry: additionals.hasCarry,
+        hasInstallation: additionals.hasInstallation,
+      });
     });
-
-    this.hasOuterFloorControl.valueChanges.subscribe((value) => {
-      if (value) {
-        this.setCostsValues(true, this.pricesByProduct?.outerFloorPrice);
-      } else {
-        this.setCostsValues(false, this.pricesByProduct?.outerFloorPrice);
-      }
-    });
-
-    this.hasCarryControl.valueChanges.subscribe((value) => {
-      if (value) {
-        this.setCostsValues(true, this.pricesByProduct?.carryPrice);
-      } else {
-        this.setCostsValues(false, this.pricesByProduct?.carryPrice);
-      }
-    });
-
-    this.productControl.valueChanges.subscribe((value) => {
-      if (!value) {
-        this.disableControls();
-      } else {
-        this.setControlsValues(
-          [
-            this.hasCarryControl,
-            this.hasInnerFloorControl,
-            this.hasOuterFloorControl,
-          ],
-          false
-        );
-      }
-    });
-  }
-
-  private setCostsValues(add: boolean, price?: number) {
-    if (add) {
-      this.customerNeedsToPay.setValue(
-        this.customerNeedsToPay.value + price || 0
-      );
-      this.assignmentCostControl.setValue(
-        this.assignmentCostControl.value + price || 0
-      );
-    } else {
-      this.customerNeedsToPay.setValue(
-        this.customerNeedsToPay.value - price || 0
-      );
-      this.assignmentCostControl.setValue(
-        this.assignmentCostControl.value - price || 0
-      );
-    }
   }
 
   disableControls() {
@@ -142,9 +101,15 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
     control.enable({ emitEvent: false });
   }
 
-  setControlsValues(controls: FormControl[], value: boolean) {
+  resetControlsValues(value: boolean = false) {
+    let controls = [
+      this.hasInnerFloorControl,
+      this.hasOuterFloorControl,
+      this.hasCarryControl,
+    ];
     controls.forEach((control) => {
       control.setValue(value, { emitEvent: false });
+      control.enable({ emitEvent: false });
     });
   }
 }

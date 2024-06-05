@@ -1,0 +1,41 @@
+<div class="flex flex-row justify-between">
+  <h1 mat-dialog-title>{{ editMarketer ? "עריכת משווק" : "הוספת משווק" }}</h1>
+  <button mat-icon-button mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <div class="wrapper">
+    <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="flex flex-col">
+        <app-input label="שם" [control]="name"></app-input>
+
+        <div
+          class="btn-wrapper flex flex-row justify-end align-end width-10/10"
+        >
+          <div class="flex gap-2">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class=""
+              [disabled]="form.invalid"
+            >
+              שמור
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              type="button"
+              (click)="onDelete()"
+            >
+              מחק
+            </button>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+    </form>
+  </div>
+</mat-dialog-content>

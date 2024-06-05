@@ -1,41 +1,24 @@
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Category } from 'src/app/core/models/category.model';
 import { ServiceProvider } from 'src/app/core/models/installer.model';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
-import { ManageAssignmentComponent } from './manage-assignment/manage-assignment.component';
-import { UsersService } from 'src/app/core/services/users.service';
-import { take } from 'rxjs';
-import { Router } from 'react-router';
-import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
+import { FiltersService } from '../filters-bar/filters-service.service';
+import { AssignmentColumnsConfig } from './assignments-colums.config';
+import { Status } from 'src/app/core/enums/status.enum';
+import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 
 @Component({
   selector: 'app-assignments',
   templateUrl: './assignments.component.html',
   styleUrls: ['./assignments.component.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition(
-        'expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-      ),
-    ]),
-  ],
+  providers: [FiltersService],
 })
 export class AssignmentsComponent implements OnInit, AfterViewInit {
   editMode: boolean = false;
@@ -43,17 +26,7 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   errMessage: string;
   assignments: Assignment[] = [];
   dataSource: MatTableDataSource<Assignment>;
-  columnsToDisplay = [
-    'date',
-    'customerName',
-    'address',
-    'phone',
-    'installerName',
-    'product',
-    'commends',
-    'status',
-  ];
-  columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
+  columns = AssignmentColumnsConfig;
   expandedElement: Assignment[] | null;
   installers: ServiceProvider[];
   categories: Category[];
@@ -62,8 +35,9 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private assignmentsService: AssignmentsService,
-    private workersService: UsersService,
+    private workersService: ServiceProvidersService,
     private categoriesService: CategoriesService,
+    private router: Router,
     private dialog: MatDialog
   ) {}
 
@@ -75,28 +49,10 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {}
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  nestedFilterCheck(search, data, key) {
-    if (typeof data[key] === 'object') {
-      for (const k in data[key]) {
-        if (data[key][k] !== null) {
-          search = this.nestedFilterCheck(search, data[key], k);
-        }
-      }
-    } else {
-      search += data[key];
-    }
-    return search;
-  }
-
   initInstallers() {
-    this.workersService.installersChain.subscribe((installers) => {
+    this.workersService.installers$.subscribe((installers) => {
       if (!installers) {
-        this.workersService.getInstallers().subscribe();
+        this.workersService.getserviceProviders().subscribe();
       } else {
         this.installers = installers;
       }
@@ -104,40 +60,29 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   }
 
   initCategories() {
-    this.categoriesService.categoriesChain.subscribe((categories) => {
-      if (!categories) {
-        this.categoriesService.getCategories().subscribe();
-      } else {
-        this.categories = categories;
-      }
+    this.categoriesService.getCategories().subscribe((categories) => {
+      this.categories = categories;
     });
   }
 
   initAssignments() {
-    this.assignmentsService.assignmentsChain.subscribe((assigns) => {
+    this.assignmentsService.assignments$.subscribe((assigns) => {
       if (!assigns) {
         this.assignmentsService.getAssignments().subscribe();
       } else {
         this.assignments = assigns;
         this.dataSource = new MatTableDataSource<Assignment>(assigns);
         this.dataSource.sort = this.sort;
-        this.dataSource.filterPredicate = (data, filter: string) => {
-          const accumulator = (currentTerm, key) => {
-            return this.nestedFilterCheck(currentTerm, data, key);
-          };
-          const dataStr = Object.keys(data)
-            .reduce(accumulator, '')
-            .toLowerCase();
-          // Transform the filter by converting it to lowercase and removing whitespace.
-          const transformedFilter = filter.trim().toLowerCase();
-          return dataStr.indexOf(transformedFilter) !== -1;
-        };
       }
     });
   }
 
   onAll() {
     this.dataSource = new MatTableDataSource(this.assignments);
+  }
+
+  onAdd() {
+    this.router.navigate(['assignments', 'manage']);
   }
 
   onCategory(categoryName: string) {
@@ -157,9 +102,6 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   }
 
   onAssignment(assignment: Assignment) {
-    // this.dialog.open(ManageAssignmentComponent, {
-    //   data: assignment,
-    //   height: '100%',
-    // });
+    this.router.navigate(['assignments', 'manage', assignment.id]);
   }
 }

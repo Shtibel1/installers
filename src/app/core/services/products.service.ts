@@ -30,7 +30,7 @@ export class ProductsService extends BaseService {
   }
 
   addProduct(product: Product) {
-    return this.post<
+    return this.postDep<
       Product,
       { name: string; customerInstallationPrice: number; categoryId: string }
     >('', {

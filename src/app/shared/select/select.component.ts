@@ -18,11 +18,24 @@ export class SelectComponent implements OnInit {
   @Input() options: Option<any>[];
   @Input() label: string;
 
+  selectedOption: Option<any>;
+
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.selectedOption =
+      this.control.value?.value !== null ? this.control.value : null;
 
-  compareIds(id1: any, id2: any): boolean {
-    return id1 && id2 && id1.id === id2.id;
+    this.control.valueChanges.subscribe((value) => {
+      if (value) {
+        this.selectedOption = value;
+      } else {
+        this.selectedOption = null;
+      }
+    });
+  }
+
+  compareFn(o1: any, o2: any) {
+    return o1 && o2 ? JSON.stringify(o1) === JSON.stringify(o2) : o1 === o2;
   }
 }

@@ -2,13 +2,26 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { ServiceProviderPricing } from '../models/installerPricing.model';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  tap,
+  throwError,
+  map,
+  of,
+  Observable,
+} from 'rxjs';
+import { KeyValue } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InstallersPricesService extends BaseService {
-  pricesChain = new BehaviorSubject<ServiceProviderPricing[]>([]);
+  prices$ = new BehaviorSubject<ServiceProviderPricing[]>([]);
+  pricesComparison$ = new BehaviorSubject<Map<
+    string,
+    ServiceProviderPricing
+  > | null>(null);
 
   constructor(http: HttpClient) {
     super(http, 'api/ServiceProviderPricing');
@@ -17,7 +30,7 @@ export class InstallersPricesService extends BaseService {
   getPricesByInstaller(installerId: string) {
     return this.get<ServiceProviderPricing[]>(`${installerId}`).pipe(
       tap((prices) => {
-        this.pricesChain.next(prices);
+        this.prices$.next(prices);
       }),
       catchError((err) => this.handlePricesError(err))
     );
@@ -29,13 +42,13 @@ export class InstallersPricesService extends BaseService {
       [...prices]
     ).pipe(
       tap((resPrices) => {
-        let newPrices = this.pricesChain.value.filter(
+        let newPrices = this.prices$.value.filter(
           (p) => p.installerId === installerId
         );
         resPrices.forEach((p) => {
           newPrices.push(p);
         });
-        this.pricesChain.next(newPrices);
+        this.prices$.next(newPrices);
       }),
       catchError((err) => this.handlePricesError(err))
     );
@@ -44,6 +57,39 @@ export class InstallersPricesService extends BaseService {
   getInstallerPrice(installerId: string, productId: string) {
     return this.get<ServiceProviderPricing>(`${installerId}/${productId}`).pipe(
       catchError((err) => this.handlePricesError(err))
+    );
+  }
+
+  clearPricesComparison() {
+    // this.pricesComparison$.next(null);
+  }
+
+  getPriceComparison(
+    installerIds: string[],
+    productId: string
+  ): Observable<ServiceProviderPricing[]> {
+    let hasAllIds = installerIds.every((id) =>
+      this.pricesComparison$.value?.has(id)
+    );
+    if (hasAllIds) {
+      return of(this.pricesComparison$.value?.values().return().value);
+    }
+
+    let dto: PriceComparisonDto = {
+      serviceProviderIds: installerIds,
+      ProductId: productId,
+    };
+
+    return this.post<ServiceProviderPricing[]>('prices-comparison', dto).pipe(
+      tap({
+        next: (prices) => {
+          let map = new Map<string, ServiceProviderPricing>();
+          prices.forEach((p) => {
+            map.set(p.installerId, p);
+          });
+          this.pricesComparison$.next(map);
+        },
+      })
     );
   }
 
@@ -61,4 +107,9 @@ export class InstallersPricesService extends BaseService {
     }
     return throwError(errMessage);
   }
+}
+
+interface PriceComparisonDto {
+  serviceProviderIds: string[];
+  ProductId: string;
 }

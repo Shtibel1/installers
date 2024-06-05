@@ -1,3 +1,7 @@
 :host {
   width: 100%;
 }
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: white !important;
+}

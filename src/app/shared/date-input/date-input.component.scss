@@ -1,0 +1,24 @@
+.custom-date-picker {
+  --mat-form-field-height: 20px; /* Adjust as needed */
+}
+
+.custom-date-picker .mat-form-field-wrapper {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.custom-date-picker .mat-form-field-flex {
+  padding: 0;
+  height: var(--mat-form-field-height);
+}
+
+.custom-date-picker .mat-form-field-infix {
+  padding: 0;
+  height: var(--mat-form-field-height);
+}
+
+.custom-date-picker .mat-input-element {
+  height: var(--mat-form-field-height);
+  line-height: var(--mat-form-field-height);
+  padding: 0;
+}

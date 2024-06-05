@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, switchMap } from 'rxjs';
 import { BaseService } from './base.service';
-import { Marketer } from '../models/Marketer.model';
+import { Marketer } from '../models/marketer.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,13 +19,18 @@ export class MarketersService extends BaseService {
   }
 
   getMarketers(): Observable<Marketer[]> {
+    if (this.marketers$.value.length) {
+      return this.marketers$.asObservable();
+    }
+
     return this.get<Marketer[]>(``).pipe(
-      tap((marketers) => this.marketers$.next(marketers))
+      tap({ next: (marketers) => this.marketers$.next(marketers) }),
+      switchMap(() => this.marketers$)
     );
   }
 
   createMarketer(marketer: Marketer): Observable<Marketer> {
-    return this.post<Marketer, Marketer>('', marketer).pipe(
+    return this.postDep<Marketer, Marketer>('', marketer).pipe(
       tap((newMarketer) => {
         this.marketers$.next([...this.marketers$.value, newMarketer]);
       })

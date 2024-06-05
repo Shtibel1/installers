@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { AuthService } from './core/services/auth.service';
 import { AssignmentsService } from './core/services/assignments.service';
 import { WebsocketService } from './core/services/websocket.service';
+import { take } from 'rxjs';
+import { ServiceProvidersService } from './core/services/service-providers.service';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +17,12 @@ export class AppComponent {
     private accountsService: AuthService,
     private productsService: ProductsService,
     private assignmentService: AssignmentsService,
+    private usersService: ServiceProvidersService,
     private socket: WebsocketService
   ) {
     this.accountsService.autoLogin();
-    this.productsService.getProducts().subscribe();
-    this.assignmentService.getAssignments().subscribe();
+    this.productsService.getProducts().pipe(take(1)).subscribe();
+    this.assignmentService.getAssignments().pipe(take(1)).subscribe();
+    this.usersService.getserviceProviders().pipe(take(1)).subscribe();
   }
 }

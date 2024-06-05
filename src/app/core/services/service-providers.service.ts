@@ -2,24 +2,41 @@ import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ServiceProvider } from '../models/installer.model';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UsersService extends BaseService {
-  installersChain = new BehaviorSubject<ServiceProvider[] | null>(null);
+export class ServiceProvidersService extends BaseService {
+  installers$ = new BehaviorSubject<ServiceProvider[] | null>(null);
 
   constructor(http: HttpClient) {
     super(http, 'api/serviceProviders');
   }
 
-  getInstallers() {
+  getserviceProviders() {
+    if (this.installers$.value) {
+      return this.installers$;
+    }
     return this.get<ServiceProvider[]>('').pipe(
       tap((installers) => {
-        if (installers) this.installersChain.next(installers);
+        if (installers) this.installers$.next(installers);
       }),
+      switchMap(() => this.installers$),
       catchError((err) => this.handleErrors(err))
+    );
+  }
+
+  getServiceProvidersIds() {
+    return this.getserviceProviders().pipe(
+      map((installer) => installer.map((i) => i.id))
     );
   }
 

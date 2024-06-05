@@ -1,40 +1,18 @@
-<h1>כל המתקינים</h1>
+<app-filters-bar></app-filters-bar>
 
-<div  class="add-btn-wrapper flex align-end">
-  <button mat-raised-button color="primary" class=" add-product-btn" (click)="onAddInstaller()"> הוסף מתקין </button>
+<div class="content">
+  <button
+    mat-raised-button
+    color="primary"
+    class="add-btn"
+    (click)="onAddInstaller()"
+  >
+    הוסף מתקין
+  </button>
+
+  <app-table
+    [columns]="columns"
+    [dataSource]="dataSource"
+    (rowClick)="onInstaller($event)"
+  ></app-table>
 </div>
-
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  
-
-  
-
-    <ng-container matColumnDef="#">
-        <th mat-header-cell *matHeaderCellDef> # </th>
-        <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
-      </ng-container>
-
-  
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> שם </th>
-      <td mat-cell *matCellDef="let element"> {{element?.name}} </td>
-    </ng-container>
-  
-    Weight Column
-    <ng-container matColumnDef="categories">
-      <th mat-header-cell *matHeaderCellDef> קטגוריות </th>
-      <td mat-cell *matCellDef="let element">
-        <div class="" *ngFor="let cat of element?.categories">{{cat?.name}}</div>
-      </td>
-    </ng-container>
-  
-    <!-- Symbol Column -->
-    <!-- <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-    </ng-container> -->
-  
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"  ></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"  (click)="onInstaller(row)"></tr>
-  </table>

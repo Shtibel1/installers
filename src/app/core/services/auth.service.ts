@@ -15,7 +15,7 @@ import {
 import { Roles } from '../enums/roles.enum';
 import { AppUser } from '../models/app-user.model';
 import { Router } from '@angular/router';
-import { UsersService } from './users.service';
+import { ServiceProvidersService } from './service-providers.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private workersService: UsersService
+    private workersService: ServiceProvidersService
   ) {}
 
   // url = `https://jltrinpj51.execute-api.eu-north-1.amazonaws.com/Prod/Account`
@@ -54,7 +54,7 @@ export class AuthService {
         role: Roles.ServiceProvider,
       })
       .pipe(
-        tap((res) => this.workersService.getInstallers()),
+        tap((res) => this.workersService.getserviceProviders()),
         catchError((err) => this.handleAccountsError(err))
       );
   }

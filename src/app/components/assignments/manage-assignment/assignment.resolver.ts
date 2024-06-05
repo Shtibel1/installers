@@ -1,4 +1,4 @@
-import { UsersService } from '../../../core/services/users.service';
+import { ServiceProvidersService } from '../../../core/services/service-providers.service';
 import { CategoriesService } from './../../../core/services/categories.service';
 import { ProductsService } from './../../../core/services/products.service';
 import { Injectable } from '@angular/core';
@@ -8,12 +8,12 @@ import { Assignment } from 'src/app/core/models/assignment.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 
 @Injectable({ providedIn: 'root' })
-export class AssignmentResolver  {
+export class AssignmentResolver {
   constructor(
     private assignmentService: AssignmentsService,
     private ProductsService: ProductsService,
     private CategoriesService: CategoriesService,
-    private WorkersService: UsersService
+    private WorkersService: ServiceProvidersService
   ) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<Assignment> {
@@ -23,12 +23,12 @@ export class AssignmentResolver  {
         switchMap(() => {
           return this.CategoriesService.getCategories().pipe(
             switchMap(() => {
-              return this.WorkersService.getInstallers().pipe(
+              return this.WorkersService.getserviceProviders().pipe(
                 switchMap(() => {
                   return this.assignmentService.getAssignment(id).pipe(
                     tap((assignment) => {
                       assignment.serviceProvider =
-                        this.WorkersService.installersChain.value?.find(
+                        this.WorkersService.installers$.value?.find(
                           (inst) => inst.id === assignment.serviceProvider.id
                         );
                     })

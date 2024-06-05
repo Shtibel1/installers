@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user.model';
+import { Roles } from '../enums/roles.enum';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
@@ -20,7 +21,11 @@ export class AuthInterceptorService implements HttpInterceptor {
     this.accountsService.user$.subscribe((user) => {
       this.user = user;
     });
+
     if (this.user) {
+      if (this.user.role === Roles.ServiceProvider) {
+        alert('You are not authorized to perform this action');
+      }
       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${this.user.token}`,

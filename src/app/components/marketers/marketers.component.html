@@ -1,1 +1,19 @@
-<p>marketers works!</p>
+<app-filters-bar></app-filters-bar>
+
+<div class="wrapper content flex flex-col" dir="rtl">
+  <div class="add-btn-wrapper flex align-end">
+    <button
+      mat-raised-button
+      color="primary"
+      class="add-product-btn"
+      (click)="onAdd()"
+    >
+      הוסף משווק
+    </button>
+  </div>
+  <app-table
+    [dataSource]="dataSource"
+    [columns]="columnConfig"
+    (rowClick)="onRow($event)"
+  ></app-table>
+</div>

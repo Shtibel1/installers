@@ -5,7 +5,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, switchMap, tap, throwError } from 'rxjs';
 import { AssignmentDto } from '../models/Dtos/assignmentDto.model';
 import { Assignment } from '../models/assignment.model';
 import { BaseService } from './base.service';
@@ -15,17 +15,21 @@ import { Status } from '../enums/status.enum';
   providedIn: 'root',
 })
 export class AssignmentsService extends BaseService {
-  assignmentsChain = new BehaviorSubject<Assignment[] | null>(null);
+  assignments$ = new BehaviorSubject<Assignment[] | null>(null);
 
   constructor(http: HttpClient, private AuthService: AuthService) {
     super(http, 'api/assignments');
   }
 
   getAssignments() {
+    if (this.assignments$.value) {
+      return this.assignments$;
+    }
     return this.get<Assignment[]>('').pipe(
       tap((asmns) => {
-        this.assignmentsChain.next(asmns);
-      })
+        this.assignments$.next(asmns);
+      }),
+      switchMap(() => this.assignments$)
     );
   }
 
@@ -38,21 +42,18 @@ export class AssignmentsService extends BaseService {
     assignmentDto.id = null;
     assignmentDto.status = Status.new;
     assignmentDto.customer.id = null;
-    return this.post<Assignment, any>('', { ...assignmentDto }).pipe(
+    return this.postDep<Assignment, any>('', { ...assignmentDto }).pipe(
       tap((assignment) => {
-        if (this.assignmentsChain.value?.length > 0)
-          this.assignmentsChain.next([
-            ...this.assignmentsChain.value,
-            assignment,
-          ]);
+        if (this.assignments$.value?.length > 0)
+          this.assignments$.next([...this.assignments$.value, assignment]);
         else {
-          this.assignmentsChain.next([assignment]);
+          this.assignments$.next([assignment]);
         }
       })
     );
   }
 
-  updateAssignment(id: number, assignmentDto: AssignmentDto) {
+  updateAssignment(id: string, assignmentDto: AssignmentDto) {
     return this.put<Assignment, AssignmentDto>(`${id}`, {
       ...assignmentDto,
     }).pipe(
@@ -89,21 +90,21 @@ export class AssignmentsService extends BaseService {
   //     catchError(err => this.handleAssignmentsError(err)))
   // }
 
-  deleteAssignment(id: number) {
-    const assignments: Assignment[] = this.assignmentsChain.value || [];
+  deleteAssignment(id: string) {
+    const assignments: Assignment[] = this.assignments$.value || [];
     return this.delete(`${id}`).pipe(
       tap(() => {
         const index = assignments.findIndex((a) => a.id === id);
         if (index > -1) {
-          this.assignmentsChain.value.splice(index, 1);
-          this.assignmentsChain.next([...this.assignmentsChain.value]);
+          this.assignments$.value.splice(index, 1);
+          this.assignments$.next([...this.assignments$.value]);
         }
       })
     );
   }
 
   updateAssignmentInSubject(assignment: Assignment) {
-    let assigments = this.assignmentsChain.value || [];
+    let assigments = this.assignments$.value || [];
 
     let isFound = false;
     for (let i = 0; i < assigments.length; i++) {
@@ -117,7 +118,7 @@ export class AssignmentsService extends BaseService {
       assigments.push(assignment);
     }
 
-    this.assignmentsChain.next(assigments);
+    this.assignments$.next(assigments);
   }
 
   handleAssignmentsError(error: HttpErrorResponse) {

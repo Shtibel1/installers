@@ -24,7 +24,7 @@ export class AddressComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     const loader = new Loader({
-      apiKey: 'AIzaSyAJCdvnKo9Wf2mYu5QVqfMEQQa719mZHQ8',
+      apiKey: 'AIzaSyAJCdvnKo9Wf2mYu5QVqfMEQQa719mZHQ8', // TODO secure the key
       libraries: ['places'],
       version: 'weekly',
     });
@@ -39,7 +39,6 @@ export class AddressComponent implements OnInit, AfterViewInit {
 
       placePicker.addListener('place_changed', () => {
         const place = placePicker.getPlace();
-        console.log(place);
         if (place.formatted_address) {
           this.control.setValue(place.formatted_address);
         }

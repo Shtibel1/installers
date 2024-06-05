@@ -14,10 +14,10 @@ import { Product } from 'src/app/core/models/product.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
 import { ProductsService } from 'src/app/core/services/products.service';
-import { UsersService } from 'src/app/core/services/users.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Roles } from 'src/app/core/enums/roles.enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 
 @Component({
   selector: 'app-installer-prices',
@@ -35,7 +35,7 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private workersService: UsersService,
+    private workersService: ServiceProvidersService,
     private productsService: ProductsService,
     private cdr: ChangeDetectorRef,
     private pricesService: InstallersPricesService,
@@ -140,10 +140,10 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
   }
 
   initInstaller(params: Params) {
-    return this.workersService.installersChain.pipe(
+    return this.workersService.installers$.pipe(
       tap((installers) => {
         if (!installers) {
-          this.workersService.getInstallers().subscribe();
+          this.workersService.getserviceProviders().subscribe();
         } else {
           this.installer = installers.find(
             (ins) => ins.id.toString() == params['id']

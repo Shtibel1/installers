@@ -5,13 +5,15 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from 'src/app/core/models/product.model';
 import { ProductsService } from 'src/app/core/services/products.service';
-import { ColumnsConfig } from './columnsConfig';
+import { ColumnsConfig } from './products.config';
 import { ManageProductComponent } from './manage-product/manage-product.component';
+import { FiltersService } from '../filters-bar/filters-service.service';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
+  providers: [FiltersService],
 })
 export class ProductsComponent implements OnInit {
   products: Product[];
@@ -39,20 +41,11 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-  onAddProduct() {
+  onAdd() {
     this.dialog.open(ManageProductComponent);
   }
 
   onProduct(p: Product) {
     this.dialog.open(ManageProductComponent, { data: p });
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 }

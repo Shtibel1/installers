@@ -1,86 +1,77 @@
-<div *ngIf="!isLoading" class="wrapper">
-  <h1 mat-dialog-title>{{ editMode ? "עריכת התקנה" : "הוספת התקנה" }}</h1>
+<div *ngIf="!isLoading" class="content content-center">
+  <div class="manage-form">
+    <h1 mat-dialog-title>{{ editMode ? "עריכת משימה" : "הוספת משימה" }}</h1>
 
-  <form [formGroup]="assignmentForm">
-    <div class="right-wrapper">
-      <app-date-input [control]="dateControl"></app-date-input>
-      <app-manage-customer
-        (formReady)="onCustomerFormReady($event)"
-        [customer]="assignment?.customer"
-      ></app-manage-customer>
-    </div>
-    <div class="left-wrapper">
-      <div class="grid">
-        <app-select
-          class="installer"
-          [control]="installerControl"
-          [options]="installersOptions"
-          [label]="'מתקין'"
-        ></app-select>
-        <app-autocomplete
-          class="product"
-          [control]="productControl"
-          [options]="filteredProductsOptions"
-          [label]="'מוצר'"
-        >
-        </app-autocomplete>
+    <form [formGroup]="assignmentForm">
+      <div class="right-wrapper">
+        <app-date-input [control]="dateControl"></app-date-input>
+        <app-manage-customer
+          (formReady)="onCustomerFormReady($event)"
+          [customer]="assignment?.customer"
+        ></app-manage-customer>
+        <app-select-marketer [control]="marketerControl"></app-select-marketer>
       </div>
-
-      <div class="flex flex-wrap flex-col checkboxes">
-        <div>
-          <section class="example-section flex gap-4">
-            <app-assignment-additionals
-              [form]="assignmentForm"
-              [pricesByProduct]="pricesByProduct"
-            ></app-assignment-additionals>
-          </section>
+      <div class="left-wrapper">
+        <div class="grid">
+          <app-select-product [control]="productControl"></app-select-product>
         </div>
-      </div>
-      <div class="grid">
-        <app-input
-          [control]="customerNeedsToPayControl"
-          [label]="'לקוח ישלם למתקין'"
-          [currency]="'₪'"
-        ></app-input>
 
-        <app-input
-          [control]="assignmentCostControl"
-          [label]="'עלות ההתקנה'"
-        ></app-input>
-      </div>
+        <div class="flex flex-wrap flex-col checkboxes">
+          <div>
+            <section class="example-section flex gap-4">
+              <app-assignment-additionals
+                [form]="assignmentForm"
+              ></app-assignment-additionals>
+            </section>
+          </div>
+        </div>
+        <div class="grid">
+          <app-select-service-provider
+            [control]="serviceProviderControl"
+          ></app-select-service-provider>
 
-      <div class="flex flex-wrap">
-        <div></div>
+          <app-input
+            [control]="customerNeedsToPayControl"
+            [label]="'לקוח ישלם למתקין'"
+            [currency]="'₪'"
+          ></app-input>
+          <app-select-status [control]="status"></app-select-status>
+          <app-input [control]="commentsControl" label="הערות"></app-input>
+        </div>
+
         <div
           class="btn-wrapper flex flex-row justify-end align-end width-10/10 gap-2"
         >
-          <div>
-            <button
-              mat-raised-button
-              [disabled]="assignmentForm.invalid && false"
-              color="primary"
-              type="submit"
-              (click)="onSubmit()"
-            >
-              {{ assignment ? "עדכן" : "שמור" }}
-            </button>
-          </div>
+          <div></div>
 
-          <div>
-            <button
-              *ngIf="assignment"
-              mat-raised-button
-              color="warn"
-              type="submit"
-              (click)="onDelete()"
-            >
-              מחק
-            </button>
-          </div>
+          <div></div>
         </div>
+        <br />
       </div>
-      <br />
-      <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
-    </div>
-  </form>
+      <div class="bottom-wrapper">
+        <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+        <button
+          mat-raised-button
+          [disabled]="assignmentForm.invalid && false"
+          color="primary"
+          type="submit"
+          (click)="onSubmit()"
+        >
+          {{ assignment ? "עדכן" : "שמור" }}
+        </button>
+
+        @if(assignment) {
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="submit"
+          (click)="onDelete()"
+        >
+          מחק
+        </button>
+        }
+      </div>
+    </form>
+  </div>
 </div>

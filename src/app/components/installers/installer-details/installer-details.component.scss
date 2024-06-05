@@ -1,18 +1,12 @@
 .wrapper {
-  margin-top: 2rem;
-  width: 100%;
-
   .details-wrapper {
-    gap: 4rem;
     background: white;
-    padding: 20px;
-    width: 50%;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    justify-content: space-around;
     flex-wrap: wrap;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-
-    div {
-      width: 40%;
-    }
   }
 
   .example-container {
@@ -29,5 +23,9 @@
 
   .mat-mdc-table-sticky {
     border-top: 1px solid #e0e0e0;
+  }
+  .btns-wrapper {
+    display: flex;
+    gap: 1rem;
   }
 }

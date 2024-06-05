@@ -5,11 +5,12 @@ import { Product } from './product.model';
 import { CommentModel } from './commentModel.model';
 import { PickupStatus } from '../enums/pickup-status.enum';
 import { Status } from '../enums/status.enum';
+import { Marketer } from './marketer.model';
 
 export interface Assignment {
-  id: number;
+  id: string;
   createdDate: Date;
-  installationDate?: Date;
+  assignmentDate?: Date;
 
   product: Product;
   customer: Customer;
@@ -26,6 +27,7 @@ export interface Assignment {
   innerFloorPrice: number;
   outerFloorPrice: number;
   customerNeedsToPay: number;
+  marketer: Marketer;
 
   pickupStatus?: PickupStatus;
   comments: CommentModel[];

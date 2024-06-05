@@ -49,24 +49,15 @@
             </div>
           </div>
 
-          <div class="nav-list-wrapper width-10/10">
-            <h4>התקנות</h4>
-            <a mat-list-item routerLink="">כל ההתקנות</a>
-            <a
-              *ngIf="user.role == roles.Employee"
-              mat-list-item
-              routerLink="manage-assignment"
-              >הוספת התקנה</a
-            >
-          </div>
-
           <div
             class="nav-list-wrapper width-10/10"
             *ngIf="user.role == roles.Employee"
           >
-            <h4>ניהול</h4>
-            <a mat-list-item routerLink="products">כל המוצרים</a>
-            <a mat-list-item routerLink="installers">כל המתקינים</a>
+            <a mat-list-item routerLink="">התקנות</a>
+            <a mat-list-item routerLink="installers">מתקינים</a>
+            <a mat-list-item routerLink="products">מוצרים</a>
+            <a mat-list-item routerLink="marketers">משווקים</a>
+            <a mat-list-item routerLink="categories">קטגוריות</a>
             <a mat-list-item (click)="onCreateManager()" routerLink="."
               >הוספת משתמש</a
             >

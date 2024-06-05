@@ -1,18 +1,39 @@
-.wrapper {
+.manage-form {
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  padding: 1rem;
-  padding-right: 2rem;
-  margin-top: 2rem;
-  overflow: auto;
+  background-color: white;
+  padding: 1.4rem;
+  max-width: 990px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 form {
   display: flex;
   gap: 6rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.right-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .left-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  // padding-left: 10px;
+}
+
+.bottom-wrapper {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .grid {
@@ -33,6 +54,7 @@ form {
 
 .checkboxes {
   margin-bottom: 1rem;
+  height: 77.44px;
 }
 
 input.price-input::-webkit-outer-spin-button,
@@ -44,10 +66,6 @@ input.price-input {
   -moz-appearance: textfield;
 }
 
-.date-wrapper {
-  // display: flex;
-}
-
-::ng-deep .date-td .mat-form-field-appearance-outline .mat-form-field-infix {
-  padding: 0.4rem 0 0.4rem 0;
+app-manage-customer {
+  margin-top: 17.5px;
 }

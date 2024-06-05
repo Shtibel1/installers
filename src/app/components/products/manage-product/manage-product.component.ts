@@ -35,14 +35,10 @@ export class ManageProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.categoriesService.categoriesChain.subscribe((res) => {
-      if (!res) {
-        this.categoriesService.getCategories().subscribe();
-      } else {
-        this.categories = res.map((cat) => {
-          return { label: cat.name, value: cat };
-        });
-      }
+    this.categoriesService.getCategories().subscribe((res) => {
+      this.categories = res.map((cat) => {
+        return { label: cat.name, value: cat };
+      });
     });
   }
 
@@ -74,7 +70,12 @@ export class ManageProductComponent implements OnInit {
       }
     });
 
-    let product: Product = { ...this.form.value };
+    let product: Product = {
+      id: null,
+      name: this.name.value,
+      category: this.category.value.value,
+      customerInstallationPrice: this.customerInstallationPrice.value,
+    };
     if (!this.editProduct) {
       this.productsService.addProduct(product).subscribe({
         next: () => {

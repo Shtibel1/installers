@@ -3,3 +3,9 @@ export enum Status {
   scheduled,
   done,
 }
+
+export const StatusDescriptions = {
+  [Status.new]: 'חדש',
+  [Status.scheduled]: 'נקבע',
+  [Status.done]: 'בוצע',
+};
