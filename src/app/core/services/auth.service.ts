@@ -12,11 +12,11 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { Roles } from '../enums/roles.enum';
 import { AppUser } from '../models/app-user.model';
 import { Router } from '@angular/router';
 import { WorkersService } from './workers.service';
 import { environment } from 'src/environments/environment';
+import { Role } from '../enums/roles.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +51,7 @@ export class AuthService {
       .post<{ message: string }>(`${this.url}/signup`, {
         ...installer,
         password: password,
-        role: Roles.installer,
+        role: Role.ServiceProvider,
       })
       .pipe(
         tap((res) => this.workersService.getInstallers()),
@@ -64,7 +64,7 @@ export class AuthService {
       .post<{ message: string }>(`${this.url}/signup`, {
         ...manager,
         password,
-        role: Roles.manager,
+        role: Role.Employee,
       })
       .pipe(catchError((err) => this.handleAccountsError(err)));
   }

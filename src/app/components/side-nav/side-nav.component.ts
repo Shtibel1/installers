@@ -22,7 +22,7 @@ import { AppUser } from 'src/app/core/models/app-user.model';
 export class SideNavComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
   user: AppUser;
-  private _mobileQueryListener: () => void;
+  private _mobileQueryListener: () => void; //comes from angular/cdk/layout
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
@@ -31,6 +31,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     private producsService: ProductsService,
     private accountsService: AuthService
   ) {
+    //comes from angular/cdk/layout
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
@@ -40,6 +41,19 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.accountsService.user$.subscribe((user) => {
       this.user = user;
     });
+  }
+
+  getUserRole() {
+    switch (this.user.role) {
+      case 0:
+        return 'מנהל';
+      case 1:
+        return 'מתקין';
+      case 2:
+        return 'מנהל מחסן';
+      default:
+        return 'לא ידוע';
+    }
   }
 
   openManageDialog() {

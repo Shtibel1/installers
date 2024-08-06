@@ -55,7 +55,7 @@
         </ng-container>
         <br>
         <div>
-            <button *ngIf="user.role == 'manager'" type="submit" mat-raised-button color="primary">שמור</button>
+            <button *ngIf="user.role == 0" type="submit" mat-raised-button color="primary">שמור</button>
         </div>
         <br><br>
         <div class="error-msg" *ngIf="errMessage" > {{errMessage}} </div>

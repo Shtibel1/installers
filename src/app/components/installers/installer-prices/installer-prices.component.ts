@@ -6,8 +6,7 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
-import { Params } from 'react-router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { take, tap } from 'rxjs';
 import { Installer } from 'src/app/core/models/installer.model';
 import { InstallerPricing } from 'src/app/core/models/installerPricing.model';
@@ -17,7 +16,7 @@ import { InstallersPricesService } from 'src/app/core/services/installers-prices
 import { ProductsService } from 'src/app/core/services/products.service';
 import { WorkersService } from 'src/app/core/services/workers.service';
 import { BaseComponent } from '../../common/base/base.component';
-import { Roles } from 'src/app/core/enums/roles.enum';
+import { Role } from 'src/app/core/enums/roles.enum';
 
 @Component({
   selector: 'app-installer-prices',
@@ -128,7 +127,7 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
         })
       );
     }
-    if (this.user.role == Roles.installer) {
+    if (this.user.role == Role.ServiceProvider) {
       this.prodFormArray.disable();
     }
     return this.prodFormArray;

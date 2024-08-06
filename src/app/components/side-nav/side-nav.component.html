@@ -2,7 +2,7 @@
     <mat-toolbar color="primary" class="example-toolbar">
       <div class="btns-wrapper"  *ngIf="user">
       <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
-      <button *ngIf="user.role == 'manager'"  class="button" (click)="openManageDialog()" mat-icon-button>
+      <button *ngIf="user.role == 0"  class="button" (click)="openManageDialog()" mat-icon-button>
         <mat-icon>add</mat-icon>
     </button>
     </div>
@@ -23,17 +23,17 @@
               </div>
               <div class="user-details flex flex-col align-center justify-center">
                 <span class="user-title"> שלום {{user.name}}  </span>
-                <p class="user-role"> {{user.role == "manager" ? "מנהל/ת" : "מתקין"}} </p>
+                <p class="user-role"> {{getUserRole()}} </p>
               </div>
             </div>
 
             <div class="nav-list-wrapper width-10/10">
             <h4>התקנות</h4>
             <a mat-list-item routerLink="" >כל ההתקנות</a>
-            <a *ngIf="user.role == 'manager'" mat-list-item routerLink="manage-assignment" >הוספת התקנה</a>
+            <a *ngIf="user.role == 0" mat-list-item routerLink="manage-assignment" >הוספת התקנה</a>
             </div>
 
-            <div class="nav-list-wrapper width-10/10" *ngIf="user.role == 'manager'">
+            <div class="nav-list-wrapper width-10/10" *ngIf="user.role == 0">
               <h4>ניהול</h4>
               <a mat-list-item routerLink="products" >כל המוצרים</a>
               <a mat-list-item routerLink="installers"    >כל המתקינים</a> 
@@ -41,7 +41,7 @@
               <a mat-list-item routerLink="." >סטטיסטיקות</a>
             </div>
 
-            <div class="nav-list-wrapper width-10/10" *ngIf="user.role != 'manager'">
+            <div class="nav-list-wrapper width-10/10" *ngIf="user.role != 0">
               <a mat-list-item [routerLink]="['installers', user.id, 'prices']"   > מחירון התקנות </a>
             </div>
 

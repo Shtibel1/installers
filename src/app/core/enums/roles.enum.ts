@@ -1,4 +1,6 @@
-export enum Roles {
-    manager = "manager",
-    installer = "installer"
+
+export enum Role {
+    Employee,
+    ServiceProvider,
+    Storekeeper,
 }
