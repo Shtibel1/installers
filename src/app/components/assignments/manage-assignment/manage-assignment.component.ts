@@ -15,9 +15,7 @@ import { SnackbarService } from 'src/app/core/services/snackbar.service';
 import { WebsocketService } from 'src/app/core/services/websocket.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Option } from './../../../core/models/option.model';
-import { AdditionalsService } from './assignment-additionals/additionals.service';
 import {
-  AdditionalsForm,
   AssignmentAdditionalsComponent,
 } from './assignment-additionals/assignment-additionals.component';
 import {
@@ -27,11 +25,14 @@ import {
 } from './assignments.helper';
 import { CustomerForm } from './manage-customer/manage-customer.component';
 import { SelectServiceProviderComponent } from './selects/select-service-provider/select-service-provider.component';
+import { AdditionalsService } from 'src/app/core/services/additionals.service';
+import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
 
 export interface AssignmentForm {
   createdDate: FormControl;
   installer: FormControl<Option<ServiceProvider> | null>;
   product: FormControl<Option<Product>>;
+  additionalPrices: FormControl<AdditionalPrice[]>;
   customerNeedsToPay: FormControl;
   marketer: FormControl<Option<Marketer> | null>;
   comments: FormControl;
@@ -43,7 +44,6 @@ export interface AssignmentForm {
   selector: 'app-manage-assignment',
   templateUrl: './manage-assignment.component.html',
   styleUrls: ['./manage-assignment.component.scss'],
-  providers: [AdditionalsService],
 })
 export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   editMode: boolean = false;
@@ -58,7 +58,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   customerNeedsToPayControl: FormControl;
   commentsControl: FormControl<string | null>;
   status: FormControl<Status>;
-  additionalsForm: FormGroup<AdditionalsForm>;
+  additionalsForm: FormGroup;
   customerControl: FormGroup<CustomerForm>;
 
   assignment: Assignment;
@@ -84,27 +84,24 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-
     this.route.data.pipe(take(1)).subscribe((data) => {
       this.assignment = data['assigment'];
 
-      if (this.assignment) {
-        this.editMode = true;
-      }
-      this.forminit();
-
+      if (this.assignment) this.editMode = true;
+      this.initForm();
       this.isLoading = false;
     });
   }
 
-  forminit() {
+  initForm() {
     let createdDate = this.assignment?.createdDate || new Date();
     let installer = serviceProviderToOption(this.assignment?.serviceProvider);
     let product = productToOption(this.assignment?.product);
-    let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let marketer = marketerToOption(this.assignment?.marketer);
     let comments = this.assignment?.comments.map((a) => a.content) || null;
+    let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let status = this.assignment?.status || Status.new;
+    let additionalPrices = this.assignment?.additionalPrices || [];
 
     this.dateControl = new FormControl(createdDate, Validators.required);
     this.serviceProviderControl = new FormControl(installer, [
@@ -128,30 +125,17 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       status: this.status,
     });
 
-    this.additionalsService.setAdditionals({
-      hasCarry: this.assignment?.carryPrice > 0,
-      hasInnerFloor: this.assignment?.innerFloorPrice > 0,
-      hasOuterFloor: this.assignment?.outerFloorPrice > 0,
-      hasInstallation: this.assignment?.installationPrice > 0,
-    });
-
     this.onProduct();
   }
 
   onProduct() {
-    this.productControl.valueChanges.subscribe((product) => {
-      this.serviceProviderControl.setValue(null);
-      if (!product || !product.value) {
-        this.additionalsComponent.disableControls();
-      } else {
-        this.additionalsComponent.resetControlsValues();
-      }
-    });
+      this.productControl.valueChanges.subscribe((product) => {
+        if (!product || !this.serviceProviderControl.value) return;
+      })
   }
 
-  onAdditionalsFormReady(form: FormGroup<AdditionalsForm>) {
-    this.additionalsForm = form;
-  }
+  initAdditionalPrices()
+
 
   onCustomerFormReady(customerForm: FormGroup<CustomerForm>) {
     this.assignmentForm.addControl('customer', customerForm);
@@ -165,25 +149,18 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
       return;
     }
-
-    const prices = this.selectServiceProviderComponent.getAdditionalsPrices();
-
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || null,
       productId: this.productControl.value.value.id,
       employeeId: this.user.id,
       serviceProviderId: this.serviceProviderControl.value.value.id,
-      date: this.datePipe.transform(
+      createdDate: this.datePipe.transform(
         this.dateControl.value,
         'yyyy-MM-ddTHH:mm:ss'
       ),
       customerNeedsToPay: this.customerNeedsToPayControl.value,
       customerAlreadyPaid: null,
-      assignmentCost: +this.serviceProviderControl?.value?.price,
-      installationPrice: prices.installationPrice,
-      innerFloorPrice: prices.innerFloorPrice,
-      outerFloorPrice: prices.outerFloorPrice,
-      carryPrice: prices.carryPrice,
+      cost: +this.serviceProviderControl?.value?.price,
       customer: {
         ...this.customerControl.value,
         id: this.assignment?.customer?.id || 0,
@@ -240,26 +217,3 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     });
   }
 }
-
-// updateProductsByInstaller(installer: ServiceProvider) {
-//   this.productsByInstaller =
-//     this.productsService.getProductsByInstaller(installer);
-
-//   this.filteredProductsOptions = this.productsByInstaller.map((product) => {
-//     return { label: product.name, value: product };
-//   });
-// }
-
-// updatePricesByProduct(product: Product) {
-//   return this.pricesService
-//     .getInstallerPrice(
-//       this.assignment?.serviceProvider?.id ??
-//         this.installerControl.value.value.id,
-//       product.id
-//     )
-//     .pipe(
-//       tap((price) => {
-//         this.pricesByProduct = price;
-//       })
-//     );
-// }

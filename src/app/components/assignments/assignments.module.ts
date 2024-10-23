@@ -11,7 +11,6 @@ import { ShtibelModule } from 'src/app/core/modules/shtibel.module';
 import { SelectServiceProviderComponent } from './manage-assignment/selects/select-service-provider/select-service-provider.component';
 import { SelectMarketerComponent } from './manage-assignment/selects/select-marketer/select-marketer.component';
 import { SelectProductComponent } from './manage-assignment/selects/select-product/select-product.component';
-import { AdditionalsService } from './manage-assignment/assignment-additionals/additionals.service';
 import { SelectStatusComponent } from './manage-assignment/selects/select-status/select-status.component';
 
 const routes: Routes = [

@@ -1,4 +1,4 @@
-import { ServiceProviderPricing } from './../models/installerPricing.model';
+import { AdditionalPrice } from '../models/additionalPrice.model';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';

@@ -6,14 +6,10 @@ import { Marketer } from '../marketer.model';
 
 export class AssignmentDto {
   id: string | null;
-  date: string;
+  createdDate: string;
   customerNeedsToPay: number;
   customerAlreadyPaid: number | null;
-  assignmentCost: number;
-  installationPrice: number;
-  innerFloorPrice: number;
-  outerFloorPrice: number;
-  carryPrice: number;
+  cost: number;
   employeeId: string;
   serviceProviderId: string;
   productId: string;
@@ -22,4 +18,5 @@ export class AssignmentDto {
   comments?: CommentModel[] = [];
   status?: Status;
   pickupStatus?: PickupStatus;
+
 }

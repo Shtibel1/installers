@@ -5,7 +5,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Marketer } from 'src/app/core/models/marketer.model';
 import { ColumnsConfig } from '../installers/installersConfig';
-import { MarketersService } from 'src/app/core/services/marketers.service';
 import { ManageMarketerComponent } from './manage-marketer/manage-marketer.component';
 import { FiltersService } from '../filters-bar/filters-service.service';
 import { MarketersConfig } from './marketers.config';

@@ -14,7 +14,7 @@ export abstract class BaseService {
     this.apiUrl = `${this.baseApiUrl}${apiUrl}`;
   }
 
-  protected get<T>(
+  protected get<T> (
     endPointUrl: string,
     headers?: { headers: HttpHeaders }
   ): Observable<T | null> {

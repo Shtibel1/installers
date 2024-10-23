@@ -1,188 +1,47 @@
-<div *ngIf="products" class="table-wrapper content">
+<div *ngIf="products && additionals" class="table-wrapper content">
   <h1>מחירון {{ installer.name }}</h1>
   <form [formGroup]="addPricesForm" (ngSubmit)="onSubmit()">
     <table class="">
-      <ng-container formArrayName="prices">
-        <tr class="flex flex-row" *ngFor="let prod of products; let i = index">
-          <div class="col-wrapper flex flex-col">
-            <th *ngIf="i == 0">מוצר</th>
-            <td formGroupName="{{ i }}" class="">
-              <div class="form-field product-name-wrapper">
-                <input
-                  type="text"
-                  formControlName="productName"
-                  readonly
-                  [value]="prod.name"
-                />
-              </div>
-            </td>
-          </div>
-
-          <div class="col-wrapper flex flex-col">
-            <th *ngIf="i == 0">מחיר התקנה</th>
-            <td formGroupName="{{ i }}" class="">
-              <div class="form-field">
-                <input type="number" formControlName="installationPrice" />
-              </div>
-            </td>
-          </div>
-
-          <div class="col-wrapper flex flex-col">
-            <th *ngIf="i == 0">במה חיצונית</th>
-            <td formGroupName="{{ i }}" class="">
-              <div class="form-field">
-                <input type="number" formControlName="outerFloorPrice" />
-              </div>
-            </td>
-          </div>
-
-          <div class="col-wrapper flex flex-col">
-            <th *ngIf="i == 0">רצפה פנימית</th>
-            <td formGroupName="{{ i }}" class="">
-              <div class="form-field">
-                <input type="number" formControlName="innerFloorPrice" />
-              </div>
-            </td>
-          </div>
-
-          <div class="col-wrapper flex flex-col">
-            <th *ngIf="i == 0">סבלות לקומה</th>
-            <td formGroupName="{{ i }}" class="">
-              <div class="form-field">
-                <input type="number" formControlName="carryPrice" />
-              </div>
-            </td>
-          </div>
+      <thead>
+        <tr class="flex flex-row">
+          <th>מוצר</th>
+          <th *ngFor="let additional of additionals">{{ additional.name }}</th>
         </tr>
-      </ng-container>
-      <br />
-      <div>
-        <button
-          *ngIf="user.role == roles.Employee"
-          type="submit"
-          mat-raised-button
-          color="primary"
-        >
-          שמור
-        </button>
-      </div>
-      <br /><br />
-      <div class="error-msg" *ngIf="errMessage">{{ errMessage }}</div>
-    </table>
-  </form>
-</div>
-<!--
-            <td><input type="text" formControlName="installationPrice" value="{{getFormGroupControl(getFormArrayControls()[i],1)}}"></td>
-            <td><input type="text" formControlName="outerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],2)}}"></td>
-            <td><input type="text" formControlName="innerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],3)}}"></td>
-            <td><input type="text" formControlName="carryPrice" value="{{getFormGroupControl(getFormArrayControls()[i],4)}}"></td> -->
-
-<!--
-    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
-
-
-<div class="wrapper" >
-<h1 mat-dialog-title>{{installerMode ? "הוספת מתקין" : "הוספת משתמש"}}</h1>
-<form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()" >
-
-
-  <table class="example-full-width" cellspacing="0">
-    <tr class="flex flex-wrap">
-      <td>
-        <mat-form-field appearance="outline" class="example-full-width">
-          <mat-label>שם</mat-label>
-          <input matInput required formControlName="name">
-          <mat-error></mat-error>
-        </mat-form-field>
-      </td>
-      <td>
-        <mat-form-field appearance="outline" class="password-wrapper">
-          <mat-label>סיסמא</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
-          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-          </button>
-        </mat-form-field>
-      </td>
-  </tr>
-  <tr class="flex flex-wrap">
-    <td>
-      <mat-form-field appearance="outline" class="example-full-width">
-        <mat-label>טלפון</mat-label>
-        <app-phone-input required formControlName="phone"></app-phone-input>
-      </mat-form-field>
-    </td>
-    <td>
-      <mat-form-field appearance="outline" class="example-full-width">
-        <mat-label>אימייל (אופציונלי)</mat-label>
-        <input matInput placeholder="pat@example.com" formControlName="email">
-      </mat-form-field>
-    </td>
-  </tr>
-  <tr class="flex flex-wrap">
-    <td>
-      <mat-form-field *ngIf="installerMode" appearance="outline" class="example-full-width">
-        <mat-label>קטגוריה</mat-label>
-        <mat-select formControlName="categories" multiple>
-          <mat-select-trigger>
-            {{category.value?.[0] || ''}}
-            <span *ngIf="(category.value?.length || 0) > 1" class="example-additional-selection">
-              (+{{(category.value?.length || 0) - 1}} {{category.value?.length === 2 ? 'other' : 'others'}})
-            </span>
-          </mat-select-trigger>
-          <mat-option *ngFor="let category of categories" [value]="category.name">{{category.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </td>
-    <td class="btn-wrapper flex flex-row justify-end align-end width-10/10">
-      <div >
-        <button mat-raised-button color="primary" type="submit">שמור</button>
-      </div>
-    </td>
-  </tr>
-  </table>
-  <br>
-  <div *ngIf="errMessage" class="error-msg">{{errMessage}}</div>
-</form>
-</div>
- -->
-
-<!--
-    <div class="table-wrapper">
-    <form  [formGroup]="addPricesForm" (ngSubmit)="onSubmit()" >
-    <table>
-        <thead>
-          <tr>
-
-            <th>מחיר התקנה</th>
-            <th>במה חיצונית</th>
-            <th>רצפה פנימית</th>
-            <th>סבלות לקומה</th>
-          </tr>
-        </thead>
-        <tbody formArrayName="prices">
-
-        <ng-container *ngFor="let prod of getFormArrayControls(); let i = index" >
-            <tr formGroupName="{{i}}" class="flex ">
-
-            <mat-form-field class="form-field">
-
-                <td><input matInput  type="text" formControlName="productName" value="{{getFormGroupControl(getFormArrayControls()[i],0)}}"> </td>
-            </mat-form-field>
-
-            <td><input type="text" formControlName="installationPrice" value="{{getFormGroupControl(getFormArrayControls()[i],1)}}"></td>
-            <td><input type="text" formControlName="outerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],2)}}"></td>
-            <td><input type="text" formControlName="innerFloorPrice" value="{{getFormGroupControl(getFormArrayControls()[i],3)}}"></td>
-            <td><input type="text" formControlName="carryPrice" value="{{getFormGroupControl(getFormArrayControls()[i],4)}}"></td>
-          </tr>
-
-        </ng-container>
+      </thead>
+      <tbody>
+        <tr class="flex flex-row" *ngFor="let prod of products; let i = index">
+          <td class="product-name-wrapper">
+            <input
+              type="text"
+              formControlName="productName"
+              readonly
+              [value]="prod.name"
+              class="readonly-input"
+            />
+          </td>
+          <td *ngFor="let additional of additionals; let j = index" class="price-field">
+            <div [formGroup]="getPriceFormGroup(i, j)">
+              <input
+                type="number"
+                formControlName="price"
+                placeholder="Enter price"
+              />
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
-    <button type="submit">submit</button>
-    </form>
+    <div>
+      <button
+        *ngIf="user.role == roles.Employee"
+        type="submit"
+        mat-raised-button
+        color="primary"
+      >
+        שמור
+      </button>
+    </div>
+    <br /><br />
+    <div class="error-msg" *ngIf="errMessage">{{ errMessage }}</div>
+  </form>
 </div>
-
-
-
-  -->

@@ -4,20 +4,22 @@ import {
   FormArray,
   FormControl,
   FormGroup,
+  Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Params } from 'react-router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { take, tap } from 'rxjs';
 import { ServiceProvider } from 'src/app/core/models/installer.model';
-import { ServiceProviderPricing } from 'src/app/core/models/installerPricing.model';
 import { Product } from 'src/app/core/models/product.model';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { InstallersPricesService } from 'src/app/core/services/installers-prices.service';
+import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
 import { ProductsService } from 'src/app/core/services/products.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Roles } from 'src/app/core/enums/roles.enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
+import { Additional } from 'src/app/core/models/additional.model';
+import { AdditionalsService } from 'src/app/core/services/additionals.service';
+import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
 
 @Component({
   selector: 'app-installer-prices',
@@ -29,8 +31,9 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
   prodFormArray: FormArray;
   addPricesForm: FormGroup = new FormGroup({});
   products: Product[] = [];
-  pricesArray: ServiceProviderPricing[] = [];
-  currentPrices: ServiceProviderPricing[] = [];
+  pricesArray: AdditionalPrice[] = [];
+  currentPrices: AdditionalPrice[] = [];
+  additionals: Additional[];
   errMessage: any;
 
   constructor(
@@ -38,144 +41,120 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
     private workersService: ServiceProvidersService,
     private productsService: ProductsService,
     private cdr: ChangeDetectorRef,
-    private pricesService: InstallersPricesService,
+    private pricesService: AdditionalPriceService,
     private _snackBar: MatSnackBar,
+    private additionalsService: AdditionalsService, 
+    private additionalsPricesService: AdditionalPriceService,
     authService: AuthService
   ) {
     super(authService);
   }
 
   ngOnInit(): void {
-    this.initForm();
-    this.route.params.subscribe((params) => {
-      this.initInstaller(params).subscribe(() => {
-        this.pricesService
-          .getPricesByInstaller(params['id'])
-          .subscribe((prices) => {
-            if (prices) this.currentPrices = prices;
+    this.route.params.subscribe((params: Params) => {
+      this.workersService
+        .getServiceProvider(params['id'])
+        .pipe(take(1))
+        .subscribe((installer) => {
+          this.installer = installer;
+          this.initAddtionals().subscribe(() => {
             this.initProducts().subscribe(() => {
-              this.addPricesForm = new FormGroup({});
-              this.initForm();
+              this.initAdditionalsPrices().subscribe(() => {
+                this.initForm();
+              });
             });
           });
-      });
+        });
+    });    
+  }
+  initForm() {
+    this.prodFormArray = new FormArray(
+      this.products.map((product, i) => {
+        const additionalPrices = this.additionals.map((additional, j) => {
+          console.log(this.currentPrices)
+          const currentPrice = this.currentPrices.find(price => price.productId === product.id && price.additionalId === additional.id);
+          return new FormGroup({
+            price: new FormControl(currentPrice ? currentPrice.price : 0, Validators.required),
+            productId: new FormControl(product.id),
+            additionalId: new FormControl(additional.id),
+            serviceProviderId: new FormControl(this.installer.id)
+          });
+        });
+  
+        return new FormGroup({
+          productName: new FormControl({ value: product.name, disabled: true }),
+          additionalPrices: new FormArray(additionalPrices)
+        });
+      })
+    );
+  
+    this.addPricesForm = new FormGroup({
+      products: this.prodFormArray
     });
+  
+    this.cdr.detectChanges();
+  }
+
+
+  getPriceFormGroup(productIndex: number, additionalIndex: number): FormGroup {
+    return (this.prodFormArray.at(productIndex) as FormGroup).controls['additionalPrices']['controls'][additionalIndex];
+  }
+
+  initAddtionals() {
+    return this.additionalsService.getAdditionals().pipe(
+      tap((additionals) => {
+        this.additionals = additionals;
+      }
+    ))
+  }
+  initProducts() {
+    return this.productsService.getProducts().pipe(tap((products) => {
+      this.products = products;
+      })
+    );
+  }
+    
+  initAdditionalsPrices() {
+    return this.additionalsPricesService.getAdditionalPrice(this.installer.id).pipe(
+      tap((prices) => {
+        this.currentPrices = prices;
+      })
+    );
   }
 
   onSubmit() {
-    this.pricesArray = [];
-    let groupsArr: FormGroup[] = <FormGroup[]>(
-      (<FormArray>this.addPricesForm.get('prices')).controls
-    );
-    groupsArr.forEach((group) => {
-      this.products.forEach((p) => {
-        if (p.name === group.value.productName) {
-          this.pricesArray.push({
-            productId: p.id,
-            ...group.value,
-            installerId: this.installer.id,
-          });
-        }
+    if (this.addPricesForm.valid) {
+      const filledPrices: AdditionalPrice[] = [];
+  
+      // Prepare the data for submission
+      this.addPricesForm.value.products.forEach((productGroup: any, productIndex: number) => {
+        productGroup.additionalPrices.forEach((priceGroup: any, additionalIndex: number) => {
+          const additionalPrice: AdditionalPrice = {
+            price: priceGroup.price,
+            productId: this.products[productIndex].id,
+            additionalId: this.additionals[additionalIndex].id,
+            serviceProviderId: this.installer.id
+          };
+  
+          filledPrices.push(additionalPrice);
+        });
       });
-    });
-
-    this.pricesService
-      .updatePricesTable(this.installer.id, this.pricesArray)
-      .subscribe({
-        next: (res) => {
-          this.openSnackBar('המחירים עודכנו בהצלחה!');
+  
+      // Call the service to update or create prices
+      this.pricesService.updatePrices(filledPrices).subscribe({
+        next: (updatedPrices) => {
+          this._snackBar.open('המחירון עודכן בהצלחה', 'Close', { duration: 3000 });
+          // Optionally reset form or update local data
         },
         error: (err) => {
-          this.errMessage = err;
-        },
-      });
-  }
-
-  initForm() {
-    this.addPricesForm = new FormGroup({
-      prices: this.createFormArray(),
-    });
-  }
-
-  createFormArray(): FormArray {
-    this.prodFormArray = new FormArray([]);
-
-    for (let i = 0; i < this.products.length; i++) {
-      let productName = this.products[i].name;
-      let installationPrice = null;
-      let outerFloorPrice = null;
-      let innerFloorPrice = null;
-      let carryPrice = null;
-
-      this.currentPrices.forEach((prices) => {
-        if (this.products[i].id === prices.productId) {
-          productName = this.products[i].name;
-          installationPrice = prices.installationPrice;
-          outerFloorPrice = prices.outerFloorPrice;
-          innerFloorPrice = prices.innerFloorPrice;
-          carryPrice = prices.carryPrice;
+          this.errMessage = 'Failed to update prices. Please try again later.';
+          this._snackBar.open(this.errMessage, 'Close', { duration: 3000 });
         }
       });
-
-      this.prodFormArray.controls.push(
-        new FormGroup({
-          productName: new FormControl(productName),
-          installationPrice: new FormControl(installationPrice),
-          outerFloorPrice: new FormControl(outerFloorPrice),
-          innerFloorPrice: new FormControl(innerFloorPrice),
-          carryPrice: new FormControl(carryPrice),
-        })
-      );
+    } else {
+      this.errMessage = 'Please check your form for errors.';
+      this._snackBar.open(this.errMessage, 'Close', { duration: 3000 });
     }
-    if (this.user.role == Roles.ServiceProvider) {
-      this.prodFormArray.disable();
-    }
-    return this.prodFormArray;
   }
-  getFormArrayControls(): FormGroup[] {
-    return <FormGroup[]>(<FormArray>this.addPricesForm.get('prices')).controls;
-  }
-  getFormGroupControl(formGroup: FormGroup, index: number) {
-    return formGroup.controls[index];
   }
 
-  initInstaller(params: Params) {
-    return this.workersService.installers$.pipe(
-      tap((installers) => {
-        if (!installers) {
-          this.workersService.getserviceProviders().subscribe();
-        } else {
-          this.installer = installers.find(
-            (ins) => ins.id.toString() == params['id']
-          );
-        }
-      })
-    );
-  }
-
-  initProducts() {
-    return this.productsService.products$.pipe(
-      tap((prds) => {
-        if (!prds) {
-          this.productsService.getProducts().subscribe();
-        } else {
-          this.products = [];
-          prds.forEach((prd) => {
-            //fix it
-            this.installer?.categories.forEach((cat) => {
-              if (cat.id === prd.category.id) {
-                this.products.push(prd);
-              }
-            });
-          });
-        }
-      })
-    );
-  }
-
-  private openSnackBar(message: string) {
-    this._snackBar.open(message, 'Ok', {
-      duration: 5000,
-    });
-  }
-}

@@ -34,6 +34,18 @@ export class ServiceProvidersService extends BaseService {
     );
   }
 
+  getServiceProvider(id: string) {
+    if (this.installers$.value) {
+      return this.installers$.pipe(
+        map((installers) => installers.find((i) => i.id === id))
+      );
+    }
+    
+    return this.get<ServiceProvider>(id).pipe(
+      catchError((err) => this.handleErrors(err))
+    );
+  }
+
   getServiceProvidersIds() {
     return this.getserviceProviders().pipe(
       map((installer) => installer.map((i) => i.id))

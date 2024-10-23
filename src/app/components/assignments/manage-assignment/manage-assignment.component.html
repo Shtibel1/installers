@@ -13,6 +13,9 @@
       </div>
       <div class="left-wrapper">
         <div class="grid">
+          <app-select-service-provider
+            [control]="serviceProviderControl"
+          ></app-select-service-provider>
           <app-select-product [control]="productControl"></app-select-product>
         </div>
 
@@ -26,9 +29,7 @@
           </div>
         </div>
         <div class="grid">
-          <app-select-service-provider
-            [control]="serviceProviderControl"
-          ></app-select-service-provider>
+          
 
           <app-input
             [control]="customerNeedsToPayControl"

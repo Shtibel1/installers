@@ -6,6 +6,7 @@ import { CommentModel } from './commentModel.model';
 import { PickupStatus } from '../enums/pickup-status.enum';
 import { Status } from '../enums/status.enum';
 import { Marketer } from './marketer.model';
+import { AdditionalPrice } from './additionalPrice.model';
 
 export interface Assignment {
   id: string;
@@ -22,10 +23,7 @@ export interface Assignment {
 
   cost: number;
   price: number;
-  carryPrice: number;
-  installationPrice: number;
-  innerFloorPrice: number;
-  outerFloorPrice: number;
+  additionalPrices: AdditionalPrice[];
   customerNeedsToPay: number;
   marketer: Marketer;
 
