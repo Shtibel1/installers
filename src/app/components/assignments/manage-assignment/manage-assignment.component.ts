@@ -6,7 +6,6 @@ import { take } from 'rxjs';
 import { Status } from 'src/app/core/enums/status.enum';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
 import { Assignment } from 'src/app/core/models/assignment.model';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
 import { Marketer } from 'src/app/core/models/marketer.model';
 import { Product } from 'src/app/core/models/product.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
@@ -27,17 +26,19 @@ import { CustomerForm } from './manage-customer/manage-customer.component';
 import { SelectServiceProviderComponent } from './selects/select-service-provider/select-service-provider.component';
 import { AdditionalsService } from 'src/app/core/services/additionals.service';
 import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
+import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
 
 export interface AssignmentForm {
   createdDate: FormControl;
-  installer: FormControl<Option<ServiceProvider> | null>;
+  serviceProvider: FormControl<Option<ServiceProvider> | null>;
   product: FormControl<Option<Product>>;
-  additionalPrices: FormControl<AdditionalPrice[]>;
   customerNeedsToPay: FormControl;
   marketer: FormControl<Option<Marketer> | null>;
   comments: FormControl;
   customer?: FormGroup<CustomerForm>;
   status: FormControl<Status>;
+  extras: FormControl
 }
 
 @Component({
@@ -60,6 +61,9 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   status: FormControl<Status>;
   additionalsForm: FormGroup;
   customerControl: FormGroup<CustomerForm>;
+  extrasControl: FormControl;
+
+  additionalPrices: AdditionalPrice[] 
 
   assignment: Assignment;
 
@@ -77,8 +81,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     private snackbarService: SnackbarService,
     private socket: WebsocketService,
     private router: Router,
-    private additionalsService: AdditionalsService
-  ) {
+    private additionalPriceService: AdditionalPriceService,
+    ) {
     super(accontsService);
   }
 
@@ -95,46 +99,69 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
 
   initForm() {
     let createdDate = this.assignment?.createdDate || new Date();
-    let installer = serviceProviderToOption(this.assignment?.serviceProvider);
+    let serviceProvider = serviceProviderToOption(this.assignment?.serviceProvider);
     let product = productToOption(this.assignment?.product);
     let marketer = marketerToOption(this.assignment?.marketer);
     let comments = this.assignment?.comments.map((a) => a.content) || null;
     let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let status = this.assignment?.status || Status.new;
-    let additionalPrices = this.assignment?.additionalPrices || [];
+    let extras = this.assignment?.extras || null
 
     this.dateControl = new FormControl(createdDate, Validators.required);
-    this.serviceProviderControl = new FormControl(installer, [
+    this.serviceProviderControl = new FormControl(serviceProvider, [
       Validators.required,
     ]);
-    this.serviceProviderControl.setValue(installer);
+    this.serviceProviderControl.setValue(serviceProvider);
     this.productControl = new FormControl(product, Validators.required);
     this.customerNeedsToPayControl = new FormControl(customerNeedsToPay);
     this.marketerControl = new FormControl(marketer);
+    this.extrasControl = new FormControl(extras)
 
     this.commentsControl = new FormControl(comments?.[0]);
     this.status = new FormControl(status);
 
     this.assignmentForm = new FormGroup({
       createdDate: this.dateControl,
-      installer: this.serviceProviderControl,
+      serviceProvider: this.serviceProviderControl,
       product: this.productControl,
       customerNeedsToPay: this.customerNeedsToPayControl,
       marketer: this.marketerControl,
       comments: this.commentsControl,
       status: this.status,
+      extras: this.extrasControl
     });
 
     this.onProduct();
+    this.onServiceProvider();
+
+    if (product && serviceProvider) {
+      this.getAdditionals(serviceProvider.value.id, product.value.id)
+    }
   }
 
   onProduct() {
       this.productControl.valueChanges.subscribe((product) => {
         if (!product || !this.serviceProviderControl.value) return;
+          this.getAdditionals(this.serviceProviderControl.value.value.id, product.value.id)
+          
+          
       })
   }
 
-  initAdditionalPrices()
+  getAdditionals( serviceProviderId: string, productId: string) {
+    this.additionalPriceService.getAdditionalPricesByProduct(serviceProviderId, productId)
+          .subscribe(res => {
+            this.additionalPrices = res;
+            console.log(this.additionalPrices)
+          })
+  }
+
+  onServiceProvider() {
+    this.serviceProviderControl.valueChanges.subscribe(value => {
+      this.productControl.reset();
+    })
+  }
+
 
 
   onCustomerFormReady(customerForm: FormGroup<CustomerForm>) {
@@ -143,12 +170,19 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.marketerControl?.value?.value?.id || null);
     if (!this.assignmentForm.valid) {
       this.assignmentForm.markAllAsTouched();
 
       return;
     }
+
+    let additionalPrices = this.additionalsComponent.getAdditionalPrices();
+    let cost = 0;
+    additionalPrices.forEach(price => {
+      cost += +price.price
+    })
+    if (this.extrasControl.value) cost += +this.extrasControl.value;
+
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || null,
       productId: this.productControl.value.value.id,
@@ -160,20 +194,25 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       ),
       customerNeedsToPay: this.customerNeedsToPayControl.value,
       customerAlreadyPaid: null,
-      cost: +this.serviceProviderControl?.value?.price,
+      cost: cost,
+      additionalPrices: additionalPrices,
       customer: {
         ...this.customerControl.value,
         id: this.assignment?.customer?.id || 0,
       },
-      comments: [
-        {
-          userId: this.user.id,
-          content: this.commentsControl.value,
-        },
-      ],
       status: this.status.value,
       marketerId: this.marketerControl?.value?.value?.id || null,
+      extras: +this.extrasControl.value
     };
+
+    console.log(this.commentsControl.value)
+
+    if (this.commentsControl.value) {
+      assignmentDto.comments = [{
+        userId: this.user.id,
+        content: this.commentsControl.value,
+      }]
+    }
 
     if (!this.editMode) {
       this.assingmentsService.createAssignment(assignmentDto).subscribe({
@@ -188,7 +227,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       });
     } else {
       assignmentDto.customer.id = null;
-      assignmentDto.comments = this.assignment.comments;
       assignmentDto.pickupStatus = this.assignment.pickupStatus;
       this.assingmentsService
         .updateAssignment(this.assignment.id, assignmentDto)

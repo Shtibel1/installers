@@ -5,7 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Product } from '../models/product.model';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { Category } from '../models/category.model';
-import { ServiceProvider } from '../models/installer.model';
+import { ServiceProvider } from '../models/serviceProvider.model';
 
 @Injectable({
   providedIn: 'root',

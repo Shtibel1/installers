@@ -11,6 +11,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'assignments',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./components/assignments/assignments.module').then(
         (m) => m.AssignmentsModule
@@ -18,6 +19,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'installers',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./components/installers/installers.module').then(
         (m) => m.InstallersModule
@@ -26,6 +28,7 @@ const appRoutes: Routes = [
 
   {
     path: 'products',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./components/products/products.module').then(
         (m) => m.ProductsModule
@@ -34,6 +37,7 @@ const appRoutes: Routes = [
 
   {
     path: 'marketers',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./components/marketers/marketers.module').then(
         (m) => m.MarketersModule
@@ -41,6 +45,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'categories',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./components/categories/categories.module').then(
         (m) => m.CategoriesModule

@@ -19,8 +19,9 @@ import { AdditionalsService } from 'src/app/core/services/additionals.service';
   templateUrl: './assignment-additionals.component.html',
   styleUrls: ['./assignment-additionals.component.scss'],
 })
-export class AssignmentAdditionalsComponent implements OnInit {
+export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
   @Input() additionalPrices: AdditionalPrice[];
+  @Input() existingPrices?: AdditionalPrice[] = [];
   additionalsGroup: FormGroup;
 
 
@@ -28,13 +29,39 @@ export class AssignmentAdditionalsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-
+    
+  }
+  
+  ngOnChanges(change: any) {
+    console.log(this.additionalPrices)
+    this.initForm();
   }
 
   initForm() {
-    const controls = this.additionalPrices.map(price => new FormControl(price.price));
+    let controls = []
+    this.additionalPrices.forEach(price =>  {
+      let exist = false
+      this.existingPrices?.forEach(existingPrice => {
+        if (price.id === existingPrice.id) {
+          exist = true;
+        }
+      })
+      if (exist) controls.push(new FormControl(true))
+      else controls.push(new FormControl(false))
+    });
     this.additionalsGroup = new FormGroup({
       additionals: new FormArray(controls)
     });
+    console.log(controls)
+    console.log(this.additionalPrices)
   }
+
+  getAdditionalPrices() {
+    let additionalPrices: AdditionalPrice[] = [];
+    (this.additionalsGroup.get('additionals').value).forEach((element, index) => {
+        if(element) additionalPrices.push(this.additionalPrices[index])
+      });
+          return additionalPrices;
+  }
+
 }

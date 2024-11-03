@@ -1,9 +1,10 @@
-<div [formGroup]="additionalsGroup">
-  <ng-container formArrayName="additionals">
-    <div *ngFor="let control of additionalsGroup.get('additionals')['controls']; let i = index">
+<div class="additionals" [formGroup]="additionalsGroup">
+  <ng-container  formArrayName="additionals">
+    <div  *ngFor="let control of additionalsGroup.get('additionals')['controls']; let i = index">
       <app-checkbox
+      *ngIf="additionalPrices[i].price > 0"
         [control]="control"
-        [label]="additionalPrices[i].additional?.name"
+        [label]="additionalPrices[i].additional?.name + ' ' + additionalPrices[i].price "
       ></app-checkbox>
     </div>
   </ng-container>

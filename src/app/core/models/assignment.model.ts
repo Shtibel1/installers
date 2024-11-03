@@ -1,6 +1,6 @@
 import { AppUser } from './app-user.model';
 import { Customer } from './customer.model';
-import { ServiceProvider } from './installer.model';
+import { ServiceProvider } from './serviceProvider.model';
 import { Product } from './product.model';
 import { CommentModel } from './commentModel.model';
 import { PickupStatus } from '../enums/pickup-status.enum';
@@ -20,7 +20,7 @@ export interface Assignment {
   status?: Status;
 
   customerAlreadyPaid: number;
-
+  extras: number
   cost: number;
   price: number;
   additionalPrices: AdditionalPrice[];

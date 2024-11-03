@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { Assignment } from 'src/app/core/models/assignment.model';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 import { ManageInstallerComponent } from './manage-installer/manage-installer.component';

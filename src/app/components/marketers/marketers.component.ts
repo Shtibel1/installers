@@ -8,6 +8,7 @@ import { ColumnsConfig } from '../installers/installersConfig';
 import { ManageMarketerComponent } from './manage-marketer/manage-marketer.component';
 import { FiltersService } from '../filters-bar/filters-service.service';
 import { MarketersConfig } from './marketers.config';
+import { MarketersService } from 'src/app/core/services/marketers.service';
 
 @Component({
   selector: 'app-marketers',

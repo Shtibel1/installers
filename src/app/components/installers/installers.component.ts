@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { CreateInstallerComponent } from './create-installer/create-installer.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ColumnsConfig } from './installersConfig';

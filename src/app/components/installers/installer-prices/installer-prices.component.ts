@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { take, tap } from 'rxjs';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { Product } from 'src/app/core/models/product.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
@@ -115,7 +115,7 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
   }
     
   initAdditionalsPrices() {
-    return this.additionalsPricesService.getAdditionalPrice(this.installer.id).pipe(
+    return this.additionalsPricesService.getAdditionalPrices(this.installer.id).pipe(
       tap((prices) => {
         this.currentPrices = prices;
       })
@@ -129,14 +129,21 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
       // Prepare the data for submission
       this.addPricesForm.value.products.forEach((productGroup: any, productIndex: number) => {
         productGroup.additionalPrices.forEach((priceGroup: any, additionalIndex: number) => {
-          const additionalPrice: AdditionalPrice = {
-            price: priceGroup.price,
-            productId: this.products[productIndex].id,
-            additionalId: this.additionals[additionalIndex].id,
-            serviceProviderId: this.installer.id
-          };
-  
-          filledPrices.push(additionalPrice);
+          const existingPrice = this.currentPrices.find(price => 
+            price.productId === this.products[productIndex].id &&
+            price.additionalId === this.additionals[additionalIndex].id
+          );
+          if (!existingPrice || existingPrice.price !== priceGroup.price) { 
+
+            const additionalPrice: AdditionalPrice = {
+              price: priceGroup.price,
+              productId: this.products[productIndex].id,
+              additionalId: this.additionals[additionalIndex].id,
+              serviceProviderId: this.installer.id
+            };
+            
+            filledPrices.push(additionalPrice);
+          }
         });
       });
   

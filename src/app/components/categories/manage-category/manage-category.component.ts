@@ -76,7 +76,7 @@ export class ManageCategoryComponent {
     if (this.editCategory) {
       this.categoriesService.deleteCategory(this.editCategory.id).subscribe({
         next: (res) => {
-          this.openSnackbar('המוצר נמחק בהצלחה!');
+          this.openSnackbar('הקטגוריה נמחקה בהצלחה!');
           this.router.navigate(['/categories']);
           this.dialogRef.close();
         },

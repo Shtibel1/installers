@@ -1,4 +1,4 @@
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { Column } from 'src/app/shared/table/table.component';
 
 export const ColumnsConfig: Column[] = [

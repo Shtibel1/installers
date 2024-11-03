@@ -1,4 +1,4 @@
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { Marketer } from 'src/app/core/models/marketer.model';
 import { Option } from 'src/app/core/models/option.model';
 import { Product } from 'src/app/core/models/product.model';

@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { take, tap } from 'rxjs';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
 import { Option } from 'src/app/core/models/option.model';
 import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';

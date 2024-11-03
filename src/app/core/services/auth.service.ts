@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Manager, ManagerDto } from '../models/manager.model';
-import { ServiceProvider, InstallerDto } from '../models/installer.model';
+import { ServiceProvider, InstallerDto } from '../models/serviceProvider.model';
 import { Category } from '../models/category.model';
 import {
   BehaviorSubject,

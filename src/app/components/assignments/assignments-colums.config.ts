@@ -38,6 +38,11 @@ export const AssignmentColumnsConfig: Column[] = [
     label: 'סטטוס',
     value: (element: Assignment) => `${element.status}`,
   },
+  {
+    ref: 'assignmentDate',
+    label: 'תאריך ביצוע',
+    value: (element: Assignment) => `${element.assignmentDate ?? ''}`,
+  },
 
   {
     ref: 'customerNeedsToPay',

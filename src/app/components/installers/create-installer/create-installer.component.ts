@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MyErrorStateMatcher } from 'src/app/core/common/error-matcher';
 import { Category } from 'src/app/core/models/category.model';
-import { InstallerDto as ServiceProviderDto } from 'src/app/core/models/installer.model';
+import { InstallerDto as ServiceProviderDto } from 'src/app/core/models/serviceProvider.model';
 import { Option } from 'src/app/core/models/option.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 

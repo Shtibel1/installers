@@ -8,12 +8,12 @@ export const InstallersColumnsConfig: Column[] = [
     value: (element: Assignment) => `${element.id}`,
   },
   {
-    ref: 'created-date',
+    ref: 'date',
     label: 'תאריך יצירה',
     value: (element: Assignment) => `${element.createdDate}`,
   },
   {
-    ref: 'completed-date',
+    ref: 'assignmentDate',
     label: 'תאריך סיום',
     value: (element: Assignment) => `${element?.assignmentDate || ''} `,
   },

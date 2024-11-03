@@ -22,15 +22,18 @@
         <div class="flex flex-wrap flex-col checkboxes">
           <div>
             <section class="example-section flex gap-4">
-              <app-assignment-additionals
-                [form]="assignmentForm"
-              ></app-assignment-additionals>
+              <app-assignment-additionals *ngIf="additionalPrices" [additionalPrices]="additionalPrices" [existingPrices]="assignment?.additionalPrices"  ></app-assignment-additionals>
             </section>
           </div>
         </div>
         <div class="grid">
           
 
+          <app-input
+            [control]="extrasControl"
+            [label]="'תוספות מיוחדות'"
+            [currency]="'₪'"
+          ></app-input>
           <app-input
             [control]="customerNeedsToPayControl"
             [label]="'לקוח ישלם למתקין'"

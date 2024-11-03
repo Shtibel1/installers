@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ServiceProvider } from '../models/installer.model';
+import { ServiceProvider } from '../models/serviceProvider.model';
 import {
   BehaviorSubject,
   catchError,

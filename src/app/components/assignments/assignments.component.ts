@@ -6,7 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Category } from 'src/app/core/models/category.model';
-import { ServiceProvider } from 'src/app/core/models/installer.model';
+import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
 import { FiltersService } from '../filters-bar/filters-service.service';
@@ -71,7 +71,7 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
         this.assignmentsService.getAssignments().subscribe();
       } else {
         this.assignments = assigns;
-        this.dataSource = new MatTableDataSource<Assignment>(assigns);
+        this.dataSource = new MatTableDataSource<Assignment>(assigns.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()));
         this.dataSource.sort = this.sort;
       }
     });
