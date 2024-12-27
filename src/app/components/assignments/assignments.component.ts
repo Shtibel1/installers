@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,6 +13,7 @@ import { FiltersService } from '../filters-bar/filters-service.service';
 import { AssignmentColumnsConfig } from './assignments-colums.config';
 import { Status } from 'src/app/core/enums/status.enum';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
+import { Option } from 'src/app/core/models/option.model';
 
 @Component({
   selector: 'app-assignments',
@@ -20,7 +21,7 @@ import { ServiceProvidersService } from 'src/app/core/services/service-providers
   styleUrls: ['./assignments.component.scss'],
   providers: [FiltersService],
 })
-export class AssignmentsComponent implements OnInit, AfterViewInit {
+export class AssignmentsComponent implements OnInit {
   editMode: boolean = false;
   form: FormGroup;
   errMessage: string;
@@ -30,6 +31,8 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
   expandedElement: Assignment[] | null;
   installers: ServiceProvider[];
   categories: Category[];
+  installerControl = new FormControl<Option<ServiceProvider>>(null);
+  statusControl = new FormControl<Status>(null)
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -47,7 +50,23 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
     this.initAssignments();
   }
 
-  ngAfterViewInit() {}
+
+  onSearch() {
+    let filteredAsgmts = this.assignments;
+    if (this.installerControl.value)
+      filteredAsgmts = filteredAsgmts.filter((a) => a.serviceProvider.name == this.installerControl.value.value.name)
+    if (this.statusControl.value)
+      filteredAsgmts = filteredAsgmts.filter(a => a.status === this.statusControl.value)
+    this.dataSource = new MatTableDataSource(filteredAsgmts);
+  }
+
+  onResetFilters() {
+    this.installerControl.setValue(null)
+    this.statusControl.setValue(null)
+    this.dataSource = new MatTableDataSource(
+      this.assignments
+    );
+  }
 
   initInstallers() {
     this.workersService.installers$.subscribe((installers) => {
@@ -92,12 +111,6 @@ export class AssignmentsComponent implements OnInit, AfterViewInit {
           .toLowerCase()
           .includes(categoryName.toLowerCase())
       )
-    );
-  }
-
-  onInstaller(installerName: string) {
-    this.dataSource = new MatTableDataSource(
-      this.assignments.filter((a) => a.serviceProvider.name === installerName)
     );
   }
 

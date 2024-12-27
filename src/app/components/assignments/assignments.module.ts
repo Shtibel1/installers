@@ -12,6 +12,7 @@ import { SelectServiceProviderComponent } from './manage-assignment/selects/sele
 import { SelectMarketerComponent } from './manage-assignment/selects/select-marketer/select-marketer.component';
 import { SelectProductComponent } from './manage-assignment/selects/select-product/select-product.component';
 import { SelectStatusComponent } from './manage-assignment/selects/select-status/select-status.component';
+import { SelectPickupStatusComponent } from './manage-assignment/selects/pickup-status/select-pickup-status.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
     SelectMarketerComponent,
     SelectProductComponent,
     SelectStatusComponent,
+    SelectPickupStatusComponent
   ],
   imports: [CommonModule, ShtibelModule, RouterModule.forChild(routes)],
 })

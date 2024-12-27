@@ -22,10 +22,13 @@
     "@angular/router": "^17.3.10",
     "@googlemaps/js-api-loader": "^1.16.6",
     "@types/google.maps": "^3.55.9",
+    "file-saver": "^2.0.5",
+    "moment": "^2.30.1",
     "ngx-mask": "^14.3.3",
     "rxjs": "^7.5.0",
     "sass": "^1.77.2",
     "tslib": "^2.5.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.6"
   },
   "devDependencies": {

@@ -15,7 +15,6 @@ import { ServiceProvidersService } from 'src/app/core/services/service-providers
   providers: [FiltersService],
 })
 export class InstallersComponent implements OnInit {
-  displayedColumns: string[] = ['#', 'name', 'categories'];
   dataSource: MatTableDataSource<ServiceProvider>;
   columns = ColumnsConfig;
 

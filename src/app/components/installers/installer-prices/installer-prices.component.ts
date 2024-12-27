@@ -109,7 +109,14 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
   }
   initProducts() {
     return this.productsService.getProducts().pipe(tap((products) => {
-      this.products = products;
+      this.products = []
+      products.forEach(prd => {
+        let bool = false
+        this.installer.categories.forEach(cat => {
+          if (cat.id == prd.category.id) bool = true;
+        })
+        if (bool) this.products.push(prd)
+      })
       })
     );
   }

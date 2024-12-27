@@ -142,7 +142,7 @@ export class TableComponent
         return 'לא מוכן';
       case PickupStatus.Ready:
         return 'מוכן';
-      case PickupStatus.taken:
+      case PickupStatus.Taken:
         return 'נלקח';
       default:
         return 'לא מוכן';

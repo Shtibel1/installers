@@ -4,7 +4,7 @@ import { Column } from 'src/app/shared/table/table.component';
 export const InstallersColumnsConfig: Column[] = [
   {
     ref: 'id',
-    label: '#',
+    label: 'מספר הזמנה',
     value: (element: Assignment) => `${element.id}`,
   },
   {

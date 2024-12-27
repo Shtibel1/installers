@@ -28,6 +28,7 @@ import { AdditionalsService } from 'src/app/core/services/additionals.service';
 import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
 import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
+import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
 
 export interface AssignmentForm {
   createdDate: FormControl;
@@ -39,6 +40,7 @@ export interface AssignmentForm {
   customer?: FormGroup<CustomerForm>;
   status: FormControl<Status>;
   extras: FormControl
+  pickupStatus:FormControl<PickupStatus>
 }
 
 @Component({
@@ -62,6 +64,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   additionalsForm: FormGroup;
   customerControl: FormGroup<CustomerForm>;
   extrasControl: FormControl;
+  pickupStatus:FormControl<PickupStatus>
 
   additionalPrices: AdditionalPrice[] 
 
@@ -106,6 +109,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let status = this.assignment?.status || Status.new;
     let extras = this.assignment?.extras || null
+    let pickupStatus = this.assignment?.pickupStatus || PickupStatus.NotReady
 
     this.dateControl = new FormControl(createdDate, Validators.required);
     this.serviceProviderControl = new FormControl(serviceProvider, [
@@ -116,7 +120,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     this.customerNeedsToPayControl = new FormControl(customerNeedsToPay);
     this.marketerControl = new FormControl(marketer);
     this.extrasControl = new FormControl(extras)
-
+    this.pickupStatus = new FormControl(pickupStatus)
     this.commentsControl = new FormControl(comments?.[0]);
     this.status = new FormControl(status);
 
@@ -128,9 +132,10 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       marketer: this.marketerControl,
       comments: this.commentsControl,
       status: this.status,
-      extras: this.extrasControl
+      extras: this.extrasControl,
+      pickupStatus: this.pickupStatus
     });
-
+    console.log(this.pickupStatus)
     this.onProduct();
     this.onServiceProvider();
 
@@ -202,10 +207,11 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       },
       status: this.status.value,
       marketerId: this.marketerControl?.value?.value?.id || null,
-      extras: +this.extrasControl.value
+      extras: +this.extrasControl.value,
+      pickupStatus: this.pickupStatus.value
     };
 
-    console.log(this.commentsControl.value)
+    console.log(this.pickupStatus.value)
 
     if (this.commentsControl.value) {
       assignmentDto.comments = [{
@@ -227,7 +233,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       });
     } else {
       assignmentDto.customer.id = null;
-      assignmentDto.pickupStatus = this.assignment.pickupStatus;
       this.assingmentsService
         .updateAssignment(this.assignment.id, assignmentDto)
         .subscribe({

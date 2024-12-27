@@ -1,11 +1,12 @@
 import {
+  HttpErrorResponse,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user.model';
 import { Roles } from '../enums/roles.enum';
@@ -31,7 +32,14 @@ export class AuthInterceptorService implements HttpInterceptor {
           Authorization: `Bearer ${this.user.token}`,
         },
       });
-      return next.handle(req);
+      return next.handle(req).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error && error.status === 401) {
+            this.accountsService.logout();
+          }
+          return throwError(error);
+        })
+      );
     }
 
     return next.handle(req);

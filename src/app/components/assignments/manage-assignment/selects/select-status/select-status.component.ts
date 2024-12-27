@@ -29,7 +29,12 @@ export class SelectStatusComponent implements OnInit {
     this.innerControl = new FormControl(option);
 
     this.innerControl.valueChanges.subscribe((value: Option<Status>) => {
+      if (value)
       this.outerControl.setValue(value.value);
     });
+    this.outerControl.valueChanges.subscribe(status => {
+      if (!status)
+      this.innerControl?.setValue(null)
+    })
   }
 }

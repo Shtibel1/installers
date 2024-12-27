@@ -16,7 +16,11 @@
   <div class="btns-wrapper">
     <button mat-raised-button (click)="onPrices()">טבלת מחירים</button>
     <button mat-raised-button (click)="onAddCategories()">שנה קטגוריות</button>
+    <button mat-raised-button (click)="onExportToExcel()">יצא לאקסל</button>
   </div>
+  <div class="filters">
 
+    <input [formControl]="date" class="month" type="month">
+  </div>
   <app-table [columns]="columns" [dataSource]="dataSource"></app-table>
 </div>
