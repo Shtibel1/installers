@@ -24,5 +24,6 @@ export class AppComponent {
     this.productsService.getProducts().pipe(take(1)).subscribe();
     this.assignmentService.getAssignments().pipe(take(1)).subscribe();
     this.usersService.getserviceProviders().pipe(take(1)).subscribe();
+    console.log(CompanyNames);
   }
 }

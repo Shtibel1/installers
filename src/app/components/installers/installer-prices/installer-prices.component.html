@@ -1,4 +1,7 @@
-<div *ngIf="products && additionals" class="table-wrapper content">
+<div
+  *ngIf="products && additionals && isFromReady()"
+  class="table-wrapper content"
+>
   <h1>מחירון {{ installer.name }}</h1>
   <form [formGroup]="addPricesForm" (ngSubmit)="onSubmit()">
     <table class="">
@@ -9,7 +12,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="flex flex-row" *ngFor="let prod of products; let i = index">
+        <tr
+          class="flex flex-row"
+          *ngFor="let prod of products; let i = index"
+          [formGroup]="getProductNameFormGroup(i)"
+        >
           <td class="product-name-wrapper">
             <input
               type="text"
@@ -19,7 +26,10 @@
               class="readonly-input"
             />
           </td>
-          <td *ngFor="let additional of additionals; let j = index" class="price-field">
+          <td
+            *ngFor="let additional of additionals; let j = index"
+            class="price-field"
+          >
             <div [formGroup]="getPriceFormGroup(i, j)">
               <input
                 type="number"

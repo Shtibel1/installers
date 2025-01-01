@@ -20,7 +20,7 @@ import { AssignmentsService } from './assignments.service';
 })
 export class WebsocketService implements OnDestroy {
   private socket$: WebSocketSubject<Assignment>;
-  private readonly websocketUrl = `ws://localhost:8123/api/ws`;
+  private readonly websocketUrl = `${environment.baseApiUrl}api/ws`;
   private connectionSubscription: Subscription;
 
   constructor(

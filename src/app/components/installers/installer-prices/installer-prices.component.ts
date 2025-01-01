@@ -43,7 +43,7 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private pricesService: AdditionalPriceService,
     private _snackBar: MatSnackBar,
-    private additionalsService: AdditionalsService, 
+    private additionalsService: AdditionalsService,
     private additionalsPricesService: AdditionalPriceService,
     authService: AuthService
   ) {
@@ -65,110 +65,133 @@ export class InstallerPricesComponent extends BaseComponent implements OnInit {
             });
           });
         });
-    });    
+    });
   }
   initForm() {
     this.prodFormArray = new FormArray(
       this.products.map((product, i) => {
         const additionalPrices = this.additionals.map((additional, j) => {
-          console.log(this.currentPrices)
-          const currentPrice = this.currentPrices.find(price => price.productId === product.id && price.additionalId === additional.id);
+          const currentPrice = this.currentPrices.find(
+            (price) =>
+              price.productId === product.id &&
+              price.additionalId === additional.id
+          );
           return new FormGroup({
-            price: new FormControl(currentPrice ? currentPrice.price : 0, Validators.required),
+            price: new FormControl(
+              currentPrice ? currentPrice.price : 0,
+              Validators.required
+            ),
             productId: new FormControl(product.id),
             additionalId: new FormControl(additional.id),
-            serviceProviderId: new FormControl(this.installer.id)
+            serviceProviderId: new FormControl(this.installer.id),
           });
         });
-  
+
         return new FormGroup({
           productName: new FormControl({ value: product.name, disabled: true }),
-          additionalPrices: new FormArray(additionalPrices)
+          additionalPrices: new FormArray(additionalPrices),
         });
       })
     );
-  
+
     this.addPricesForm = new FormGroup({
-      products: this.prodFormArray
+      products: this.prodFormArray,
     });
-  
+
     this.cdr.detectChanges();
   }
 
+  isFromReady(): boolean {
+    return Object.keys(this.addPricesForm.controls).length > 0;
+  }
 
   getPriceFormGroup(productIndex: number, additionalIndex: number): FormGroup {
-    return (this.prodFormArray.at(productIndex) as FormGroup).controls['additionalPrices']['controls'][additionalIndex];
+    return (this.prodFormArray.at(productIndex) as FormGroup).controls[
+      'additionalPrices'
+    ]['controls'][additionalIndex];
+  }
+
+  getProductNameFormGroup(productIndex: number): FormGroup {
+    return this.prodFormArray?.at(productIndex) as FormGroup;
   }
 
   initAddtionals() {
     return this.additionalsService.getAdditionals().pipe(
       tap((additionals) => {
         this.additionals = additionals;
-      }
-    ))
+      })
+    );
   }
   initProducts() {
-    return this.productsService.getProducts().pipe(tap((products) => {
-      this.products = []
-      products.forEach(prd => {
-        let bool = false
-        this.installer.categories.forEach(cat => {
-          if (cat.id == prd.category.id) bool = true;
-        })
-        if (bool) this.products.push(prd)
-      })
+    return this.productsService.getProducts().pipe(
+      tap((products) => {
+        this.products = [];
+        products.forEach((prd) => {
+          let bool = false;
+          this.installer.categories.forEach((cat) => {
+            if (cat.id == prd.category.id) bool = true;
+          });
+          if (bool) this.products.push(prd);
+        });
       })
     );
   }
-    
+
   initAdditionalsPrices() {
-    return this.additionalsPricesService.getAdditionalPrices(this.installer.id).pipe(
-      tap((prices) => {
-        this.currentPrices = prices;
-      })
-    );
+    return this.additionalsPricesService
+      .getAdditionalPrices(this.installer.id)
+      .pipe(
+        tap((prices) => {
+          this.currentPrices = prices;
+        })
+      );
   }
 
   onSubmit() {
     if (this.addPricesForm.valid) {
       const filledPrices: AdditionalPrice[] = [];
-  
-      // Prepare the data for submission
-      this.addPricesForm.value.products.forEach((productGroup: any, productIndex: number) => {
-        productGroup.additionalPrices.forEach((priceGroup: any, additionalIndex: number) => {
-          const existingPrice = this.currentPrices.find(price => 
-            price.productId === this.products[productIndex].id &&
-            price.additionalId === this.additionals[additionalIndex].id
-          );
-          if (!existingPrice || existingPrice.price !== priceGroup.price) { 
 
-            const additionalPrice: AdditionalPrice = {
-              price: priceGroup.price,
-              productId: this.products[productIndex].id,
-              additionalId: this.additionals[additionalIndex].id,
-              serviceProviderId: this.installer.id
-            };
-            
-            filledPrices.push(additionalPrice);
-          }
-        });
-      });
-  
+      // Prepare the data for submission
+      this.addPricesForm.value.products.forEach(
+        (productGroup: any, productIndex: number) => {
+          productGroup.additionalPrices.forEach(
+            (priceGroup: any, additionalIndex: number) => {
+              const existingPrice = this.currentPrices.find(
+                (price) =>
+                  price.productId === this.products[productIndex].id &&
+                  price.additionalId === this.additionals[additionalIndex].id
+              );
+              if (!existingPrice || existingPrice.price !== priceGroup.price) {
+                const additionalPrice: AdditionalPrice = {
+                  price: priceGroup.price,
+                  productId: this.products[productIndex].id,
+                  additionalId: this.additionals[additionalIndex].id,
+                  serviceProviderId: this.installer.id,
+                };
+
+                filledPrices.push(additionalPrice);
+              }
+            }
+          );
+        }
+      );
+
       // Call the service to update or create prices
       this.pricesService.updatePrices(filledPrices).subscribe({
         next: (updatedPrices) => {
-          this._snackBar.open('המחירון עודכן בהצלחה', 'Close', { duration: 3000 });
+          this._snackBar.open('המחירון עודכן בהצלחה', 'Close', {
+            duration: 3000,
+          });
           // Optionally reset form or update local data
         },
         error: (err) => {
           this.errMessage = 'Failed to update prices. Please try again later.';
           this._snackBar.open(this.errMessage, 'Close', { duration: 3000 });
-        }
+        },
       });
     } else {
       this.errMessage = 'Please check your form for errors.';
       this._snackBar.open(this.errMessage, 'Close', { duration: 3000 });
     }
   }
-  }
-
+}
