@@ -18,13 +18,13 @@ export const InstallersColumnsConfig: Column[] = [
     value: (element: Assignment) => `${element?.assignmentDate || ''} `,
   },
   {
+    ref: 'customerName',
+    label: 'שם לקוח',
+    value: (element: Assignment) => `${element.customer.name}`,
+  },
+  {
     ref: 'cost',
     label: 'עלות',
     value: (element: Assignment) => `${element.cost}`,
-  },
-  {
-    ref: 'customer-paid',
-    label: ' הלקוח שילם למתקין',
-    value: (element: Assignment) => `${element?.customerNeedsToPay || 0}`,
   },
 ];

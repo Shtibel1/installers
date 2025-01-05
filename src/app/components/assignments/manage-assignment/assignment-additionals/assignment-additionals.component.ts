@@ -13,7 +13,6 @@ import { Product } from 'src/app/core/models/product.model';
 import { Option } from './../../../../core/models/option.model';
 import { AdditionalsService } from 'src/app/core/services/additionals.service';
 
-
 @Component({
   selector: 'app-assignment-additionals',
   templateUrl: './assignment-additionals.component.html',
@@ -24,44 +23,54 @@ export class AssignmentAdditionalsComponent implements OnInit, OnChanges {
   @Input() existingPrices?: AdditionalPrice[] = [];
   additionalsGroup: FormGroup;
 
+  @Output() formReady = new EventEmitter<FormGroup>();
 
   constructor() {}
 
   ngOnInit(): void {
     this.initForm();
-    
+    this.formReady.emit(this.additionalsGroup);
   }
-  
+
   ngOnChanges(change: any) {
-    console.log(this.additionalPrices)
     this.initForm();
+    this.formReady.emit(this.additionalsGroup);
   }
 
   initForm() {
-    let controls = []
-    this.additionalPrices.forEach(price =>  {
-      let exist = false
-      this.existingPrices?.forEach(existingPrice => {
+    let controls = [];
+    this.additionalPrices.forEach((price) => {
+      let exist = false;
+      this.existingPrices?.forEach((existingPrice) => {
         if (price.id === existingPrice.id) {
           exist = true;
         }
-      })
-      if (exist) controls.push(new FormControl(true))
-      else controls.push(new FormControl(false))
+      });
+      if (exist) controls.push(new FormControl(true));
+      else controls.push(new FormControl(false));
+    });
+    this.existingPrices?.forEach((price) => {
+      let exist = false;
+      this.additionalPrices.forEach((additionalPrice) => {
+        if (price.id === additionalPrice.id) {
+          exist = true;
+        }
+      });
+      if (!exist) {
+        controls.push(new FormControl({ value: true, disabled: true }));
+        this.additionalPrices.push(price);
+      }
     });
     this.additionalsGroup = new FormGroup({
-      additionals: new FormArray(controls)
+      additionals: new FormArray(controls),
     });
-    console.log(controls)
-    console.log(this.additionalPrices)
   }
 
   getAdditionalPrices() {
     let additionalPrices: AdditionalPrice[] = [];
-    (this.additionalsGroup.get('additionals').value).forEach((element, index) => {
-        if(element) additionalPrices.push(this.additionalPrices[index])
-      });
-          return additionalPrices;
+    this.additionalsGroup.get('additionals').value.forEach((element, index) => {
+      if (element) additionalPrices.push(this.additionalPrices[index]);
+    });
+    return additionalPrices;
   }
-
 }

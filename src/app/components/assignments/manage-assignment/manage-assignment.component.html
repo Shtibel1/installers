@@ -22,13 +22,16 @@
         <div class="flex flex-wrap flex-col checkboxes">
           <div>
             <section class="example-section flex gap-4">
-              <app-assignment-additionals *ngIf="additionalPrices" [additionalPrices]="additionalPrices" [existingPrices]="assignment?.additionalPrices"  ></app-assignment-additionals>
+              <app-assignment-additionals
+                *ngIf="additionalPrices"
+                [additionalPrices]="additionalPrices"
+                [existingPrices]="assignment?.additionalPrices"
+                (formReady)="onAdditionalsFormReady($event)"
+              ></app-assignment-additionals>
             </section>
           </div>
         </div>
         <div class="grid">
-          
-
           <app-input
             [control]="extrasControl"
             [label]="'תוספות מיוחדות'"
@@ -40,14 +43,16 @@
             [currency]="'₪'"
           ></app-input>
           <app-select-status [control]="status"></app-select-status>
-          <app-select-pickup-status [control]="pickupStatus" ></app-select-pickup-status>
+          <app-select-pickup-status
+            [control]="pickupStatus"
+          ></app-select-pickup-status>
           <app-input [control]="commentsControl" label="הערות"></app-input>
         </div>
 
         <div
           class="btn-wrapper flex flex-row justify-end align-end width-10/10 gap-2"
         >
-          <div></div>
+          <div>סה"כ התחשבנות מול המתקין: {{ cost }}</div>
 
           <div></div>
         </div>

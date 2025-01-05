@@ -14,9 +14,7 @@ import { SnackbarService } from 'src/app/core/services/snackbar.service';
 import { WebsocketService } from 'src/app/core/services/websocket.service';
 import { BaseComponent } from '../../common/base/base.component';
 import { Option } from './../../../core/models/option.model';
-import {
-  AssignmentAdditionalsComponent,
-} from './assignment-additionals/assignment-additionals.component';
+import { AssignmentAdditionalsComponent } from './assignment-additionals/assignment-additionals.component';
 import {
   marketerToOption,
   productToOption,
@@ -39,8 +37,9 @@ export interface AssignmentForm {
   comments: FormControl;
   customer?: FormGroup<CustomerForm>;
   status: FormControl<Status>;
-  extras: FormControl
-  pickupStatus:FormControl<PickupStatus>
+  extras: FormControl;
+  pickupStatus: FormControl<PickupStatus>;
+  additionals?: FormGroup;
 }
 
 @Component({
@@ -48,7 +47,10 @@ export interface AssignmentForm {
   templateUrl: './manage-assignment.component.html',
   styleUrls: ['./manage-assignment.component.scss'],
 })
-export class ManageAssignmentComponent extends BaseComponent implements OnInit {
+export class ManageAssignmentComponent
+  extends BaseComponent
+  implements OnInit, AfterViewInit
+{
   editMode: boolean = false;
   errMessage: string;
   isLoading = false;
@@ -64,11 +66,12 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
   additionalsForm: FormGroup;
   customerControl: FormGroup<CustomerForm>;
   extrasControl: FormControl;
-  pickupStatus:FormControl<PickupStatus>
+  pickupStatus: FormControl<PickupStatus>;
 
-  additionalPrices: AdditionalPrice[] 
+  additionalPrices: AdditionalPrice[];
 
   assignment: Assignment;
+  cost: number;
 
   @ViewChild(SelectServiceProviderComponent)
   selectServiceProviderComponent: SelectServiceProviderComponent;
@@ -84,8 +87,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     private snackbarService: SnackbarService,
     private socket: WebsocketService,
     private router: Router,
-    private additionalPriceService: AdditionalPriceService,
-    ) {
+    private additionalPriceService: AdditionalPriceService
+  ) {
     super(accontsService);
   }
 
@@ -98,18 +101,23 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       this.initForm();
       this.isLoading = false;
     });
+    this.handleFormChange();
   }
+
+  ngAfterViewInit() {}
 
   initForm() {
     let createdDate = this.assignment?.createdDate || new Date();
-    let serviceProvider = serviceProviderToOption(this.assignment?.serviceProvider);
+    let serviceProvider = serviceProviderToOption(
+      this.assignment?.serviceProvider
+    );
     let product = productToOption(this.assignment?.product);
     let marketer = marketerToOption(this.assignment?.marketer);
     let comments = this.assignment?.comments.map((a) => a.content) || null;
     let customerNeedsToPay = this.assignment?.customerNeedsToPay || null;
     let status = this.assignment?.status || Status.new;
-    let extras = this.assignment?.extras || null
-    let pickupStatus = this.assignment?.pickupStatus || PickupStatus.NotReady
+    let extras = this.assignment?.extras || null;
+    let pickupStatus = this.assignment?.pickupStatus || PickupStatus.NotReady;
 
     this.dateControl = new FormControl(createdDate, Validators.required);
     this.serviceProviderControl = new FormControl(serviceProvider, [
@@ -119,8 +127,8 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     this.productControl = new FormControl(product, Validators.required);
     this.customerNeedsToPayControl = new FormControl(customerNeedsToPay);
     this.marketerControl = new FormControl(marketer);
-    this.extrasControl = new FormControl(extras)
-    this.pickupStatus = new FormControl(pickupStatus)
+    this.extrasControl = new FormControl(extras);
+    this.pickupStatus = new FormControl(pickupStatus);
     this.commentsControl = new FormControl(comments?.[0]);
     this.status = new FormControl(status);
 
@@ -133,41 +141,59 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       comments: this.commentsControl,
       status: this.status,
       extras: this.extrasControl,
-      pickupStatus: this.pickupStatus
+      pickupStatus: this.pickupStatus,
     });
-    console.log(this.pickupStatus)
     this.onProduct();
     this.onServiceProvider();
 
     if (product && serviceProvider) {
-      this.getAdditionals(serviceProvider.value.id, product.value.id)
+      this.getAdditionals(serviceProvider.value.id, product.value.id);
     }
   }
 
   onProduct() {
-      this.productControl.valueChanges.subscribe((product) => {
-        if (!product || !this.serviceProviderControl.value) return;
-          this.getAdditionals(this.serviceProviderControl.value.value.id, product.value.id)
-          
-          
-      })
+    this.productControl.valueChanges.subscribe((product) => {
+      if (!product || !this.serviceProviderControl.value) return;
+      this.getAdditionals(
+        this.serviceProviderControl.value.value.id,
+        product.value.id
+      );
+    });
   }
 
-  getAdditionals( serviceProviderId: string, productId: string) {
-    this.additionalPriceService.getAdditionalPricesByProduct(serviceProviderId, productId)
-          .subscribe(res => {
-            this.additionalPrices = res;
-            console.log(this.additionalPrices)
-          })
+  onAdditionalsFormReady(additionalsForm: FormGroup) {
+    //this.assignmentForm.addControl('additionals', additionalsForm);
+    this.additionalsForm = additionalsForm;
+    if (additionalsForm) {
+      this.additionalsForm.valueChanges.subscribe((value) => {
+        this.cost = this.calculateCost();
+      });
+    }
+    console.log(additionalsForm);
+  }
+
+  getAdditionals(serviceProviderId: string, productId: string) {
+    this.additionalPriceService
+      .getAdditionalPricesByProduct(serviceProviderId, productId)
+      .subscribe((res) => {
+        this.additionalPrices = res;
+        setTimeout(() => {
+          this.cost = this.calculateCost();
+        }, 10);
+      });
   }
 
   onServiceProvider() {
-    this.serviceProviderControl.valueChanges.subscribe(value => {
+    this.serviceProviderControl.valueChanges.subscribe((value) => {
       this.productControl.reset();
-    })
+    });
   }
 
-
+  handleFormChange() {
+    this.assignmentForm.valueChanges.subscribe((value) => {
+      this.cost = this.calculateCost();
+    });
+  }
 
   onCustomerFormReady(customerForm: FormGroup<CustomerForm>) {
     this.assignmentForm.addControl('customer', customerForm);
@@ -182,11 +208,6 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
     }
 
     let additionalPrices = this.additionalsComponent.getAdditionalPrices();
-    let cost = 0;
-    additionalPrices.forEach(price => {
-      cost += +price.price
-    })
-    if (this.extrasControl.value) cost += +this.extrasControl.value;
 
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || null,
@@ -199,7 +220,7 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       ),
       customerNeedsToPay: this.customerNeedsToPayControl.value,
       customerAlreadyPaid: null,
-      cost: cost,
+      cost: this.cost,
       additionalPrices: additionalPrices,
       customer: {
         ...this.customerControl.value,
@@ -208,16 +229,16 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
       status: this.status.value,
       marketerId: this.marketerControl?.value?.value?.id || null,
       extras: +this.extrasControl.value,
-      pickupStatus: this.pickupStatus.value
+      pickupStatus: this.pickupStatus.value,
     };
 
-    console.log(this.pickupStatus.value)
-
     if (this.commentsControl.value) {
-      assignmentDto.comments = [{
-        userId: this.user.id,
-        content: this.commentsControl.value,
-      }]
+      assignmentDto.comments = [
+        {
+          userId: this.user.id,
+          content: this.commentsControl.value,
+        },
+      ];
     }
 
     if (!this.editMode) {
@@ -258,5 +279,17 @@ export class ManageAssignmentComponent extends BaseComponent implements OnInit {
         this.errMessage = err;
       },
     });
+  }
+
+  calculateCost() {
+    let additionalPrices = this.additionalsComponent?.getAdditionalPrices();
+    console.log(additionalPrices);
+    let cost = 0;
+    additionalPrices?.forEach((price) => {
+      cost += +price.price;
+    });
+    if (this.extrasControl.value) cost += +this.extrasControl.value;
+    cost = this.customerNeedsToPayControl.value - cost;
+    return cost;
   }
 }

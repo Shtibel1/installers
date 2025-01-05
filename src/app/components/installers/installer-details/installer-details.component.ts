@@ -13,7 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { FiltersService } from '../../filters-bar/filters-service.service';
 import { Status } from 'src/app/core/enums/status.enum';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver'
+import { saveAs } from 'file-saver';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
 import * as moment from 'moment';
@@ -34,7 +34,7 @@ export class InstallerDetailsComponent implements OnInit {
   assignments: Assignment[];
   filteredAssignments: Assignment[];
   columns = InstallersColumnsConfig;
-  date = new FormControl(null)
+  date = new FormControl(null);
   dataSource: MatTableDataSource<Assignment>;
 
   constructor(
@@ -50,15 +50,17 @@ export class InstallerDetailsComponent implements OnInit {
       this.initInstaller(params);
     });
 
-    this.date.valueChanges.subscribe(date => {
+    this.date.valueChanges.subscribe((date) => {
       date = new Date(date);
-      let delta = new Date(date)
-      delta.setMonth(delta.getMonth() + 1)
-      console.log(date)
-      this.filteredAssignments = this.assignments.filter(a => new Date(a.createdDate).getTime() > date.getTime()
-        && new Date(a.createdDate).getTime() < delta.getTime()) 
-      this.dataSource = new MatTableDataSource(this.filteredAssignments)
-    })
+      let delta = new Date(date);
+      delta.setMonth(delta.getMonth() + 1);
+      this.filteredAssignments = this.assignments.filter(
+        (a) =>
+          new Date(a.createdDate).getTime() > date.getTime() &&
+          new Date(a.createdDate).getTime() < delta.getTime()
+      );
+      this.dataSource = new MatTableDataSource(this.filteredAssignments);
+    });
   }
 
   initInstaller(params: Params) {
@@ -77,7 +79,8 @@ export class InstallerDetailsComponent implements OnInit {
   initAssignments() {
     this.assignmentService.getAssignments().subscribe((asmnts) => {
       this.assignments = asmnts.filter(
-        (a) => a.serviceProvider.id == this.installer.id && a.status === Status.done
+        (a) =>
+          a.serviceProvider.id == this.installer.id && a.status === Status.done
       );
       this.filteredAssignments = this.assignments;
       this.dataSource = new MatTableDataSource(this.filteredAssignments);
@@ -93,7 +96,7 @@ export class InstallerDetailsComponent implements OnInit {
   }
 
   onExportToExcel() {
-    this.exportToExcel(this.filteredAssignments)
+    this.exportToExcel(this.filteredAssignments);
   }
 
   exportToExcel(assignments: any[]): void {
@@ -105,16 +108,19 @@ export class InstallerDetailsComponent implements OnInit {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Assignments');
 
     // 3. Generate an Excel file
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
 
     // 4. Save the Excel file
     this.saveAsExcelFile(excelBuffer, 'Assignments');
   }
 
   private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const data: Blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     saveAs(data, `${fileName}_export_${new Date().getTime()}.xlsx`);
   }
-
-
 }

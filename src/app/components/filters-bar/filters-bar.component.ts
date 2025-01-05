@@ -37,7 +37,6 @@ export class FiltersBarComponent {
 
   listenToSearch() {
     this.search.valueChanges.subscribe((search) => {
-      console.log(search);
       this.filtersService.filters$.next({
         ...this.filtersService.filters$.value,
         search,
