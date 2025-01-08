@@ -36,6 +36,10 @@ export class InstallerDetailsComponent implements OnInit {
   columns = InstallersColumnsConfig;
   date = new FormControl(null);
   dataSource: MatTableDataSource<Assignment>;
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl(),
+  });
 
   constructor(
     private router: Router,
@@ -50,15 +54,15 @@ export class InstallerDetailsComponent implements OnInit {
       this.initInstaller(params);
     });
 
-    this.date.valueChanges.subscribe((date) => {
-      date = new Date(date);
-      let delta = new Date(date);
-      delta.setMonth(delta.getMonth() + 1);
+    this.range.valueChanges.subscribe((range) => {
+      let start = range.start;
+      let end = range.end;
       this.filteredAssignments = this.assignments.filter(
         (a) =>
-          new Date(a.createdDate).getTime() > date.getTime() &&
-          new Date(a.createdDate).getTime() < delta.getTime()
+          new Date(a.createdDate).getTime() > start.getTime() &&
+          new Date(a.createdDate).getTime() < end.getTime()
       );
+
       this.dataSource = new MatTableDataSource(this.filteredAssignments);
     });
   }
@@ -99,9 +103,20 @@ export class InstallerDetailsComponent implements OnInit {
     this.exportToExcel(this.filteredAssignments);
   }
 
-  exportToExcel(assignments: any[]): void {
+  exportToExcel(assignments: Assignment[]): void {
     // 1. Create a worksheet from the array of assignment objects
-    const worksheet = XLSX.utils.json_to_sheet(assignments);
+    console.log(assignments);
+    let list = assignments.map((a) => ({
+      id: a.id,
+      תאריך: a.createdDate,
+      תאריך_התקנה: a.assignmentDate,
+      שם_לקוח: a.customer.name,
+      כתובת: a.customer.address,
+      מוצר: a.product.name,
+      עלןת: a.cost,
+    }));
+    console.log(list);
+    const worksheet = XLSX.utils.json_to_sheet(list);
 
     // 2. Create a workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();

@@ -7,6 +7,7 @@ import { Status } from './../../enums/status.enum';
 export class AssignmentDto {
   id: string | null;
   createdDate: string;
+  assignmentDate: string;
   customerNeedsToPay: number;
   customerAlreadyPaid: number | null;
   cost: number;
@@ -15,10 +16,9 @@ export class AssignmentDto {
   productId: string;
   customer: Customer;
   marketerId: string;
-  additionalPrices: AdditionalPrice[]
+  additionalPrices: AdditionalPrice[];
   comments?: CommentModel[] = [];
   status?: Status;
   pickupStatus?: PickupStatus;
-  extras: number
-
+  extras: number;
 }

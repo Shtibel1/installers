@@ -14,13 +14,14 @@ import {
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { environment } from 'src/environments/environment';
 import { AssignmentsService } from './assignments.service';
+import { AppUser } from '../models/app-user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebsocketService implements OnDestroy {
   private socket$: WebSocketSubject<Assignment>;
-  private readonly websocketUrl = `${environment.baseApiUrl}api/ws`;
+  private websocketUrl = `${environment.baseApiUrl}api/ws`;
   private connectionSubscription: Subscription;
 
   constructor(
@@ -41,16 +42,18 @@ export class WebsocketService implements OnDestroy {
   }
 
   private getNewWebSocket(): WebSocketSubject<Assignment> {
+    let user: AppUser = JSON.parse(localStorage.getItem('user'));
+    let company = user.companies[0].name;
+    this.websocketUrl = `${this.websocketUrl}/${company}`;
     return new WebSocketSubject<Assignment>(this.websocketUrl);
   }
 
   sendMessage(assignment: Assignment) {
-    console.log('Sending message');
-
     this.socket$.next(assignment);
   }
 
   private handleMessage(message: Assignment) {
+    console.log('Received message from server: ', message);
     this.assignmentsService.updateAssignmentInSubject(message);
     this.snackbarService.openSnackBar(`התקנה מספר ${message.id} עודכנה`);
   }

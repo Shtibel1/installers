@@ -33,13 +33,14 @@
         <td mat-cell *matCellDef="let row">
           {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
         </td>
-        } 
-        @case ('assignmentDate') {
-          <td mat-cell *matCellDef="let row">
-            {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
-          </td>
-        }
-        @default {
+        } @case ('assignmentDate') {
+        <td mat-cell *matCellDef="let row">
+          @if(col.value(row) != null) {
+
+          {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
+          }
+        </td>
+        } @default {
         <td mat-cell *matCellDef="let row">{{ col.value(row) ?? "" }}</td>
         } }
       </ng-container>

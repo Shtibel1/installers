@@ -169,7 +169,6 @@ export class ManageAssignmentComponent
         this.cost = this.calculateCost();
       });
     }
-    console.log(additionalsForm);
   }
 
   getAdditionals(serviceProviderId: string, productId: string) {
@@ -209,8 +208,16 @@ export class ManageAssignmentComponent
 
     let additionalPrices = this.additionalsComponent.getAdditionalPrices();
 
+    let assignmentDate = this.assignment?.assignmentDate
+      ? this.datePipe.transform(
+          this.assignment.assignmentDate,
+          'yyyy-MM-ddTHH:mm:ss'
+        )
+      : null;
+
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || null,
+      assignmentDate: assignmentDate,
       productId: this.productControl.value.value.id,
       employeeId: this.user.id,
       serviceProviderId: this.serviceProviderControl.value.value.id,
@@ -221,7 +228,7 @@ export class ManageAssignmentComponent
       customerNeedsToPay: this.customerNeedsToPayControl.value,
       customerAlreadyPaid: null,
       cost: this.cost,
-      additionalPrices: additionalPrices,
+      additionalPrices: [...additionalPrices],
       customer: {
         ...this.customerControl.value,
         id: this.assignment?.customer?.id || 0,
@@ -283,7 +290,6 @@ export class ManageAssignmentComponent
 
   calculateCost() {
     let additionalPrices = this.additionalsComponent?.getAdditionalPrices();
-    console.log(additionalPrices);
     let cost = 0;
     additionalPrices?.forEach((price) => {
       cost += +price.price;

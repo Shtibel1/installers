@@ -25,8 +25,6 @@ export class SelectMarketerComponent {
         return { label: marketer.name, value: marketer };
       });
     });
-    this.control.valueChanges.subscribe((value) => {
-      console.log(value);
-    });
+    this.control.valueChanges.subscribe((value) => {});
   }
 }
