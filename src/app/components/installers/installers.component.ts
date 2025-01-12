@@ -7,6 +7,7 @@ import { ColumnsConfig } from './installersConfig';
 import { FiltersService } from '../filters-bar/filters-service.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
+import { Assignment } from 'src/app/core/models/assignment.model';
 
 @Component({
   selector: 'app-installers',

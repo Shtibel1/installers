@@ -17,6 +17,7 @@ import { saveAs } from 'file-saver';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
 import * as moment from 'moment';
+import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
 
 interface Transaction {
   item: string;
@@ -87,6 +88,11 @@ export class InstallerDetailsComponent implements OnInit {
           a.serviceProvider.id == this.installer.id && a.status === Status.done
       );
       this.filteredAssignments = this.assignments;
+      this.filteredAssignments.sort((a, b) => {
+        return (
+          new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+        );
+      });
       this.dataSource = new MatTableDataSource(this.filteredAssignments);
     });
   }
@@ -130,6 +136,17 @@ export class InstallerDetailsComponent implements OnInit {
 
     // 4. Save the Excel file
     this.saveAsExcelFile(excelBuffer, 'Assignments');
+  }
+
+  onIsPaidChange(assignment: Assignment) {
+    const pathsValus: string[][] = [
+      ['/isPaid'], // The path to the property being updated
+      [assignment.isPaid.toString()], // The new value as a string
+    ];
+
+    this.assignmentService
+      .patchAssignment(assignment.id, pathsValus)
+      .subscribe();
   }
 
   private saveAsExcelFile(buffer: any, fileName: string): void {

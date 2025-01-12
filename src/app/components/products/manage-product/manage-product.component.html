@@ -9,11 +9,6 @@
     <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="flex flex-col">
         <app-input label="שם" [control]="name"></app-input>
-        <app-input
-          label="מחיר התקנה ללקוח"
-          [control]="customerInstallationPrice"
-          type="number"
-        ></app-input>
         <app-select
           label="קטגוריה"
           [control]="category"

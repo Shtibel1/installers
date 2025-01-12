@@ -11,6 +11,8 @@ import {
   ViewChild,
   output,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,6 +20,7 @@ import { Observable, Subject, filter, takeUntil } from 'rxjs';
 import { FiltersService } from 'src/app/components/filters-bar/filters-service.service';
 import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
 import { Status, StatusDescriptions } from 'src/app/core/enums/status.enum';
+import { Assignment } from 'src/app/core/models/assignment.model';
 
 @Component({
   selector: 'app-table',
@@ -30,7 +33,6 @@ export class TableComponent
   @Input() dataSource?: MatTableDataSource<any>;
   @Input() displayedColumns: string[];
   @Input() columns: Column[];
-
   searchText: string;
 
   destroyed$: Subject<void> = new Subject();
@@ -38,6 +40,7 @@ export class TableComponent
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  @Output() isPaidChange = new EventEmitter<Assignment>();
   @Output() rowClick = new EventEmitter<any>();
   constructor(private filtersService: FiltersService) {}
 
@@ -142,21 +145,9 @@ export class TableComponent
     this.destroyed$.next();
   }
 
-  getStatusDescription(status: any) {
-    return StatusDescriptions[status];
-  }
-
-  getPickupStatusDescription(status: any) {
-    switch (Number(status)) {
-      case PickupStatus.NotReady:
-        return 'לא מוכן';
-      case PickupStatus.Ready:
-        return 'מוכן';
-      case PickupStatus.Taken:
-        return 'נלקח';
-      default:
-        return 'לא מוכן';
-    }
+  onPaidChange(e: MatCheckboxChange, row: Assignment) {
+    row.isPaid = e.checked;
+    this.isPaidChange.emit(row);
   }
 }
 

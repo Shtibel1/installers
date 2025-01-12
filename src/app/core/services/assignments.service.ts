@@ -64,7 +64,7 @@ export class AssignmentsService extends BaseService {
     );
   }
 
-  patchAssignment(id: number, pathsValus: string[][]) {
+  patchAssignment(id: string, pathsValus: string[][]) {
     const headers = new HttpHeaders().set(
       'Content-Type',
       'application/json-patch+json'
@@ -79,7 +79,12 @@ export class AssignmentsService extends BaseService {
       });
     }
 
-    return this.patch(id.toString(), patchDocument, { headers }).pipe(
+    let user = this.AuthService.user$.value;
+    let companyName = user?.companies[0]?.name;
+
+    return this.patch(`${companyName}/${id.toString()}`, patchDocument, {
+      headers,
+    }).pipe(
       tap(() => {}),
       catchError((err) => this.handleAssignmentsError(err))
     );

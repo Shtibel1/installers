@@ -3,9 +3,19 @@ import { Column } from 'src/app/shared/table/table.component';
 
 export const InstallersColumnsConfig: Column[] = [
   {
+    ref: 'isPaid',
+    label: 'שולם',
+    value: (element: Assignment) => `${element.isPaid}`,
+  },
+  {
     ref: 'id',
     label: 'מספר הזמנה',
     value: (element: Assignment) => `${element.id}`,
+  },
+  {
+    ref: 'customerName',
+    label: 'שם לקוח',
+    value: (element: Assignment) => `${element.customer.name}`,
   },
   {
     ref: 'date',
@@ -17,11 +27,7 @@ export const InstallersColumnsConfig: Column[] = [
     label: 'תאריך סיום',
     value: (element: Assignment) => `${element?.assignmentDate || ''} `,
   },
-  {
-    ref: 'customerName',
-    label: 'שם לקוח',
-    value: (element: Assignment) => `${element.customer.name}`,
-  },
+
   {
     ref: 'cost',
     label: 'עלות',

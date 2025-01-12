@@ -218,6 +218,7 @@ export class ManageAssignmentComponent
     let assignmentDto: AssignmentDto = {
       id: this.assignment?.id || null,
       assignmentDate: assignmentDate,
+      isPaid: this.assignment?.isPaid || false,
       productId: this.productControl.value.value.id,
       employeeId: this.user.id,
       serviceProviderId: this.serviceProviderControl.value.value.id,

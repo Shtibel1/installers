@@ -21,21 +21,20 @@
         <td mat-cell *matCellDef="let row">
           {{ col.value(row) | slice : 0 : 4 }}
         </td>
-        } @case ('status') {
-        <td mat-cell *matCellDef="let row">
-          {{ getStatusDescription(col.value(row)) }}
-        </td>
-        } @case ('pickupStatus') {
-        <td mat-cell *matCellDef="let row">
-          {{ getPickupStatusDescription(col.value(row)) }}
-        </td>
         } @case ('date') {
         <td mat-cell *matCellDef="let row">
           {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
         </td>
-        } @case ('assignmentDate') {
+        }@case ('isPaid'){
         <td mat-cell *matCellDef="let row">
-          @if(col.value(row) != null) {
+          <mat-checkbox
+            [checked]="col.value(row) == 'true' ? true : false"
+            (change)="onPaidChange($event, row)"
+          ></mat-checkbox>
+        </td>
+        }@case ('assignmentDate') {
+        <td mat-cell *matCellDef="let row">
+          @if(row.assignmentDate != null) {
 
           {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
           }

@@ -18,9 +18,10 @@ export interface Assignment {
   employee: AppUser;
   serviceProvider: ServiceProvider;
   status?: Status;
+  isPaid: boolean;
 
   customerAlreadyPaid: number;
-  extras: number
+  extras: number;
   cost: number;
   price: number;
   additionalPrices: AdditionalPrice[];

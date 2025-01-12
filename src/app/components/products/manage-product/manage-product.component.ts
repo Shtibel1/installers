@@ -53,7 +53,7 @@ export class ManageProductComponent implements OnInit {
       this.editProduct?.customerInstallationPrice || null;
 
     this.name = new FormControl(name, Validators.required);
-    this.category = new FormControl(category);
+    this.category = new FormControl(category, Validators.required);
     this.customerInstallationPrice = new FormControl(customerInstallationPrice);
 
     this.form = new FormGroup({
@@ -64,6 +64,11 @@ export class ManageProductComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.categories.forEach((cat) => {
       if (this.form.value.category == cat.value.name) {
         this.form.value.category = cat;

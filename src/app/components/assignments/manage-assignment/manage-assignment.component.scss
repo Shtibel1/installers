@@ -6,12 +6,12 @@
   max-width: 990px;
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 form {
   display: flex;
-  gap: 6rem;
+  gap: 4rem;
   width: 100%;
   flex-wrap: wrap;
 }

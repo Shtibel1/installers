@@ -17,9 +17,4 @@ export const ColumnsConfig: Column[] = [
     label: 'קטגוריה',
     value: (element: Product) => `${element.category.name}`,
   },
-  {
-    ref: 'customerInstallationPrice',
-    label: 'מחיר התקנה',
-    value: (element: Product) => `${element.customerInstallationPrice}`,
-  },
 ];

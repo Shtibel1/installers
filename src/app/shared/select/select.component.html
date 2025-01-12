@@ -17,4 +17,7 @@
       </div>
     </mat-option>
   </mat-select>
+  @if (control.hasError('required')) {
+  <mat-error>שדה חובה</mat-error>
+  }
 </mat-form-field>

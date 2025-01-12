@@ -1,3 +1,6 @@
+import { DatePipe } from '@angular/common';
+import { PickupStatusDescriptions } from 'src/app/core/enums/pickup-status.enum';
+import { StatusDescriptions } from 'src/app/core/enums/status.enum';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Column } from 'src/app/shared/table/table.component';
 
@@ -36,7 +39,7 @@ export const AssignmentColumnsConfig: Column[] = [
   {
     ref: 'status',
     label: 'סטטוס',
-    value: (element: Assignment) => `${element.status}`,
+    value: (element: Assignment) => `${StatusDescriptions[element.status]}`,
   },
   {
     ref: 'assignmentDate',
@@ -52,7 +55,8 @@ export const AssignmentColumnsConfig: Column[] = [
   {
     ref: 'pickupStatus',
     label: 'סטטוס איסוף',
-    value: (element: Assignment) => `${element.pickupStatus}`,
+    value: (element: Assignment) =>
+      `${PickupStatusDescriptions[element.pickupStatus]}`,
   },
   {
     ref: 'comments',
