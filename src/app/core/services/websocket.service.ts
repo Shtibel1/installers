@@ -43,7 +43,7 @@ export class WebsocketService implements OnDestroy {
 
   private getNewWebSocket(): WebSocketSubject<Assignment> {
     let user: AppUser = JSON.parse(localStorage.getItem('user'));
-    let company = user.companies[0].name;
+    let company = user?.companies[0]?.name;
     this.websocketUrl = `${this.websocketUrl}/${company}`;
     return new WebSocketSubject<Assignment>(this.websocketUrl);
   }

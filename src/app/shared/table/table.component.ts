@@ -146,8 +146,7 @@ export class TableComponent
   }
 
   onPaidChange(e: MatCheckboxChange, row: Assignment) {
-    row.isPaid = e.checked;
-    this.isPaidChange.emit(row);
+    this.isPaidChange.emit({ ...row, isPaid: e.checked });
   }
 }
 

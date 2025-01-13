@@ -18,6 +18,11 @@ export const InstallersColumnsConfig: Column[] = [
     value: (element: Assignment) => `${element.customer.name}`,
   },
   {
+    ref: 'address',
+    label: 'כתובת',
+    value: (element: Assignment) => `${element.customer.address}`,
+  },
+  {
     ref: 'date',
     label: 'תאריך יצירה',
     value: (element: Assignment) => `${element.createdDate}`,

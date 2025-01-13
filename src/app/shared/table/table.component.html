@@ -30,6 +30,7 @@
           <mat-checkbox
             [checked]="col.value(row) == 'true' ? true : false"
             (change)="onPaidChange($event, row)"
+            [disabled]="row.isPaid"
           ></mat-checkbox>
         </td>
         }@case ('assignmentDate') {

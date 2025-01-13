@@ -44,4 +44,8 @@
     (isPaidChange)="onIsPaidChange($event)"
     [dataSource]="dataSource"
   ></app-table>
+  <div class="calculate-wrapper">
+    <div class="flex gap-2 justify-center align-center">₪{{ totalCost }}</div>
+    <button mat-raised-button (click)="onCalculate()">בצע התחשבנות</button>
+  </div>
 </div>

@@ -18,6 +18,7 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
 import * as moment from 'moment';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface Transaction {
   item: string;
@@ -41,13 +42,16 @@ export class InstallerDetailsComponent implements OnInit {
     start: new FormControl(),
     end: new FormControl(),
   });
+  patchedAssignments: Assignment[] = [];
+  totalCost: number = 0;
 
   constructor(
     private router: Router,
     private workersService: ServiceProvidersService,
     private route: ActivatedRoute,
     private assignmentService: AssignmentsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -139,6 +143,20 @@ export class InstallerDetailsComponent implements OnInit {
   }
 
   onIsPaidChange(assignment: Assignment) {
+    this.patchedAssignments.push(assignment);
+    assignment.isPaid
+      ? (this.totalCost += assignment.cost)
+      : (this.totalCost -= assignment.cost);
+  }
+
+  onCalculate() {
+    this.patchedAssignments.forEach((a) => {
+      this.patchIsPaid(a);
+    });
+    this.openSnackbar('התשלומים נשמרו בהצלחה');
+  }
+
+  patchIsPaid(assignment: Assignment) {
     const pathsValus: string[][] = [
       ['/isPaid'], // The path to the property being updated
       [assignment.isPaid.toString()], // The new value as a string
@@ -154,5 +172,9 @@ export class InstallerDetailsComponent implements OnInit {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
     saveAs(data, `${fileName}_export_${new Date().getTime()}.xlsx`);
+  }
+
+  openSnackbar(msg: string) {
+    this._snackBar.open(msg, 'Ok', { duration: 4000 });
   }
 }
