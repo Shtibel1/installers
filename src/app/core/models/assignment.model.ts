@@ -30,6 +30,7 @@ export interface Assignment {
 
   pickupStatus?: PickupStatus;
   comments: CommentModel[];
+  numOfProducts: number;
 }
 
 // {

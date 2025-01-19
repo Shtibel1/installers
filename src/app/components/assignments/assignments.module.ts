@@ -13,6 +13,7 @@ import { SelectMarketerComponent } from './manage-assignment/selects/select-mark
 import { SelectProductComponent } from './manage-assignment/selects/select-product/select-product.component';
 import { SelectStatusComponent } from './manage-assignment/selects/select-status/select-status.component';
 import { SelectPickupStatusComponent } from './manage-assignment/selects/pickup-status/select-pickup-status.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const routes: Routes = [
   {
@@ -43,8 +44,13 @@ const routes: Routes = [
     SelectMarketerComponent,
     SelectProductComponent,
     SelectStatusComponent,
-    SelectPickupStatusComponent
+    SelectPickupStatusComponent,
   ],
-  imports: [CommonModule, ShtibelModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    ShtibelModule,
+    RouterModule.forChild(routes),
+    MatProgressSpinnerModule,
+  ],
 })
 export class AssignmentsModule {}

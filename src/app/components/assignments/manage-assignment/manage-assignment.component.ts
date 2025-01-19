@@ -40,6 +40,7 @@ export interface AssignmentForm {
   extras: FormControl;
   pickupStatus: FormControl<PickupStatus>;
   additionals?: FormGroup;
+  numOfProducts: FormControl;
 }
 
 @Component({
@@ -67,6 +68,7 @@ export class ManageAssignmentComponent
   customerControl: FormGroup<CustomerForm>;
   extrasControl: FormControl;
   pickupStatus: FormControl<PickupStatus>;
+  numOfProductsControl: FormControl;
 
   additionalPrices: AdditionalPrice[];
 
@@ -118,6 +120,7 @@ export class ManageAssignmentComponent
     let status = this.assignment?.status || Status.new;
     let extras = this.assignment?.extras || null;
     let pickupStatus = this.assignment?.pickupStatus || PickupStatus.NotReady;
+    let numOfProducts = this.assignment?.numOfProducts || 1;
 
     this.dateControl = new FormControl(createdDate, Validators.required);
     this.serviceProviderControl = new FormControl(serviceProvider, [
@@ -131,6 +134,7 @@ export class ManageAssignmentComponent
     this.pickupStatus = new FormControl(pickupStatus);
     this.commentsControl = new FormControl(comments?.[0]);
     this.status = new FormControl(status);
+    this.numOfProductsControl = new FormControl(numOfProducts);
 
     this.assignmentForm = new FormGroup({
       createdDate: this.dateControl,
@@ -142,6 +146,7 @@ export class ManageAssignmentComponent
       status: this.status,
       extras: this.extrasControl,
       pickupStatus: this.pickupStatus,
+      numOfProducts: this.numOfProductsControl,
     });
     this.onProduct();
     this.onServiceProvider();
@@ -238,6 +243,7 @@ export class ManageAssignmentComponent
       marketerId: this.marketerControl?.value?.value?.id || null,
       extras: +this.extrasControl.value,
       pickupStatus: this.pickupStatus.value,
+      numOfProducts: this.numOfProductsControl.value,
     };
 
     if (this.commentsControl.value) {
@@ -297,6 +303,6 @@ export class ManageAssignmentComponent
     });
     if (this.extrasControl.value) cost += +this.extrasControl.value;
     cost = this.customerNeedsToPayControl.value - cost;
-    return cost;
+    return cost * this.numOfProductsControl.value;
   }
 }

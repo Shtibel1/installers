@@ -23,6 +23,7 @@ export class AssignmentDto {
   status?: Status;
   pickupStatus?: PickupStatus;
   extras: number;
+  numOfProducts: number;
 
   constructor(ass: Assignment) {
     this.id = ass.id;

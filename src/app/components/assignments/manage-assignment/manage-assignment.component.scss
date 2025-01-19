@@ -69,3 +69,25 @@ input.price-input {
 app-manage-customer {
   margin-top: 17.5px;
 }
+
+::ng-deep .select-product > app-autocomplete > mat-form-field {
+  width: 75%;
+}
+
+.product {
+  width: 212px;
+}
+
+.num-products {
+  height: 50px;
+  width: 2rem;
+  margin-right: 8px;
+}
+
+.comments {
+  width: 440px;
+}
+
+::ng-deep .comments > mat-form-field {
+  width: 100%;
+}
