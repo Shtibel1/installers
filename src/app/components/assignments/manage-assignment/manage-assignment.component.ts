@@ -302,7 +302,8 @@ export class ManageAssignmentComponent
       cost += +price.price;
     });
     if (this.extrasControl.value) cost += +this.extrasControl.value;
+    cost = cost * this.numOfProductsControl.value;
     cost = this.customerNeedsToPayControl.value - cost;
-    return cost * this.numOfProductsControl.value;
+    return cost;
   }
 }

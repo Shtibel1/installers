@@ -2,11 +2,15 @@
 
 <div class="wrapper content">
   <div class="filters">
-
-    <app-select-service-provider [control]="installerControl" ></app-select-service-provider>
-    <app-select-status [control]="statusControl" ></app-select-status>
-    <button (click)="onSearch()" mat-raised-button  > חפש </button>
-    <button (click)="onResetFilters()" mat-raised-button  > נקה פילטרים </button>
+    <app-select-service-provider
+      [control]="installerControl"
+    ></app-select-service-provider>
+    <app-select-status [control]="statusControl"></app-select-status>
+    <app-select-pickup-status
+      [control]="pickupStatusControl"
+    ></app-select-pickup-status>
+    <button (click)="onSearch()" mat-raised-button>חפש</button>
+    <button (click)="onResetFilters()" mat-raised-button>נקה פילטרים</button>
   </div>
 
   <button mat-raised-button color="primary" class="add-btn" (click)="onAdd()">

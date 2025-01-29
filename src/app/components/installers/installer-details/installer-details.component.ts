@@ -88,8 +88,7 @@ export class InstallerDetailsComponent implements OnInit {
   initAssignments() {
     this.assignmentService.getAssignments().subscribe((asmnts) => {
       this.assignments = asmnts.filter(
-        (a) =>
-          a.serviceProvider.id == this.installer.id && a.status === Status.done
+        (a) => a.serviceProvider.id == this.installer.id && !a.isPaid
       );
       this.filteredAssignments = this.assignments;
       this.filteredAssignments.sort((a, b) => {

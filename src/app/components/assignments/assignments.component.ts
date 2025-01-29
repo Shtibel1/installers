@@ -14,6 +14,7 @@ import { AssignmentColumnsConfig } from './assignments-colums.config';
 import { Status } from 'src/app/core/enums/status.enum';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 import { Option } from 'src/app/core/models/option.model';
+import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
 
 @Component({
   selector: 'app-assignments',
@@ -32,7 +33,8 @@ export class AssignmentsComponent implements OnInit {
   installers: ServiceProvider[];
   categories: Category[];
   installerControl = new FormControl<Option<ServiceProvider>>(null);
-  statusControl = new FormControl<Status>(null)
+  statusControl = new FormControl<Status>(null);
+  pickupStatusControl = new FormControl<PickupStatus>(null);
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -50,22 +52,28 @@ export class AssignmentsComponent implements OnInit {
     this.initAssignments();
   }
 
-
   onSearch() {
     let filteredAsgmts = this.assignments;
     if (this.installerControl.value)
-      filteredAsgmts = filteredAsgmts.filter((a) => a.serviceProvider.name == this.installerControl.value.value.name)
+      filteredAsgmts = filteredAsgmts.filter(
+        (a) => a.serviceProvider.name == this.installerControl.value.value.name
+      );
     if (this.statusControl.value)
-      filteredAsgmts = filteredAsgmts.filter(a => a.status === this.statusControl.value)
+      filteredAsgmts = filteredAsgmts.filter(
+        (a) => a.status === this.statusControl.value
+      );
+
+    if (this.pickupStatusControl.value)
+      filteredAsgmts = filteredAsgmts.filter(
+        (a) => a.pickupStatus === this.pickupStatusControl.value
+      );
     this.dataSource = new MatTableDataSource(filteredAsgmts);
   }
 
   onResetFilters() {
-    this.installerControl.setValue(null)
-    this.statusControl.setValue(null)
-    this.dataSource = new MatTableDataSource(
-      this.assignments
-    );
+    this.installerControl.setValue(null);
+    this.statusControl.setValue(null);
+    this.dataSource = new MatTableDataSource(this.assignments);
   }
 
   initInstallers() {
@@ -90,7 +98,13 @@ export class AssignmentsComponent implements OnInit {
         this.assignmentsService.getAssignments().subscribe();
       } else {
         this.assignments = assigns;
-        this.dataSource = new MatTableDataSource<Assignment>(assigns.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()));
+        this.dataSource = new MatTableDataSource<Assignment>(
+          assigns.sort(
+            (a, b) =>
+              new Date(b.createdDate).getTime() -
+              new Date(a.createdDate).getTime()
+          )
+        );
         this.dataSource.sort = this.sort;
       }
     });

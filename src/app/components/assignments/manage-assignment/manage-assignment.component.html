@@ -33,6 +33,9 @@
         <div class="flex flex-wrap flex-col checkboxes">
           <div>
             <section class="example-section flex gap-4">
+              <h5 *ngIf="this.numOfProductsControl.value > 1">
+                X{{ this.numOfProductsControl.value }}
+              </h5>
               <app-assignment-additionals
                 *ngIf="additionalPrices"
                 [additionalPrices]="additionalPrices"
@@ -45,7 +48,11 @@
         <div class="grid">
           <app-input
             [control]="extrasControl"
-            [label]="'תוספת מרחק'"
+            [label]="
+              numOfProductsControl.value > 1
+                ? 'תוספת מרחק X' + numOfProductsControl.value
+                : 'תוספת מרחק'
+            "
             [currency]="'₪'"
           ></app-input>
           <app-input
