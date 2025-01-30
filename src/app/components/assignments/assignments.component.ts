@@ -58,12 +58,11 @@ export class AssignmentsComponent implements OnInit {
       filteredAsgmts = filteredAsgmts.filter(
         (a) => a.serviceProvider.name == this.installerControl.value.value.name
       );
-    if (this.statusControl.value)
+    if (this.statusControl.value !== null)
       filteredAsgmts = filteredAsgmts.filter(
         (a) => a.status === this.statusControl.value
       );
-
-    if (this.pickupStatusControl.value)
+    if (this.pickupStatusControl.value !== null)
       filteredAsgmts = filteredAsgmts.filter(
         (a) => a.pickupStatus === this.pickupStatusControl.value
       );
@@ -73,6 +72,8 @@ export class AssignmentsComponent implements OnInit {
   onResetFilters() {
     this.installerControl.setValue(null);
     this.statusControl.setValue(null);
+    this.pickupStatusControl.setValue(null);
+    console.log(this.pickupStatusControl.value);
     this.dataSource = new MatTableDataSource(this.assignments);
   }
 

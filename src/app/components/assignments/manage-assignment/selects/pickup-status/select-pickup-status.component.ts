@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { PickupStatus, PickupStatusDescriptions } from 'src/app/core/enums/pickup-status.enum';
+import {
+  PickupStatus,
+  PickupStatusDescriptions,
+} from 'src/app/core/enums/pickup-status.enum';
 import { Status, StatusDescriptions } from 'src/app/core/enums/status.enum';
 import { Option } from 'src/app/core/models/option.model';
 
@@ -30,7 +33,10 @@ export class SelectPickupStatusComponent implements OnInit {
     this.innerControl = new FormControl(option);
 
     this.innerControl.valueChanges.subscribe((value: Option<PickupStatus>) => {
-      this.outerControl.setValue(value.value);
+      if (value) this.outerControl.setValue(value.value);
+    });
+    this.outerControl.valueChanges.subscribe((status) => {
+      if (!status) this.innerControl?.setValue(null);
     });
   }
 }
