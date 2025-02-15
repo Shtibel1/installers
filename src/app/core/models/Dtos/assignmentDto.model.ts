@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { PickupStatus } from '../../enums/pickup-status.enum';
 import { AdditionalPrice } from '../additionalPrice.model';
 import { Assignment } from '../assignment.model';
@@ -25,11 +26,14 @@ export class AssignmentDto {
   extras: number;
   numOfProducts: number;
 
-  constructor(ass: Assignment) {
+  constructor(ass: Assignment, datepipe: DatePipe) {
     this.id = ass.id;
-    this.createdDate = new Date(ass.createdDate).toISOString(); // Ensure conversion to Date
+    this.createdDate = datepipe.transform(
+      ass.createdDate,
+      'yyyy-MM-ddTHH:mm:ss'
+    ); // Ensure conversion to Date
     this.assignmentDate = ass.assignmentDate
-      ? new Date(ass.assignmentDate).toISOString()
+      ? datepipe.transform(ass.assignmentDate, 'yyyy-MM-ddTHH:mm:ss')
       : ''; // Convert assignmentDate if it exists
     this.customerNeedsToPay = ass.customerNeedsToPay;
     this.customerAlreadyPaid = ass.customerAlreadyPaid ?? null; // Handle nullable field
@@ -39,6 +43,7 @@ export class AssignmentDto {
     this.serviceProviderId = ass.serviceProvider?.id; // Assign service provider ID
     this.productId = ass.product?.id; // Assign product ID
     this.customer = ass.customer; // Directly map customer
+    this.customer.id = null;
     this.marketerId = ass.marketer?.id; // Assign marketer ID
     this.additionalPrices = ass.additionalPrices; // Map additional prices
     this.comments = ass.comments || []; // Assign comments or empty array

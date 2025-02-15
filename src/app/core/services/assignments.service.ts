@@ -21,16 +21,28 @@ export class AssignmentsService extends BaseService {
     super(http, 'api/assignments');
   }
 
-  getAssignments() {
+  getAssignments(isPaid = false) {
     if (this.assignments$.value) {
       return this.assignments$;
     }
-    return this.get<Assignment[]>('').pipe(
+    let query = !isPaid ? 'isPaid=false' : '';
+    return this.get<Assignment[]>(`?${query}`).pipe(
       tap((asmns) => {
         this.assignments$.next(asmns);
       }),
       switchMap(() => this.assignments$)
     );
+  }
+
+  getFiltredAssignments(filters: AssignmentFilters) {
+    let query = '';
+    if (filters.customerName) {
+      query += `customerName=${filters.customerName}`;
+    }
+    if (filters.serviceProviderId) {
+      query += `&serviceProviderId=${filters.serviceProviderId}`;
+    }
+    return this.get<Assignment[]>(`?${query}`);
   }
 
   getAssignment(id: string) {
@@ -85,7 +97,11 @@ export class AssignmentsService extends BaseService {
     return this.patch(`${companyName}/${id.toString()}`, patchDocument, {
       headers,
     }).pipe(
-      tap(() => {}),
+      tap(() => {
+        this.getAssignment(id).subscribe((assignment) => {
+          this.updateAssignmentInSubject(assignment);
+        });
+      }),
       catchError((err) => this.handleAssignmentsError(err))
     );
   }
@@ -141,4 +157,11 @@ export class AssignmentsService extends BaseService {
 
     return throwError(errMessage);
   }
+}
+
+export interface AssignmentFilters {
+  startDate?: string;
+  endDate?: string;
+  serviceProviderId?: string;
+  customerName?: string;
 }

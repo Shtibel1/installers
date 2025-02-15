@@ -17,9 +17,10 @@
     הוסף משימה
   </button>
 
-  <app-table
+  <app-assignment-table
     [columns]="columns"
     [dataSource]="dataSource"
     (rowClick)="onAssignment($event)"
-  ></app-table>
+    (pickupStatusChange)="onPickupStatusChange($event)"
+  ></app-assignment-table>
 </div>

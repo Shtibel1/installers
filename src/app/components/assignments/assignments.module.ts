@@ -40,11 +40,9 @@ const routes: Routes = [
     ManageAssignmentComponent,
     ManageCustomerComponent,
     ManageCommentsComponent,
-    SelectServiceProviderComponent,
     SelectMarketerComponent,
     SelectProductComponent,
     SelectStatusComponent,
-    SelectPickupStatusComponent,
   ],
   imports: [
     CommonModule,

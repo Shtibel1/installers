@@ -14,6 +14,9 @@ import { MaterialModule } from './material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxMaskModule } from 'ngx-mask';
 import { SelectCategoriesComponent } from 'src/app/shared/select-categories/select-categories.component';
+import { AssignmentTableComponent } from 'src/app/shared/assignment-table/assignment-table.component';
+import { SelectPickupStatusComponent } from 'src/app/components/assignments/manage-assignment/selects/pickup-status/select-pickup-status.component';
+import { SelectServiceProviderComponent } from 'src/app/components/assignments/manage-assignment/selects/select-service-provider/select-service-provider.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +30,9 @@ import { SelectCategoriesComponent } from 'src/app/shared/select-categories/sele
     TableComponent,
     FiltersBarComponent,
     SelectCategoriesComponent,
+    AssignmentTableComponent,
+    SelectPickupStatusComponent,
+    SelectServiceProviderComponent,
   ],
   imports: [
     CommonModule,
@@ -47,6 +53,9 @@ import { SelectCategoriesComponent } from 'src/app/shared/select-categories/sele
     MaterialModule,
     ReactiveFormsModule,
     SelectCategoriesComponent,
+    AssignmentTableComponent,
+    SelectPickupStatusComponent,
+    SelectServiceProviderComponent,
   ],
 })
 export class ShtibelModule {}

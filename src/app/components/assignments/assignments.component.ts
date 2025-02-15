@@ -15,6 +15,8 @@ import { Status } from 'src/app/core/enums/status.enum';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 import { Option } from 'src/app/core/models/option.model';
 import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
+import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-assignments',
@@ -43,7 +45,8 @@ export class AssignmentsComponent implements OnInit {
     private workersService: ServiceProvidersService,
     private categoriesService: CategoriesService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private datePipe: DatePipe
   ) {}
 
   ngOnInit(): void {
@@ -107,6 +110,7 @@ export class AssignmentsComponent implements OnInit {
           )
         );
         this.dataSource.sort = this.sort;
+        this.onSearch();
       }
     });
   }
@@ -131,5 +135,14 @@ export class AssignmentsComponent implements OnInit {
 
   onAssignment(assignment: Assignment) {
     this.router.navigate(['assignments', 'manage', assignment.id]);
+  }
+
+  onPickupStatusChange(ass: Assignment) {
+    this.assignmentsService.getAssignment(ass.id).subscribe((assfull) => {
+      assfull.pickupStatus = ass.pickupStatus;
+      const assDto: AssignmentDto = new AssignmentDto(assfull, this.datePipe);
+
+      this.assignmentsService.updateAssignment(ass.id, assDto).subscribe();
+    });
   }
 }

@@ -1,0 +1,83 @@
+<div class="mat-elevation-z8">
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    matSort
+    (matSortChange)="sortData($event)"
+  >
+    @for ( col of columns; track $index) {
+    <ng-container>
+      <ng-container [matColumnDef]="col.ref">
+        @if (col.ref == 'date') {
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="date">
+          {{ col.label }}
+        </th>
+        } @else {
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ col.label }}
+        </th>
+        } @switch (col.ref) { @case ('id') {
+        <td mat-cell *matCellDef="let row">
+          {{ col.value(row) | slice : 0 : 4 }}
+        </td>
+        } @case ('date') {
+        <td mat-cell *matCellDef="let row">
+          {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
+        </td>
+        }@case ('isPaid'){
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            [checked]="col.value(row) == 'true' ? true : false"
+            (change)="onPaidChange($event, row)"
+            [disabled]="row.isPaid"
+          ></mat-checkbox>
+        </td>
+        }@case ('assignmentDate') {
+        <td mat-cell *matCellDef="let row">
+          @if(row.assignmentDate != null) {
+
+          {{ col.value(row) | date : "dd/MM/yyyy HH:mm " }}
+          }
+        </td>
+        }@case ('pickupStatus') {
+        <td mat-cell *matCellDef="let row">
+          <app-select-pickup-status
+            (valueChange)="onPickupStatusChange(row, $event)"
+            [value]="row.pickupStatus"
+          >
+          </app-select-pickup-status>
+        </td>
+        } @case ('edit-btn') {
+        <td mat-cell *matCellDef="let row">
+          <button mat-button color="primary" (click)="onEdit(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+        } @default {
+
+        <td mat-cell *matCellDef="let row">{{ col.value(row) ?? "" }}</td>
+        } }
+      </ng-container>
+    </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="table-row"
+    ></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">
+        לא נמצאו תוצאות עבור: "{{ searchText }}"
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 100]"
+    aria-label="Select page of users"
+  ></mat-paginator>
+</div>

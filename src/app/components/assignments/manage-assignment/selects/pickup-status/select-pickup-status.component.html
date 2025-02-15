@@ -2,4 +2,6 @@
   [control]="innerControl"
   [options]="statuseOptions"
   label="ניפוק מהמחסן"
+  [value]="selectedOption"
+  (valueChange)="onValueChange($event)"
 ></app-select>

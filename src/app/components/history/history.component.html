@@ -1,0 +1,10 @@
+<div class="content">
+  <div class="filters">
+    <app-input [label]="'שם לקוח'" [control]="customerName"></app-input>
+    <app-select-service-provider
+      [control]="serviceProvider"
+    ></app-select-service-provider>
+    <button (click)="onSearch()" mat-raised-button>חפש</button>
+  </div>
+  <app-table [columns]="columns" [dataSource]="dataSource"></app-table>
+</div>

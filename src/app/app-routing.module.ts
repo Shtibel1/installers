@@ -51,7 +51,28 @@ const appRoutes: Routes = [
         (m) => m.CategoriesModule
       ),
   },
+  {
+    path: 'calculations',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./components/calculations/calculations.component').then(
+        (m) => m.CalculationsComponent
+      ),
+  },
+  {
+    path: 'history',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./components/history/history.component').then(
+        (m) => m.HistoryComponent
+      ),
+  },
+
   { path: 'auth', component: AuthComponent },
+  {
+    path: '**',
+    redirectTo: 'assignments',
+  },
 ];
 
 @NgModule({

@@ -19,6 +19,8 @@ import { Moment } from 'moment';
 import * as moment from 'moment';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CalculationsService } from 'src/app/core/services/calculations.service';
+import { Calculation } from 'src/app/core/models/calculation.model';
 
 interface Transaction {
   item: string;
@@ -45,13 +47,16 @@ export class InstallerDetailsComponent implements OnInit {
   patchedAssignments: Assignment[] = [];
   totalCost: number = 0;
 
+  description = new FormControl();
+
   constructor(
     private router: Router,
     private workersService: ServiceProvidersService,
     private route: ActivatedRoute,
     private assignmentService: AssignmentsService,
     private dialog: MatDialog,
-    public _snackBar: MatSnackBar
+    public _snackBar: MatSnackBar,
+    private calcSerivce: CalculationsService
   ) {}
 
   ngOnInit(): void {
@@ -109,7 +114,7 @@ export class InstallerDetailsComponent implements OnInit {
   }
 
   onExportToExcel() {
-    this.exportToExcel(this.filteredAssignments);
+    this.exportToExcel(this.patchedAssignments);
   }
 
   exportToExcel(assignments: Assignment[]): void {
@@ -122,6 +127,8 @@ export class InstallerDetailsComponent implements OnInit {
       שם_לקוח: a.customer.name,
       כתובת: a.customer.address,
       מוצר: a.product.name,
+      תוספות: a.additionalPrices.map((ap) => ap.additional.name).join(', '),
+      שולם_למתקין: a.customerNeedsToPay,
       עלןת: a.cost,
     }));
     console.log(list);
@@ -152,6 +159,19 @@ export class InstallerDetailsComponent implements OnInit {
     this.patchedAssignments.forEach((a) => {
       this.patchIsPaid(a);
     });
+    let calc: Calculation = {
+      serviceProviderId: this.installer.id,
+      price: this.totalCost,
+      description: this.description.value ?? '',
+      assignmentIds: this.patchedAssignments.map((a) => a.id),
+    };
+
+    this.calcSerivce.addCalc(calc).subscribe(() => {
+      this.totalCost = 0;
+      this.patchedAssignments = [];
+      this.description.setValue('');
+    });
+
     this.openSnackbar('התשלומים נשמרו בהצלחה');
   }
 

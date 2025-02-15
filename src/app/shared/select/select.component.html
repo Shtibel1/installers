@@ -5,7 +5,8 @@
       *ngFor="let opt of options; let i = index"
       [value]="opt"
       [disabled]="opt.value === null"
-      (click)="control.setValue(opt)"
+      (click)="control?.setValue(opt)"
+      (click)="onValueChange(opt.value)"
     >
       <div class="option-content">
         <span>
@@ -17,7 +18,7 @@
       </div>
     </mat-option>
   </mat-select>
-  @if (control.hasError('required')) {
+  @if (control?.hasError('required')) {
   <mat-error>שדה חובה</mat-error>
   }
 </mat-form-field>

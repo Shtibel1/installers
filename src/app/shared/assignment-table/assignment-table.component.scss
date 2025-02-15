@@ -1,0 +1,12 @@
+.table-row:hover {
+  background-color: whitesmoke;
+}
+
+:host {
+  width: 100%;
+}
+
+:host ::ng-deep app-select-pickup-status > app-select > mat-form-field {
+  width: 130px;
+  scale: 0.8;
+}

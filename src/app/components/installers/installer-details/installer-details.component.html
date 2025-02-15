@@ -16,7 +16,12 @@
   <div class="btns-wrapper">
     <button mat-raised-button (click)="onPrices()">טבלת מחירים</button>
     <button mat-raised-button (click)="onAddCategories()">שנה קטגוריות</button>
+  </div>
+  <div class="calculate-wrapper">
+    <div class="flex gap-2 justify-center align-center">₪{{ totalCost }}</div>
+    <app-input [label]="'איך שולם?'" [control]="description"></app-input>
     <button mat-raised-button (click)="onExportToExcel()">יצא לאקסל</button>
+    <button mat-raised-button (click)="onCalculate()">בצע התחשבנות</button>
   </div>
   <div class="filters">
     <mat-form-field>
@@ -44,8 +49,4 @@
     (isPaidChange)="onIsPaidChange($event)"
     [dataSource]="dataSource"
   ></app-table>
-  <div class="calculate-wrapper">
-    <div class="flex gap-2 justify-center align-center">₪{{ totalCost }}</div>
-    <button mat-raised-button (click)="onCalculate()">בצע התחשבנות</button>
-  </div>
 </div>

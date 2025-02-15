@@ -4,7 +4,7 @@ import { StatusDescriptions } from 'src/app/core/enums/status.enum';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { Column } from 'src/app/shared/table/table.component';
 
-export const AssignmentColumnsConfig: Column[] = [
+export const HistoryColumnsConfig: Column[] = [
   {
     ref: 'id',
     label: '#',
@@ -62,10 +62,5 @@ export const AssignmentColumnsConfig: Column[] = [
     ref: 'comments',
     label: 'הערות',
     value: (element: Assignment) => `${element?.comments[0]?.content ?? ''}`,
-  },
-  {
-    ref: 'edit-btn',
-    label: 'ערוך',
-    value: (element: Assignment) => null,
   },
 ];

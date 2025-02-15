@@ -1,0 +1,15 @@
+.wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.calc {
+  padding: 16px;
+
+  box-shadow: rgba(99, 99, 99, 0.5) 0px 4px 12px 0px;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+}

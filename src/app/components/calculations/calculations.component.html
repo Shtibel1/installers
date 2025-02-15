@@ -1,0 +1,18 @@
+<div class="content">
+  <div class="wrapper">
+    @for (calc of calculations; track $index) {
+    <div class="calc" (click)="onCalc(calc)">
+      <div class="details flex gap-2">
+        <div class="date">
+          תאריך: {{ calc.createdDate | date : "dd/MM/YYYY" }}
+        </div>
+        <div class="service-provider">{{ calc.serviceProvider.name }}</div>
+        <div *ngIf="calc.description" class="how-paid">
+          איך שולם: {{ calc.description }}
+        </div>
+      </div>
+      <div class="price">סכום: {{ calc.price }}</div>
+    </div>
+    }
+  </div>
+</div>
