@@ -1,0 +1,71 @@
+<div class="wrapper content flex flex-col gap-8">
+  <!-- Header -->
+  <div class="header-wrapper flex justify-between align-center">
+    <div class="flex gap-2 align-center">
+      <mat-icon>inventory</mat-icon>
+      <h2>מלאי ספק שירות - {{ installer?.name }}</h2>
+    </div>
+    <button mat-raised-button color="primary" (click)="onAddStock()">
+      <mat-icon>add</mat-icon>
+      הוסף למלאי
+    </button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="loading-wrapper flex justify-center">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Stock table -->
+  <div *ngIf="!isLoading" class="table-wrapper">
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+      
+      <!-- Product Name Column -->
+      <ng-container matColumnDef="serviceProductName">
+        <mat-header-cell *matHeaderCellDef>שם המוצר</mat-header-cell>
+        <mat-cell *matCellDef="let item">{{ item.serviceProductName }}</mat-cell>
+      </ng-container>
+
+      <!-- Amount Column -->
+      <ng-container matColumnDef="amount">
+        <mat-header-cell *matHeaderCellDef>כמות במלאי</mat-header-cell>
+        <mat-cell *matCellDef="let item">
+          <span [class.low-stock]="item.amount <= 5" [class.out-of-stock]="item.amount === 0">
+            {{ item.amount }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>פעולות</mat-header-cell>
+        <mat-cell *matCellDef="let item">
+          <button mat-icon-button 
+                  matTooltip="עדכן מלאי"
+                  (click)="onEditStock(item)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  color="warn"
+                  matTooltip="הסר מהמלאי"
+                  (click)="onRemoveStock(item)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <!-- Empty state -->
+    <div *ngIf="stockItems.length === 0" class="empty-state flex flex-col align-center justify-center gap-4">
+      <mat-icon class="large-icon">inventory_2</mat-icon>
+      <h3>אין פריטים במלאי</h3>
+      <p>התחל בהוספת פריטים למלאי של הספק</p>
+      <button mat-raised-button color="primary" (click)="onAddStock()">
+        הוסף פריט ראשון
+      </button>
+    </div>
+  </div>
+</div>

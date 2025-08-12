@@ -1,0 +1,41 @@
+<div class="dialog-container" dir="rtl">
+  <h2 mat-dialog-title>{{ title }}</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="form" class="form-container">
+      <div class="form-row">
+        <app-input
+          [control]="name"
+          label="שם השירות"
+          placeHolder="הכנס שם שירות">
+        </app-input>
+      </div>
+      
+      <div class="error-message" *ngIf="errMessage">
+        {{ errMessage }}
+      </div>
+    </form>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">
+      ביטול
+    </button>
+    
+    <button 
+      mat-button 
+      *ngIf="isEdit" 
+      color="warn" 
+      (click)="onDelete()">
+      מחק
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="primary" 
+      [disabled]="form.invalid"
+      (click)="onSave()">
+      {{ isEdit ? 'עדכן' : 'שמור' }}
+    </button>
+  </mat-dialog-actions>
+</div>

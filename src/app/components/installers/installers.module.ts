@@ -8,6 +8,8 @@ import { CreateInstallerComponent } from './create-installer/create-installer.co
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { ShtibelModule } from 'src/app/core/modules/shtibel.module';
 import { ManageInstallerComponent } from './installer-details/manage-installer/manage-installer.component';
+import { ProviderStockComponent } from './provider-stock/provider-stock.component';
+import { ManageStockComponent } from './provider-stock/manage-stock/manage-stock.component';
 
 const routes: Routes = [
   {
@@ -19,6 +21,7 @@ const routes: Routes = [
     children: [
       { path: '', component: InstallerDetailsComponent },
       { path: 'prices', component: InstallerPricesComponent },
+      { path: 'stock', component: ProviderStockComponent },
     ],
   },
 ];
@@ -30,6 +33,8 @@ const routes: Routes = [
     InstallerDetailsComponent,
     CreateInstallerComponent,
     ManageInstallerComponent,
+    ProviderStockComponent,
+    ManageStockComponent,
   ],
   imports: [CommonModule, ShtibelModule, RouterModule.forChild(routes)],
 })

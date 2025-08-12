@@ -1,0 +1,85 @@
+<div class="dialog-content">
+  <h2 mat-dialog-title>{{ title }}</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="stockForm" class="stock-form">
+      
+      <!-- Service Product Selection -->
+      <mat-form-field appearance="outline">
+        <mat-label>בחר מוצר</mat-label>
+        <mat-select formControlName="serviceProductId" [disabled]="data.isEdit">
+          <mat-option *ngFor="let product of data.serviceProducts" [value]="product.id">
+            {{ product.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="stockForm.get('serviceProductId')?.hasError('required')">
+          יש לבחור מוצר
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Current Stock Info (for edit mode) -->
+      <div *ngIf="data.isEdit" class="current-stock-info">
+        <span class="info-icon">ℹ</span>
+        <span>כמות נוכחית במלאי: <strong>{{ currentStock }}</strong></span>
+      </div>
+
+      <!-- Adjustment Type -->
+      <mat-form-field appearance="outline">
+        <mat-label>סוג פעולה</mat-label>
+        <mat-select formControlName="adjustmentType">
+          <mat-option *ngFor="let type of adjustmentTypes" [value]="type.value">
+            <div class="adjustment-option">
+              <span class="adjustment-icon">{{ type.symbol }}</span>
+              <span>{{ type.label }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Amount -->
+      <mat-form-field appearance="outline">
+        <mat-label>כמות</mat-label>
+        <input matInput 
+               type="number" 
+               formControlName="amount" 
+               min="0"
+               [placeholder]="getAmountPlaceholder()">
+        <mat-error *ngIf="stockForm.get('amount')?.hasError('required')">
+          יש להזין כמות
+        </mat-error>
+        <mat-error *ngIf="stockForm.get('amount')?.hasError('min')">
+          הכמות חייבת להיות חיובית
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Reason -->
+      <mat-form-field appearance="outline">
+        <mat-label>סיבה (אופציונלי)</mat-label>
+        <textarea matInput 
+                  formControlName="reason" 
+                  rows="3"
+                  placeholder="הוסף הערה על השינוי במלאי"></textarea>
+      </mat-form-field>
+
+      <!-- Preview of change -->
+      <div *ngIf="data.isEdit && stockForm.valid" class="change-preview">
+        <span class="preview-icon">👁</span>
+        <span>כמות חדשה תהיה: <strong>{{ getNewAmount() }}</strong></span>
+        <span *ngIf="getNewAmount() < 0" class="warning-text">
+          (כמות שלילית!)
+        </span>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">ביטול</button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="!stockForm.valid">
+      {{ data.isEdit ? 'עדכן' : 'הוסף' }}
+    </button>
+  </mat-dialog-actions>
+</div>

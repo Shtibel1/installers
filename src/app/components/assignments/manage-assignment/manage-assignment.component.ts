@@ -27,6 +27,7 @@ import { AdditionalPrice } from 'src/app/core/models/additionalPrice.model';
 import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
 import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
+import { ServiceSuppliesService, ProductRequirementVm, ServiceProviderStockVm, StockAdjustmentVm } from 'src/app/core/services/service-products.service';
 
 export interface AssignmentForm {
   createdDate: FormControl;
@@ -41,6 +42,7 @@ export interface AssignmentForm {
   pickupStatus: FormControl<PickupStatus>;
   additionals?: FormGroup;
   numOfProducts: FormControl;
+  affectStock: FormControl<boolean>;
 }
 
 @Component({
@@ -69,8 +71,11 @@ export class ManageAssignmentComponent
   extrasControl: FormControl;
   pickupStatus: FormControl<PickupStatus>;
   numOfProductsControl: FormControl;
+  affectStockControl: FormControl<boolean>;
 
   additionalPrices: AdditionalPrice[];
+  productRequirements: ProductRequirementVm[] = [];
+  stockInfo: { serviceProductId: string; serviceProductName: string; currentStock: number; afterStock: number; }[] = [];
 
   assignment: Assignment;
   cost: number;
@@ -89,7 +94,8 @@ export class ManageAssignmentComponent
     private snackbarService: SnackbarService,
     private socket: WebsocketService,
     private router: Router,
-    private additionalPriceService: AdditionalPriceService
+    private additionalPriceService: AdditionalPriceService,
+    private serviceSuppliesService: ServiceSuppliesService
   ) {
     super(accontsService);
   }
@@ -135,6 +141,7 @@ export class ManageAssignmentComponent
     this.commentsControl = new FormControl(comments?.[0]);
     this.status = new FormControl(status);
     this.numOfProductsControl = new FormControl(numOfProducts);
+    this.affectStockControl = new FormControl(false);
 
     this.assignmentForm = new FormGroup({
       createdDate: this.dateControl,
@@ -147,9 +154,19 @@ export class ManageAssignmentComponent
       extras: this.extrasControl,
       pickupStatus: this.pickupStatus,
       numOfProducts: this.numOfProductsControl,
+      affectStock: this.affectStockControl,
     });
     this.onProduct();
     this.onServiceProvider();
+
+    // Add listeners for stock-related changes
+    this.affectStockControl.valueChanges.subscribe(() => {
+      this.onAffectStockChange();
+    });
+
+    this.numOfProductsControl.valueChanges.subscribe(() => {
+      this.onNumOfProductsChange();
+    });
 
     if (product && serviceProvider) {
       this.getAdditionals(serviceProvider.value.id, product.value.id);
@@ -163,6 +180,8 @@ export class ManageAssignmentComponent
         this.serviceProviderControl.value.value.id,
         product.value.id
       );
+      // Update stock information when product or service provider changes
+      this.updateStockInfo();
     });
   }
 
@@ -190,6 +209,7 @@ export class ManageAssignmentComponent
   onServiceProvider() {
     this.serviceProviderControl.valueChanges.subscribe((value) => {
       this.productControl.reset();
+      this.stockInfo = []; // Clear stock info when service provider changes
     });
   }
 
@@ -207,7 +227,12 @@ export class ManageAssignmentComponent
   onSubmit() {
     if (!this.assignmentForm.valid) {
       this.assignmentForm.markAllAsTouched();
+      return;
+    }
 
+    // Check for insufficient stock if affect stock is enabled and it's a new assignment
+    if (!this.editMode && this.affectStockControl.value && this.hasInsufficientStock()) {
+      this.snackbarService.openSnackBar('אין מספיק מלאי לביצוע ההתקנה. אנא בדוק את המלאי.');
       return;
     }
 
@@ -258,9 +283,23 @@ export class ManageAssignmentComponent
     if (!this.editMode) {
       this.assingmentsService.createAssignment(assignmentDto).subscribe({
         next: (res) => {
-          this.socket.sendMessage(res);
-          this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה!');
-          this.router.navigate(['/assignments']);
+          // Update stock if the checkbox is checked
+          if (this.affectStockControl.value) {
+            this.updateProviderStock().then(() => {
+              this.socket.sendMessage(res);
+              this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה והמלאי עודכן!');
+              this.router.navigate(['/assignments']);
+            }).catch((error) => {
+              console.error('Error updating stock:', error);
+              this.socket.sendMessage(res);
+              this.snackbarService.openSnackBar('ההתקנה נוספה אך עדכון המלאי נכשל');
+              this.router.navigate(['/assignments']);
+            });
+          } else {
+            this.socket.sendMessage(res);
+            this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה!');
+            this.router.navigate(['/assignments']);
+          }
         },
         error: (err) => {
           this.errMessage = err;
@@ -272,6 +311,7 @@ export class ManageAssignmentComponent
         .updateAssignment(this.assignment.id, assignmentDto)
         .subscribe({
           next: (res) => {
+            // Update stock if the checkbox is checked (only for new installations, not edits)
             this.socket.sendMessage(res);
             this.snackbarService.openSnackBar('ההתקנה עודנה בהצלחה!');
             this.router.navigate(['/assignments']);
@@ -305,5 +345,111 @@ export class ManageAssignmentComponent
     cost = cost * this.numOfProductsControl.value;
     cost = this.customerNeedsToPayControl.value - cost;
     return cost;
+  }
+
+  updateStockInfo() {
+    if (!this.productControl.value || !this.serviceProviderControl.value) {
+      this.stockInfo = [];
+      return;
+    }
+
+    const productId = this.productControl.value.value.id;
+    const serviceProviderId = this.serviceProviderControl.value.value.id;
+
+    // Get product requirements
+    this.serviceSuppliesService.getRequirements(productId).subscribe({
+      next: (requirements) => {
+        this.productRequirements = requirements;
+        
+        if (requirements.length > 0) {
+          // Get current stock for each required service product
+          this.loadStockInfo(serviceProviderId, requirements);
+        } else {
+          this.stockInfo = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error loading product requirements:', error);
+        this.stockInfo = [];
+      }
+    });
+  }
+
+  private loadStockInfo(serviceProviderId: string, requirements: ProductRequirementVm[]) {
+    this.serviceSuppliesService.getProviderStock(serviceProviderId).subscribe({
+      next: (stockItems) => {
+        this.stockInfo = requirements.map(req => {
+          const currentStockItem = stockItems.find(stock => stock.serviceProductId === req.serviceProductId);
+          const currentStock = currentStockItem ? currentStockItem.amount : 0;
+          const requiredQuantity = req.quantity * this.numOfProductsControl.value;
+          const afterStock = currentStock - requiredQuantity;
+
+          return {
+            serviceProductId: req.serviceProductId,
+            serviceProductName: req.serviceProductName || 'Unknown Product',
+            currentStock: currentStock,
+            afterStock: afterStock
+          };
+        });
+      },
+      error: (error) => {
+        console.error('Error loading stock info:', error);
+        this.stockInfo = [];
+      }
+    });
+  }
+
+  onAffectStockChange() {
+    if (this.affectStockControl.value) {
+      this.updateStockInfo();
+    }
+  }
+
+  onNumOfProductsChange() {
+    // Update stock calculations when number of products changes
+    if (this.affectStockControl.value && this.productRequirements.length > 0) {
+      const serviceProviderId = this.serviceProviderControl.value?.value.id;
+      if (serviceProviderId) {
+        this.loadStockInfo(serviceProviderId, this.productRequirements);
+      }
+    }
+    // Recalculate cost
+    this.cost = this.calculateCost();
+  }
+
+  hasInsufficientStock(): boolean {
+    return this.stockInfo.some(item => item.afterStock < 0);
+  }
+
+  private async updateProviderStock(): Promise<void> {
+    if (!this.productRequirements || this.productRequirements.length === 0) {
+      return Promise.resolve();
+    }
+
+    const serviceProviderId = this.serviceProviderControl.value.value.id;
+    const numOfProducts = this.numOfProductsControl.value;
+
+    // Create stock adjustments for each required service product
+    const stockAdjustments = this.productRequirements.map(req => ({
+      serviceProviderIdExternal: serviceProviderId,
+      serviceProductId: req.serviceProductId,
+      delta: -(req.quantity * numOfProducts), // Negative because we're consuming stock
+      reason: `התקנה - ${this.productControl.value.value.name} (כמות: ${numOfProducts})`,
+      performedByUserId: this.user.id,
+      referenceId: null // Could be assignment ID if needed
+    }));
+
+    // Execute all stock adjustments
+    const adjustmentPromises = stockAdjustments.map(adjustment =>
+      this.serviceSuppliesService.adjustStock(adjustment).toPromise()
+    );
+
+    try {
+      await Promise.all(adjustmentPromises);
+      console.log('Stock updated successfully for all products');
+    } catch (error) {
+      console.error('Error updating stock:', error);
+      throw error;
+    }
   }
 }

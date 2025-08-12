@@ -26,7 +26,50 @@
               [formControl]="numOfProductsControl"
               class="num-products"
               type="number"
+              (input)="onNumOfProductsChange()"
             />
+          </div>
+        </div>
+
+        <!-- Stock Management Section - Only show for new assignments -->
+        <div class="stock-section" *ngIf="!editMode && serviceProviderControl.value && productControl.value">
+          <div class="stock-checkbox">
+            <mat-checkbox [formControl]="affectStockControl">
+              האם להשפיע על מלאי הספק?
+            </mat-checkbox>
+          </div>
+          
+          <div class="stock-info" *ngIf="affectStockControl.value && stockInfo.length > 0">
+            <h4>השפעה על המלאי:</h4>
+            <div class="stock-items">
+              <div 
+                class="stock-item" 
+                *ngFor="let item of stockInfo"
+                [class.insufficient-stock]="item.afterStock < 0"
+              >
+                <div class="stock-item-content">
+                  <span class="product-name">{{ item.serviceProductName }}</span>
+                  <div class="stock-details">
+                    <span class="current-stock">מלאי נוכחי: {{ item.currentStock }}</span>
+                    <span class="arrow">→</span>
+                    <span class="after-stock" [class.negative]="item.afterStock < 0">
+                      אחרי ההתקנה: {{ item.afterStock }}
+                    </span>
+                  </div>
+                </div>
+                <mat-icon 
+                  *ngIf="item.afterStock < 0" 
+                  class="warning-icon" 
+                  matTooltip="מלאי לא מספיק"
+                >
+                  warning
+                </mat-icon>
+              </div>
+            </div>
+          </div>
+          
+          <div class="no-requirements" *ngIf="affectStockControl.value && stockInfo.length === 0">
+            <p>אין דרישות מלאי עבור מוצר זה</p>
           </div>
         </div>
 
@@ -82,9 +125,16 @@
       </div>
       <div class="bottom-wrapper">
         <div *ngIf="errMessage" class="error-msg">{{ errMessage }}</div>
+        
+        <!-- Insufficient stock warning - Only for new assignments -->
+        <div *ngIf="!editMode && affectStockControl.value && hasInsufficientStock()" class="stock-warning">
+          <mat-icon>warning</mat-icon>
+          <span>לא ניתן לשמור - אין מספיק מלאי לביצוע ההתקנה</span>
+        </div>
+        
         <button
           mat-raised-button
-          [disabled]="assignmentForm.invalid && false"
+          [disabled]="assignmentForm.invalid || (!editMode && affectStockControl.value && hasInsufficientStock())"
           color="primary"
           type="submit"
           (click)="onSubmit()"

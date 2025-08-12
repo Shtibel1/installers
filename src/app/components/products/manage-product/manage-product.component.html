@@ -15,6 +15,75 @@
           [options]="categories"
         ></app-select>
 
+        <!-- Product Requirements Section -->
+        <div class="requirements-section" *ngIf="editProduct || productRequirements.length > 0">
+          <h3>דרישות שירותים למוצר</h3>
+          
+          <div class="requirements-list">
+            <div 
+              class="requirement-item flex align-center gap-2" 
+              *ngFor="let requirement of productRequirements; let i = index"
+            >
+              <div class="service-select">
+                <label>שירות</label>
+                <mat-select 
+                  [value]="requirement.serviceProductId"
+                  (selectionChange)="onServiceProductChange(i, $event.value)"
+                >
+                  <mat-option 
+                    *ngFor="let serviceProduct of serviceProducts" 
+                    [value]="serviceProduct.id"
+                  >
+                    {{ serviceProduct.name }}
+                  </mat-option>
+                </mat-select>
+              </div>
+              
+              <div class="quantity-input">
+                <label>כמות</label>
+                <input 
+                  type="number" 
+                  [value]="requirement.quantity"
+                  (input)="updateQuantity(i, +($any($event.target).value))"
+                  min="1"
+                  class="form-control"
+                />
+              </div>
+              
+              <button 
+                mat-icon-button 
+                color="warn" 
+                type="button"
+                (click)="removeRequirement(i)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+          <button 
+            mat-button 
+            color="primary" 
+            type="button"
+            (click)="addRequirement()"
+          >
+            <mat-icon>add</mat-icon>
+            הוסף דרישת שירות
+          </button>
+        </div>
+
+        <div class="add-requirements-btn" *ngIf="!editProduct && productRequirements.length === 0">
+          <button 
+            mat-button 
+            color="accent" 
+            type="button"
+            (click)="addRequirement()"
+          >
+            <mat-icon>add</mat-icon>
+            הוסף דרישות שירותים
+          </button>
+        </div>
+
         <div
           class="btn-wrapper flex flex-row justify-end align-end width-10/10"
         >

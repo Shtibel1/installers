@@ -52,6 +52,14 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'service-products',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./components/service-products/service-products.module').then(
+        (m) => m.ServiceProductsModule
+      ),
+  },
+  {
     path: 'calculations',
     canActivate: [AuthGuard],
     loadComponent: () =>

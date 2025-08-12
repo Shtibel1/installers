@@ -27,10 +27,25 @@ export const InstallersColumnsConfig: Column[] = [
     label: 'תאריך יצירה',
     value: (element: Assignment) => `${element.createdDate}`,
   },
+
   {
-    ref: 'assignmentDate',
-    label: 'תאריך סיום',
-    value: (element: Assignment) => `${element?.assignmentDate || ''} `,
+    ref: 'additionals',
+    label: 'מחיר ההתקנה',
+    value: (element: Assignment) =>
+      `${element.additionalPrices
+        .map((a) => a.price)
+        .reduce((a, b) => a + b, 0)}`,
+  },
+
+  {
+    ref: 'extras',
+    label: 'תוספת מרחק',
+    value: (element: Assignment) => `${element.extras}`,
+  },
+  {
+    ref: 'customerNeedsToPay',
+    label: 'הלקוח שילם',
+    value: (element: Assignment) => `${element.customerNeedsToPay}`,
   },
 
   {

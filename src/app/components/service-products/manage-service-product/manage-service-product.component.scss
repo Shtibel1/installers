@@ -1,0 +1,37 @@
+.dialog-container {
+  min-width: 400px;
+  padding: 20px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.error-message {
+  color: #f44336;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+mat-dialog-actions {
+  gap: 8px;
+  padding-top: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+}

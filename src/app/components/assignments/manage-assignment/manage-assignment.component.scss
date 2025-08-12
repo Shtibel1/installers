@@ -91,3 +91,135 @@ app-manage-customer {
 ::ng-deep .comments > mat-form-field {
   width: 100%;
 }
+
+// Stock Management Styles
+.stock-section {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+
+  .stock-checkbox {
+    margin-bottom: 16px;
+    
+    mat-checkbox {
+      font-weight: 500;
+    }
+  }
+
+  .stock-info {
+    h4 {
+      margin: 0 0 12px 0;
+      color: #495057;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .stock-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stock-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 12px 16px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      &.insufficient-stock {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+      }
+
+      .stock-item-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .product-name {
+          font-weight: 600;
+          color: #212529;
+        }
+
+        .stock-details {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+
+          .current-stock {
+            color: #6c757d;
+          }
+
+          .arrow {
+            color: #adb5bd;
+            font-weight: bold;
+          }
+
+          .after-stock {
+            font-weight: 600;
+            
+            &.negative {
+              color: #dc3545;
+            }
+          }
+        }
+      }
+
+      .warning-icon {
+        color: #dc3545;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .no-requirements {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 8px;
+
+    p {
+      margin: 0;
+      color: #856404;
+      font-style: italic;
+    }
+  }
+}
+
+// Stock warning styles
+.stock-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  color: #856404;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #856404;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  span {
+    font-weight: 500;
+  }
+}

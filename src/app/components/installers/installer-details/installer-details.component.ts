@@ -109,6 +109,10 @@ export class InstallerDetailsComponent implements OnInit {
     this.router.navigate([`${this.router.url}/prices`]);
   }
 
+  onProviderStock() {
+    this.router.navigate([`${this.router.url}/stock`]);
+  }
+
   onAddCategories() {
     this.dialog.open(ManageInstallerComponent, { data: this.installer });
   }
