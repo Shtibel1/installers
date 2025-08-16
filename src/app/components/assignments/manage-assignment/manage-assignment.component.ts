@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Optional, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
@@ -28,6 +28,7 @@ import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
 import { AdditionalPriceService } from 'src/app/core/services/additional-price.service';
 import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
 import { ServiceSuppliesService, ProductRequirementVm, ServiceProviderStockVm, StockAdjustmentVm } from 'src/app/core/services/service-products.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface AssignmentForm {
   createdDate: FormControl;
@@ -57,6 +58,7 @@ export class ManageAssignmentComponent
   editMode: boolean = false;
   errMessage: string;
   isLoading = false;
+  private returnUrl?: string;
 
   assignmentForm: FormGroup<AssignmentForm>;
   dateControl: FormControl;
@@ -95,21 +97,44 @@ export class ManageAssignmentComponent
     private socket: WebsocketService,
     private router: Router,
     private additionalPriceService: AdditionalPriceService,
-    private serviceSuppliesService: ServiceSuppliesService
+    private serviceSuppliesService: ServiceSuppliesService,
+    @Optional() @Inject(MAT_DIALOG_DATA) private dialogData?: { assignmentId?: string },
+    @Optional() private dialogRef?: MatDialogRef<ManageAssignmentComponent>
   ) {
     super(accontsService);
   }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.route.data.pipe(take(1)).subscribe((data) => {
-      this.assignment = data['assigment'];
-
-      if (this.assignment) this.editMode = true;
-      this.initForm();
-      this.isLoading = false;
-    });
-    this.handleFormChange();
+    // If opened as a dialog with an assignmentId, fetch and init for edit
+  // capture returnUrl from query if present
+  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || undefined;
+  if (this.dialogData?.assignmentId) {
+      this.assingmentsService.getAssignment(this.dialogData.assignmentId)
+        .pipe(take(1))
+        .subscribe({
+          next: (assignment) => {
+            this.assignment = assignment;
+            this.editMode = true;
+            this.initForm();
+            this.isLoading = false;
+            this.handleFormChange();
+          },
+          error: () => {
+            this.isLoading = false;
+            this.errMessage = 'שגיאה בטעינת ההזמנה';
+          },
+        });
+    } else {
+      // Regular route-based flow
+      this.route.data.pipe(take(1)).subscribe((data) => {
+        this.assignment = data['assigment'];
+        if (this.assignment) this.editMode = true;
+        this.initForm();
+        this.isLoading = false;
+        this.handleFormChange();
+      });
+    }
   }
 
   ngAfterViewInit() {}
@@ -288,17 +313,29 @@ export class ManageAssignmentComponent
             this.updateProviderStock().then(() => {
               this.socket.sendMessage(res);
               this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה והמלאי עודכן!');
-              this.router.navigate(['/assignments']);
+              if (this.dialogRef.close) {
+                this.dialogRef.close(res);
+              } else {
+                this.navigateBack();
+              }
             }).catch((error) => {
               console.error('Error updating stock:', error);
               this.socket.sendMessage(res);
               this.snackbarService.openSnackBar('ההתקנה נוספה אך עדכון המלאי נכשל');
-              this.router.navigate(['/assignments']);
+              if (this.dialogRef.close) {
+                this.dialogRef.close(res);
+              } else {
+                this.navigateBack();
+              }
             });
           } else {
             this.socket.sendMessage(res);
             this.snackbarService.openSnackBar('ההתקנה נוספה בהצלחה!');
-            this.router.navigate(['/assignments']);
+            if (this.dialogRef.close) {
+              this.dialogRef.close(res);
+            } else {
+              this.navigateBack();
+            }
           }
         },
         error: (err) => {
@@ -314,7 +351,11 @@ export class ManageAssignmentComponent
             // Update stock if the checkbox is checked (only for new installations, not edits)
             this.socket.sendMessage(res);
             this.snackbarService.openSnackBar('ההתקנה עודנה בהצלחה!');
-            this.router.navigate(['/assignments']);
+            if (this.dialogRef.close) {
+              this.dialogRef.close(res);
+            } else {
+              this.navigateBack();
+            }
           },
           error: (err) => {
             this.errMessage = err;
@@ -327,7 +368,11 @@ export class ManageAssignmentComponent
     this.assingmentsService.deleteAssignment(this.assignment.id).subscribe({
       next: (res) => {
         this.snackbarService.openSnackBar('ההתקנה נמחקה בהצלחה!');
-        this.router.navigate(['/assignments']);
+        if (this.dialogRef) {
+          this.dialogRef.close({ deleted: true, id: this.assignment.id });
+        } else {
+          this.router.navigate(['/assignments']);
+        }
       },
       error: (err) => {
         this.errMessage = err;
@@ -450,6 +495,14 @@ export class ManageAssignmentComponent
     } catch (error) {
       console.error('Error updating stock:', error);
       throw error;
+    }
+  }
+
+  private navigateBack() {
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+    } else {
+      this.router.navigate(['/assignments']);
     }
   }
 }

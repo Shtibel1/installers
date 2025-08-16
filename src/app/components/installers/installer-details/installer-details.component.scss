@@ -1,36 +1,201 @@
+@use "@angular/material" as mat;
+
 .wrapper {
-  .details-wrapper {
-    background: white;
-    width: 100%;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  .installer-header {
+    margin-bottom: 1.5rem;
+    
+    .installer-avatar {
+      background-color: #536dfe; // indigo A200 (your primary)
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      mat-icon {
+        color: white;
+      }
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        background-color: #ffffff;
+
+        .info-icon {
+          color: #536dfe; // indigo A200 (your primary)
+          margin-top: 0.125rem;
+        }
+
+        .info-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          flex: 1;
+
+          .info-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
+
+          .info-value {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.87);
+            line-height: 1.25;
+          }
+        }
+      }
+    }
+
+    .categories-section {
+      margin-top: 1.5rem;
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+
+        mat-icon {
+          color: #536dfe; // indigo A200 (your primary)
+        }
+      }
+
+      .categories-list {
+        mat-chip-set {
+          mat-chip {
+            background-color: #e8eaf6; // indigo-50
+            color: #536dfe; // indigo A200
+            
+            &:hover {
+              background-color: #c5cae9; // indigo-100
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .actions-card {
+    .btns-wrapper {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  .calculation-card {
+    .calculate-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 16px;
+      background-color: white;
+      box-shadow: rgba(99, 99, 99, 0.5) 0px 4px 12px 0px;
+      flex-wrap: wrap;
+
+      .total-cost {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2e7d32;
+
+        .cost-amount {
+          background: #e8f5e8;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+        }
+      }
+
+      .description-input {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .filters-card {
+    .date-range-field {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
+
+  .table-card {
+    mat-card-content {
+      padding: 0;
+    }
   }
 
   .example-container {
     overflow: auto;
   }
 
-  .btns-wrapper {
-    display: flex;
-    gap: 1rem;
-  }
-
   .month {
     height: 40px;
   }
 
-  .calculate-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 16px;
-    background-color: white;
-    box-shadow: rgba(99, 99, 99, 0.5) 0px 4px 12px 0px;
-    align-items: center;
+  // Responsive design
+  @media (max-width: 768px) {
+    .installer-header .details-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+
+      .info-item {
+        padding: 0.75rem;
+      }
+    }
+
+    .calculation-card .calculate-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+
+      .action-buttons {
+        justify-content: stretch;
+        flex-direction: column;
+      }
+    }
+
+    .actions-card .btns-wrapper {
+      flex-direction: column;
+    }
   }
 }

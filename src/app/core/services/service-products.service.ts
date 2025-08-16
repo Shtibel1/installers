@@ -23,6 +23,18 @@ export interface ServiceProviderStockVm {
   serviceProductId: string;
   serviceProductName?: string;
   amount: number;
+  auditVm: ServiceProviderStockAudit[];
+}
+
+export interface ServiceProviderStockAudit {
+
+    id: string;
+    serviceProviderIdExternal: string;
+    serviceProductId: string;
+    delta: number;
+    balanceAfter: number;
+    reason: string;
+    performedAt: Date;
 }
 
 export interface StockAdjustmentVm {

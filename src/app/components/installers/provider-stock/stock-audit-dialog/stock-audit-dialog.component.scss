@@ -1,0 +1,27 @@
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.audit-table th, .audit-table td {
+  border: 1px solid #e0e0e0;
+  padding: 8px;
+  text-align: center;
+}
+.audit-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+.positive {
+  color: #388e3c;
+  font-weight: bold;
+}
+.negative {
+  color: #d32f2f;
+  font-weight: bold;
+}
+.empty-state {
+  text-align: center;
+  color: #888;
+  margin: 32px 0;
+}

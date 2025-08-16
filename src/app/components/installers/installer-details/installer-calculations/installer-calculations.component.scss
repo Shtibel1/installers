@@ -1,0 +1,124 @@
+.calculations-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .back-button {
+      color: #536dfe;
+    }
+
+    .header-content {
+      .page-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .page-subtitle {
+        margin: 0.25rem 0 0 0;
+        font-size: 0.875rem;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+  }
+
+  .filters-card, .table-card {
+    flex: 1;
+    margin-bottom: 1rem;
+  }
+
+  .calculation-card {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    margin-top: auto;
+    background: white;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px 8px 0 0;
+
+    .calculate-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .total-cost {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2e7d32;
+
+        .cost-amount {
+          background: #e8f5e8;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+        }
+      }
+
+      .description-input {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .filters-card {
+    .date-range-field {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
+
+  .table-card {
+    mat-card-content {
+      padding: 0;
+    }
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    .calculation-card .calculate-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+
+      .action-buttons {
+        justify-content: stretch;
+        flex-direction: column;
+      }
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+}

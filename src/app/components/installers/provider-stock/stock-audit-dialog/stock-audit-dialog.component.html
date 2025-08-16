@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>היסטוריית שינויים עבור {{ productName }}</h2>
+<div mat-dialog-content>
+  <div *ngIf="!audit || audit.length === 0" class="empty-state">
+    <mat-icon>history</mat-icon>
+    <p>אין היסטוריית שינויים לפריט זה.</p>
+  </div>
+  <table *ngIf="audit && audit.length > 0" class="audit-table">
+    <thead>
+      <tr>
+        <th>תאריך</th>
+        <th>שינוי</th>
+        <th>סיבה</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of audit">
+        <td>{{ entry.performedAt | date: 'dd/MM/yyyy'  }}</td>
+        <td [ngClass]="{'positive': entry.delta > 0, 'negative': entry.delta < 0}">{{ entry.delta }}</td>
+        <td>{{ entry.reason }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()">סגור</button>
+</div>

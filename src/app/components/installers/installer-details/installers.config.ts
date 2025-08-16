@@ -53,4 +53,9 @@ export const InstallersColumnsConfig: Column[] = [
     label: 'עלות',
     value: (element: Assignment) => `${element.cost}`,
   },
+  {
+    ref: 'actions',
+    label: 'פעולות',
+    value: (element: Assignment) => '',
+  },
 ];

@@ -33,6 +33,7 @@ export class TableComponent
   @Input() dataSource?: MatTableDataSource<any>;
   @Input() displayedColumns: string[];
   @Input() columns: Column[];
+  @Input() selectedIds?: Set<string> | string[];
   searchText: string;
 
   destroyed$: Subject<void> = new Subject();
@@ -41,6 +42,7 @@ export class TableComponent
   @ViewChild(MatSort) sort: MatSort;
 
   @Output() isPaidChange = new EventEmitter<Assignment>();
+  @Output() editAssignment = new EventEmitter<Assignment>();
   @Output() rowClick = new EventEmitter<any>();
   constructor(private filtersService: FiltersService) {}
 
@@ -146,7 +148,23 @@ export class TableComponent
   }
 
   onPaidChange(e: MatCheckboxChange, row: Assignment) {
-    this.isPaidChange.emit({ ...row, isPaid: e.checked });
+    // Do not mutate the underlying row.isPaid here; emit as a selection change only
+    this.isPaidChange.emit({ ...row });
+  }
+
+  onEditAssignment(row: Assignment) {
+    this.editAssignment.emit(row);
+  }
+
+  isSelected(row: any): boolean {
+    if (!this.selectedIds) {
+      // Fall back to row.isPaid if no external selection is provided
+      return String(row?.isPaid) === 'true' || row?.isPaid === true;
+    }
+    if (Array.isArray(this.selectedIds)) {
+      return this.selectedIds.includes(row.id);
+    }
+    return (this.selectedIds as Set<string>).has(row.id);
   }
 }
 

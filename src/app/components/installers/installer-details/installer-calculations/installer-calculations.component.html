@@ -1,0 +1,111 @@
+<div class="calculations-wrapper content flex flex-col gap-8">
+  <!-- Header with back button -->
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-content">
+      <h1 class="page-title">התחשבנות - {{ installer?.name }}</h1>
+      <p class="page-subtitle">ניהול התחשבנויות ועבודות</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>סינון לפי תאריכים</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters">
+        <mat-form-field appearance="outline" class="date-range-field">
+          <mat-label>בחר טווח תאריכים</mat-label>
+          <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+            <input matStartDate formControlName="start" placeholder="תאריך התחלה" />
+            <input matEndDate formControlName="end" placeholder="תאריך סיום" />
+          </mat-date-range-input>
+          <mat-hint>DD/MM/YYYY – DD/MM/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          
+          @if (range.controls.start.hasError('matStartDateInvalid')) {
+            <mat-error>תאריך התחלה לא תקין</mat-error>
+          } 
+          @if (range.controls.end.hasError('matEndDateInvalid')) {
+            <mat-error>תאריך סיום לא תקין</mat-error>
+          }
+        </mat-form-field>
+        
+        <button 
+          mat-button 
+          (click)="clearDateFilter()" 
+          *ngIf="range.value.start || range.value.end">
+          <mat-icon>clear</mat-icon>
+          נקה סינון
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>רשימת עבודות</mat-card-title>
+      <mat-card-subtitle>{{ filteredAssignments?.length }} עבודות</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <app-table
+        [columns]="columns"
+        (isPaidChange)="onIsPaidChange($event)"
+        (editAssignment)="onEditAssignment($event)"
+  [dataSource]="dataSource"
+  [selectedIds]="selectedIds">
+      </app-table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Calculation Section (Sticky Bottom) -->
+  <mat-card class="calculation-card">
+    <mat-card-header>
+      <mat-card-title>התחשבנות</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="calculate-wrapper">
+        <div class="total-cost">
+          <mat-icon>attach_money</mat-icon>
+          <span class="cost-amount">₪{{ totalCost | number }}</span>
+        </div>
+        <app-input 
+          [label]="'איך שולם?'" 
+          [control]="description"
+          class="description-input">
+        </app-input>
+        <div class="action-buttons">
+          <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="onExportToExcel()"
+            [disabled]="isSaving || patchedAssignments.length === 0">
+            <mat-icon>download</mat-icon>
+            יצא לאקסל
+          </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="onCalculate()"
+            [disabled]="isSaving || patchedAssignments.length === 0 || totalCost === 0">
+            <ng-container *ngIf="!isSaving; else savingTpl">
+              <mat-icon>calculate</mat-icon>
+              בצע התחשבנות
+            </ng-container>
+            <ng-template #savingTpl>
+              <span class="inline-flex items-center gap-2">
+                <mat-progress-spinner [diameter]="18" mode="indeterminate"></mat-progress-spinner>
+                מעבד...
+              </span>
+            </ng-template>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { Assignment } from 'src/app/core/models/assignment.model';
 import { ServiceProvider } from 'src/app/core/models/serviceProvider.model';
+import { Calculation } from 'src/app/core/models/calculation.model';
 import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
+import { CalculationsService } from 'src/app/core/services/calculations.service';
 import { ManageInstallerComponent } from './manage-installer/manage-installer.component';
 import { InstallersColumnsConfig } from './installers.config';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,9 +21,6 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { Moment } from 'moment';
 import * as moment from 'moment';
 import { AssignmentDto } from 'src/app/core/models/Dtos/assignmentDto.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CalculationsService } from 'src/app/core/services/calculations.service';
-import { Calculation } from 'src/app/core/models/calculation.model';
 
 interface Transaction {
   item: string;
@@ -107,6 +107,10 @@ export class InstallerDetailsComponent implements OnInit {
 
   onPrices() {
     this.router.navigate([`${this.router.url}/prices`]);
+  }
+
+  onCalculations() {
+    this.router.navigate([`${this.router.url}/calculations`]);
   }
 
   onProviderStock() {
@@ -199,5 +203,17 @@ export class InstallerDetailsComponent implements OnInit {
 
   openSnackbar(msg: string) {
     this._snackBar.open(msg, 'Ok', { duration: 4000 });
+  }
+
+  clearDateFilter() {
+    this.range.reset();
+    this.filteredAssignments = this.assignments;
+    this.dataSource = new MatTableDataSource(this.filteredAssignments);
+  }
+
+  onEditAssignment(assignment: Assignment) {
+    // TODO: Implement assignment editing dialog
+    // For now, just show a snackbar
+    this.openSnackbar(`עריכת הזמנה ${assignment.id} - תכונה זו תמומש בקרוב`);
   }
 }

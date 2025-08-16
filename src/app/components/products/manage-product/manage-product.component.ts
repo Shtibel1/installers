@@ -150,16 +150,15 @@ export class ManageProductComponent implements OnInit {
   }
 
   saveProductRequirements(productId: string) {
-    if (this.productRequirements.length > 0) {
-      this.serviceSuppliesService.setAllRequirements(productId, this.productRequirements).subscribe({
-        next: () => {
-          console.log('Product requirements saved successfully');
-        },
-        error: (error) => {
-          console.error('Failed to save product requirements:', error);
-        }
-      });
-    }
+    // Always call setAllRequirements, even for empty array to clear all requirements
+    this.serviceSuppliesService.setAllRequirements(productId, this.productRequirements).subscribe({
+      next: () => {
+        console.log('Product requirements saved successfully');
+      },
+      error: (error) => {
+        console.error('Failed to save product requirements:', error);
+      }
+    });
   }
 
   addRequirement() {

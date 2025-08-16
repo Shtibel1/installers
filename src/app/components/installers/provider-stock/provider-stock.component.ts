@@ -8,6 +8,7 @@ import { ServiceProvidersService } from 'src/app/core/services/service-providers
 import { ManageStockComponent } from './manage-stock/manage-stock.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { switchMap, combineLatest } from 'rxjs';
+import { StockAuditDialogComponent } from './stock-audit-dialog';
 
 @Component({
   selector: 'app-provider-stock',
@@ -138,4 +139,14 @@ export class ProviderStockComponent implements OnInit {
       this.adjustStock(adjustment);
     }
   }
+
+    onViewAudit(stockItem: ServiceProviderStockVm): void {
+      this.dialog.open(StockAuditDialogComponent, {
+        data: {
+          audit: stockItem.auditVm,
+          productName: stockItem.serviceProductName
+        },
+        width: '600px'
+      });
+    }
 }
