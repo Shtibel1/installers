@@ -17,10 +17,82 @@
     הוסף משימה
   </button>
 
-  <app-assignment-table
-    [columns]="columns"
-    [dataSource]="dataSource"
-    (rowClick)="onAssignment($event)"
-    (pickupStatusChange)="onPickupStatusChange($event)"
-  ></app-assignment-table>
+  <!-- Desktop Table -->
+  <div class="desktop-view">
+    <app-assignment-table
+      [columns]="columns"
+      [dataSource]="dataSource"
+      (rowClick)="onAssignment($event)"
+      (pickupStatusChange)="onPickupStatusChange($event)"
+    ></app-assignment-table>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="mobile-view">
+    @if (dataSource) {
+      @for (row of dataSource.filteredData; track row.id) {
+      <div class="mobile-card" (click)="onAssignment(row)">
+        <div class="mobile-card-header">
+          <div class="mobile-customer-info">
+            <span class="mobile-customer">{{ row.customer?.name }}</span>
+            @if (row.customer?.address) {
+            <span class="mobile-customer-address">{{ row.customer.address }}</span>
+            }
+          </div>
+          <span class="mobile-status-badge">{{ StatusDescriptions[row.status] }}</span>
+        </div>
+        <div class="mobile-card-body">
+          <div class="mobile-field">
+            <span class="mobile-label">מוצר</span>
+            <span class="mobile-value">{{ row.product?.name }}</span>
+          </div>
+          <div class="mobile-field">
+            <span class="mobile-label">מתקין</span>
+            <span class="mobile-value">{{ row.serviceProvider?.name }}</span>
+          </div>
+          @if (row.additionalPrices?.length) {
+          <div class="mobile-field full-width">
+            <span class="mobile-label">תוספות</span>
+            <span class="mobile-value">{{ getAdditionalNames(row) }}</span>
+          </div>
+          }
+          <div class="mobile-field">
+            <span class="mobile-label">תאריך</span>
+            <span class="mobile-value">{{ row.createdDate | date:'dd/MM/yy' }}</span>
+          </div>
+          @if (row.assignmentDate) {
+          <div class="mobile-field">
+            <span class="mobile-label">תאריך ביצוע</span>
+            <span class="mobile-value">{{ row.assignmentDate | date:'dd/MM/yy' }}</span>
+          </div>
+          }
+          @if (row.customerNeedsToPay) {
+          <div class="mobile-field">
+            <span class="mobile-label">לשלם</span>
+            <span class="mobile-value pay">&#x20AA;{{ row.customerNeedsToPay }}</span>
+          </div>
+          }
+          @if (row.comments?.[0]?.content) {
+          <div class="mobile-field full-width">
+            <span class="mobile-label">הערות</span>
+            <span class="mobile-value">{{ row.comments[0].content }}</span>
+          </div>
+          }
+        </div>
+        <div class="mobile-card-footer" (click)="$event.stopPropagation()">
+          <app-select-pickup-status
+            [value]="row.pickupStatus"
+            (valueChange)="onPickupStatusChange(row)"
+          ></app-select-pickup-status>
+          <button mat-icon-button color="primary" (click)="onAssignment(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+      }
+      @if (dataSource.filteredData.length === 0) {
+      <div class="mobile-empty">לא נמצאו תוצאות</div>
+      }
+    }
+  </div>
 </div>

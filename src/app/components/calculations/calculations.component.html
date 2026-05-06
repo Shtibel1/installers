@@ -1,17 +1,63 @@
 <div class="content">
+  <div class="page-header">
+    <h2 class="page-title">חישובים</h2>
+    <span class="calc-count">{{ filteredCalculations.length }} רשומות</span>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-icon">🔍</span>
+    <input
+      class="filter-input"
+      type="text"
+      placeholder="סינון לפי שם מתקין..."
+      [(ngModel)]="filterText"
+    />
+    @if (filterText) {
+    <button class="clear-btn" (click)="filterText = ''">✕</button>
+    }
+  </div>
+
   <div class="wrapper">
-    @for (calc of calculations; track $index) {
-    <div class="calc" (click)="onCalc(calc)">
-      <div class="details flex gap-2">
-        <div class="date">
-          תאריך: {{ calc.createdDate | date : "dd/MM/YYYY" }}
+    @for (calc of filteredCalculations; track $index) {
+    <div class="calc-card" (click)="onCalc(calc)">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="provider-badge">
+            <span class="provider-icon">🏢</span>
+            <span class="provider-name">{{ calc.serviceProvider?.name }}</span>
+          </div>
+          <div class="price-badge">
+            <span class="price-label">סכום</span>
+            <span class="price-value" [class.negative]="calc.price < 0">₪{{ calc.price | number:'1.0-2' }}</span>
+          </div>
         </div>
-        <div class="service-provider">{{ calc.serviceProvider.name }}</div>
-        <div *ngIf="calc.description" class="how-paid">
-          איך שולם: {{ calc.description }}
+        <div class="card-bottom">
+          <div class="meta-item">
+            <span class="meta-icon">📅</span>
+            <span class="meta-text">{{ calc.createdDate | date : 'dd/MM/YYYY' }}</span>
+          </div>
+          @if (calc.description) {
+          <div class="meta-item">
+            <span class="meta-icon">💳</span>
+            <span class="meta-text">{{ calc.description }}</span>
+          </div>
+          }
+          @if (calc.assignments?.length) {
+          <div class="meta-item">
+            <span class="meta-icon">📋</span>
+            <span class="meta-text">{{ calc.assignments?.length }} הזמנות</span>
+          </div>
+          }
         </div>
       </div>
-      <div class="price">סכום: {{ calc.price }}</div>
+    </div>
+    }
+
+    @if (filteredCalculations.length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📊</span>
+      <p>{{ filterText ? 'לא נמצאו תוצאות עבור "' + filterText + '"' : 'אין חישובים להצגה' }}</p>
     </div>
     }
   </div>

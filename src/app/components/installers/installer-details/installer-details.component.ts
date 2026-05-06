@@ -46,6 +46,8 @@ export class InstallerDetailsComponent implements OnInit {
   });
   patchedAssignments: Assignment[] = [];
   totalCost: number = 0;
+  balance: number = 0;          // positive = business owes installer, negative = installer owes business
+  lastCalculation: Calculation | null = null;
 
   description = new FormControl();
 
@@ -102,6 +104,20 @@ export class InstallerDetailsComponent implements OnInit {
         );
       });
       this.dataSource = new MatTableDataSource(this.filteredAssignments);
+      // Balance = total unpaid cost owed to installer
+      this.balance = this.assignments.reduce((sum, a) => sum + (Number(a.cost) || 0), 0) * -1;
+      this.loadCalculations();
+    });
+  }
+
+  loadCalculations() {
+    this.calcSerivce.getCalcs().subscribe((calcs) => {
+      const mine = calcs.filter((c) => c.serviceProviderId == this.installer.id);
+      if (mine.length > 0) {
+        this.lastCalculation = mine.sort(
+          (a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+        )[0];
+      }
     });
   }
 

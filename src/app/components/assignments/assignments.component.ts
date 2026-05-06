@@ -11,7 +11,7 @@ import { AssignmentsService } from 'src/app/core/services/assignments.service';
 import { CategoriesService } from 'src/app/core/services/categories.service';
 import { FiltersService } from '../filters-bar/filters-service.service';
 import { AssignmentColumnsConfig } from './assignments-colums.config';
-import { Status } from 'src/app/core/enums/status.enum';
+import { Status, StatusDescriptions } from 'src/app/core/enums/status.enum';
 import { ServiceProvidersService } from 'src/app/core/services/service-providers.service';
 import { Option } from 'src/app/core/models/option.model';
 import { PickupStatus } from 'src/app/core/enums/pickup-status.enum';
@@ -25,6 +25,7 @@ import { DatePipe } from '@angular/common';
   providers: [FiltersService],
 })
 export class AssignmentsComponent implements OnInit {
+  StatusDescriptions = StatusDescriptions;
   editMode: boolean = false;
   form: FormGroup;
   errMessage: string;
@@ -144,5 +145,12 @@ export class AssignmentsComponent implements OnInit {
 
       this.assignmentsService.updateAssignment(ass.id, assDto).subscribe();
     });
+  }
+
+  getAdditionalNames(ass: Assignment): string {
+    return ass.additionalPrices
+      ?.map((a) => a.additional?.name)
+      .filter(Boolean)
+      .join(', ') || '';
   }
 }

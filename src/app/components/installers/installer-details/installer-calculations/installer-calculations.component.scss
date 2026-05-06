@@ -101,6 +101,19 @@
     mat-card-content {
       padding: 0;
     }
+
+    mat-card-header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      .select-all-wrapper {
+        margin-right: auto;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 
   // Responsive design

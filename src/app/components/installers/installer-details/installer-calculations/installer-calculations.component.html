@@ -51,6 +51,15 @@
     <mat-card-header>
       <mat-card-title>רשימת עבודות</mat-card-title>
       <mat-card-subtitle>{{ filteredAssignments?.length }} עבודות</mat-card-subtitle>
+      <div class="select-all-wrapper">
+        <mat-checkbox
+          [checked]="isAllSelected"
+          [indeterminate]="patchedAssignments.length > 0 && !isAllSelected"
+          (change)="toggleSelectAll()"
+          color="primary">
+          בחר הכל ({{ patchedAssignments.length }}/{{ filteredAssignments?.length }})
+        </mat-checkbox>
+      </div>
     </mat-card-header>
     <mat-card-content>
       <app-table

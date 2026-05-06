@@ -47,6 +47,28 @@ export class InstallerCalculationsComponent implements OnInit {
     return this.patchedAssignments.map(a => a.id);
   }
 
+  get isAllSelected(): boolean {
+    return this.filteredAssignments.length > 0 &&
+      this.filteredAssignments.every(a => this.patchedAssignments.some(pa => pa.id === a.id));
+  }
+
+  toggleSelectAll() {
+    if (this.isAllSelected) {
+      // Deselect all filtered assignments
+      const filteredIds = new Set(this.filteredAssignments.map(a => a.id));
+      this.patchedAssignments = this.patchedAssignments.filter(a => !filteredIds.has(a.id));
+    } else {
+      // Select all filtered assignments not yet selected
+      this.filteredAssignments.forEach(a => {
+        if (!this.patchedAssignments.some(pa => pa.id === a.id)) {
+          this.patchedAssignments.push({ ...a });
+        }
+      });
+    }
+    this.calculateCost();
+    this.savePatchedState();
+  }
+
   constructor(
     private _assignmentsService: AssignmentsService,
     private _serviceProvidersService: ServiceProvidersService,

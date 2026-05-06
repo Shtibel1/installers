@@ -47,6 +47,55 @@ form {
   }
 }
 
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .manage-form {
+    padding: 1rem;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  form {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .right-wrapper,
+  .left-wrapper {
+    width: 100%;
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product {
+    width: 100% !important;
+  }
+
+  .comments {
+    width: 100% !important;
+  }
+
+  ::ng-deep .select-product > app-autocomplete > mat-form-field {
+    width: 100% !important;
+  }
+
+  .bottom-wrapper {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .stock-section {
+    margin: 8px 0;
+  }
+}
+
 .price-input {
   text-align: right;
   width: calc(100% - 20px);
@@ -64,6 +113,7 @@ input.price-input::-webkit-inner-spin-button {
 
 input.price-input {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 app-manage-customer {

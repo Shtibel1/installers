@@ -11,4 +11,137 @@ mat-chip {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Desktop / Mobile visibility */
+.desktop-view {
+  display: block;
+}
+.mobile-view {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-view {
+    display: none;
+  }
+  .mobile-view {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+/* Mobile Card Styles */
+.mobile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  overflow: hidden;
+  border-right: 5px solid #3949ab;
+  direction: rtl;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+
+  &:active {
+    box-shadow: 0 4px 16px rgba(57,73,171,0.2);
+  }
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 8px;
+  background: #f5f7ff;
+  border-bottom: 1px solid #e8eaf6;
+
+  .mobile-customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-customer {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a237e;
+  }
+
+  .mobile-customer-address {
+    font-size: 0.78rem;
+    color: #5c6bc0;
+  }
+
+  .mobile-status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #e8eaf6;
+    color: #3949ab;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+}
+
+.mobile-card-body {
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.mobile-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+
+  &.full-width {
+    width: 100%;
+  }
+
+  .mobile-label {
+    font-size: 0.7rem;
+    color: #9e9e9e;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-value {
+    font-size: 0.9rem;
+    color: #212121;
+    font-weight: 500;
+
+    &.pay {
+      color: #2e7d32;
+      font-weight: 700;
+    }
+  }
+}
+
+.mobile-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.mobile-empty {
+  text-align: center;
+  color: #9e9e9e;
+  padding: 40px;
+  font-size: 1rem;
 }

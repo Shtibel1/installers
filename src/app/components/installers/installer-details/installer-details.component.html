@@ -53,6 +53,46 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- Financial Summary -->
+  <mat-card class="financial-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>account_balance_wallet</mat-icon>
+        סיכום כספי
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="financial-grid">
+        <div class="financial-item" [ngClass]="balance > 0 ? 'owed-to-installer' : balance < 0 ? 'owed-to-business' : 'balanced'">
+          <mat-icon>{{ balance > 0 ? 'arrow_upward' : balance < 0 ? 'arrow_downward' : 'check_circle' }}</mat-icon>
+          <div class="financial-info">
+            <span class="financial-label">
+              {{ balance > 0 ? 'חוב העסק למתקין' : balance < 0 ? 'חוב המתקין לעסק' : 'מאוזן' }}
+            </span>
+            <span class="financial-amount">₪{{ (balance < 0 ? -balance : balance) | number }}</span>
+          </div>
+        </div>
+
+        <mat-divider [vertical]="true"></mat-divider>
+
+        <div class="financial-item last-calc">
+          <mat-icon>history</mat-icon>
+          <div class="financial-info">
+            <span class="financial-label">התחשבנות אחרונה</span>
+            <ng-container *ngIf="lastCalculation; else noCalc">
+              <span class="financial-amount">₪{{ lastCalculation.price | number }}</span>
+              <span class="financial-meta">{{ lastCalculation.createdDate | date:'dd/MM/yyyy' }}</span>
+              <span class="financial-meta" *ngIf="lastCalculation.description">{{ lastCalculation.description }}</span>
+            </ng-container>
+            <ng-template #noCalc>
+              <span class="financial-empty">אין התחשבנויות קודמות</span>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
   <!-- Action Buttons -->
   <mat-card class="actions-card">
     <mat-card-content>

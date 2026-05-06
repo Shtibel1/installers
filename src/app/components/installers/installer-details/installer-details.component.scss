@@ -5,6 +5,90 @@
   margin: 0 auto;
   padding: 1rem;
 
+  .financial-card {
+    margin-bottom: 1.5rem;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .financial-grid {
+      display: flex;
+      align-items: stretch;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding-top: 0.5rem;
+
+      mat-divider[vertical] {
+        height: auto;
+        align-self: stretch;
+      }
+    }
+
+    .financial-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex: 1;
+      min-width: 180px;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        margin-top: 0.25rem;
+      }
+
+      .financial-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        .financial-label {
+          font-size: 0.8rem;
+          color: rgba(0,0,0,0.5);
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .financial-amount {
+          font-size: 1.6rem;
+          font-weight: 700;
+          line-height: 1.2;
+        }
+
+        .financial-meta {
+          font-size: 0.85rem;
+          color: rgba(0,0,0,0.55);
+        }
+
+        .financial-empty {
+          font-size: 0.9rem;
+          color: rgba(0,0,0,0.4);
+          font-style: italic;
+        }
+      }
+
+      &.owed-to-installer {
+        mat-icon { color: #c62828; }
+        .financial-amount { color: #c62828; }
+      }
+
+      &.owed-to-business {
+        mat-icon { color: #2e7d32; }
+        .financial-amount { color: #2e7d32; }
+      }
+
+      &.balanced {
+        mat-icon { color: #1565c0; }
+        .financial-amount { color: #1565c0; }
+      }
+    }
+  }
+
   .installer-header {
     margin-bottom: 1.5rem;
     
