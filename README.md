@@ -1,4 +1,17 @@
-# Installers — Field-Service Dispatch Client (Angular)
+<div align="center">
+
+<img src=".github/banner.svg" alt="installers" width="100%"/>
+
+![Angular 14](https://img.shields.io/badge/Angular-14-dd0031?logo=angular&logoColor=white)
+![Material](https://img.shields.io/badge/Angular_Material-RTL-3f51b5)
+![RxJS](https://img.shields.io/badge/RxJS-7-b7178c?logo=reactivex&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.7-3178c6?logo=typescript&logoColor=white)
+[![API](https://img.shields.io/badge/backend-InstallersApi2-60a5fa)](https://github.com/Shtibel1/InstallersApi2)
+
+**Hebrew, right-to-left dispatch console for field-service installation jobs, installers and pricing matrices.**
+
+</div>
+
 
 Hebrew, right-to-left Angular 14 + Angular Material web client used by back-office staff to
 dispatch installation jobs to field installers, manage the product catalog, and maintain
@@ -21,6 +34,15 @@ per-installer pricing matrices. It is the front end for
   (`Employee`, `ServiceProvider`, `Storekeeper`).
 
 ## Architecture
+
+```mermaid
+flowchart LR
+  U[Back-office user] --> C["Angular components<br/>assignments · installers · products"]
+  C --> S["Typed services<br/>BaseService + BehaviorSubject cache"]
+  S --> I["AuthInterceptor<br/>Bearer token"]
+  I -->|REST + JSON Patch| API["InstallersApi2<br/>ASP.NET Core 8"]
+```
+
 
 ```
 src/app
@@ -54,7 +76,7 @@ src/app
 - **RTL and localization** — Material theme in `theme.scss`, a custom
   `MatPaginatorIntl` with Hebrew range labels, and Hebrew status values.
 
-## Getting started
+## Quick start
 
 Requirements: Node.js 16+ and npm.
 
